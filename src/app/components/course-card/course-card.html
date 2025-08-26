@@ -1,0 +1,129 @@
+<div class="course-card" 
+     [ngClass]="[size, { 'trending-card': course.isTrending, 'enrolled': !!enrollment }]"
+     (click)="onViewDetails()">
+  
+  <!-- Course Image -->
+  <div class="course-image" *ngIf="course.thumbnail">
+    <img [src]="course.thumbnail" [alt]="course.title" loading="lazy">
+    
+    <!-- Badges -->
+    <div class="badges">
+      <div class="trending-badge" *ngIf="course.isTrending">
+        🔥 Trending
+      </div>
+      <div class="level-badge" [ngClass]="course.level">
+        {{ course.level | titlecase }}
+      </div>
+      <div class="status-badge" *ngIf="enrollment" [ngClass]="enrollment.status">
+        {{ getStatusText() }}
+      </div>
+    </div>
+    
+    <!-- Duration overlay -->
+    <div class="duration-overlay" *ngIf="timeRemaining">
+      <span class="duration-text">⏱️ {{ timeRemaining }}</span>
+    </div>
+  </div>
+
+  <!-- Course Content -->
+  <div class="course-content">
+    <!-- Header -->
+    <div class="course-header">
+      <h3 class="course-title">{{ course.title }}</h3>
+      <div class="course-category" *ngIf="course.category">
+        {{ course.category.name }}
+      </div>
+    </div>
+
+    <!-- Instructor -->
+    <div class="course-instructor">
+      <img [src]="course.instructor.profileImage" 
+           [alt]="course.instructor.firstName + ' ' + course.instructor.lastName"
+           class="instructor-avatar">
+      <div class="instructor-info">
+        <span class="instructor-name">
+          {{ course.instructor.firstName }} {{ course.instructor.lastName }}
+        </span>
+        <div class="course-meta">
+          <span class="rating" *ngIf="course.rating > 0">
+            ⭐ {{ course.rating | number:'1.1-1' }}
+          </span>
+          <span class="reviews" *ngIf="course.reviewCount > 0">
+            ({{ course.reviewCount | number }} reviews)
+          </span>
+          <span class="enrollment-count">
+            👥 {{ course.enrollmentCount | number }} students
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Section -->
+    <div class="course-progress" *ngIf="enrollment && showProgress">
+      <div class="progress-info">
+        <span class="progress-text">
+          {{ enrollment.progress.currentModule || 'Getting Started' }}
+        </span>
+        <span class="progress-percent">{{ progressPercentage }}% complete</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" 
+             [style.width.%]="progressPercentage"
+             [style.background-color]="getProgressColor()">
+        </div>
+      </div>
+      <div class="progress-stats">
+        <span class="completed-lessons">
+          {{ enrollment.progress.completedLessons.length }} lessons completed
+        </span>
+        <span class="time-spent" *ngIf="enrollment.timeSpent > 0">
+          {{ formatDuration(enrollment.timeSpent) }} spent
+        </span>
+      </div>
+    </div>
+
+    <!-- Price Section -->
+    <div class="course-price" *ngIf="!enrollment && course.price > 0">
+      <span class="price">{{ course.currency }}{{ course.price | number:'1.0-0' }}</span>
+      <span class="price-note" *ngIf="course.price === 0">Free</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="course-actions" (click)="$event.stopPropagation()">
+      <!-- Enrolled Course Actions -->
+      <ng-container *ngIf="enrollment; else notEnrolledActions">
+        <button class="btn btn-primary" 
+                *ngIf="enrollment.status === 'active' && progressPercentage < 100"
+                (click)="onContinue()">
+          Continue Learning
+        </button>
+        <button class="btn btn-secondary" 
+                *ngIf="progressPercentage === 100"
+                (click)="onViewDetails()">
+          View Certificate
+        </button>
+        <button class="btn btn-outline" 
+                *ngIf="enrollment.status === 'paused'"
+                (click)="onContinue()">
+          Resume
+        </button>
+      </ng-container>
+
+      <!-- Non-enrolled Course Actions -->
+      <ng-template #notEnrolledActions>
+        <button class="btn" 
+                [ngClass]="course.isTrending ? 'btn-primary' : 'btn-secondary'"
+                [disabled]="isEnrolling"
+                (click)="onEnroll()">
+          <span *ngIf="!isEnrolling">
+            {{ course.price > 0 ? 'Enroll Now' : 'Start Free' }}
+          </span>
+          <span *ngIf="isEnrolling" class="loading-text">
+            <span class="spinner"></span>
+            Enrolling...
+          </span>
+        </button>
+      </ng-template>
+    </div>
+  </div>
+</div>

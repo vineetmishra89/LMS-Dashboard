@@ -1,0 +1,207 @@
+<!-- src/app/components/chat/chat.component.html -->
+<div class="chat-container">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="chat-title">
+      <span class="ai-icon">🤖</span>
+      <div class="title-info">
+        <span class="title-text">AI Course Assistant</span>
+        <span class="status-indicator" [ngClass]="{ 'online': !isAITyping, 'typing': isAITyping }">
+          <span class="status-dot"></span>
+          {{ isAITyping ? 'Thinking...' : 'Online' }}
+        </span>
+      </div>
+    </div>
+    <div class="chat-actions">
+      <button class="action-btn" (click)="exportChatHistory()" title="Export chat">
+        📥
+      </button>
+      <button class="action-btn" (click)="clearChat()" title="Clear chat">
+        🗑️
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions" *ngIf="messages.length <= 1">
+    <div class="quick-action-label">Quick actions:</div>
+    <div class="action-buttons">
+      <button 
+        *ngFor="let action of quickActions" 
+        class="quick-action-btn"
+        (click)="onQuickAction(action.action)">
+        {{ action.text }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" #messagesContainer>
+    <div 
+      *ngFor="let msg of messages; trackBy: trackByMessageId" 
+      class="message" 
+      [ngClass]="[msg.sender, msg.type]">
+      
+      <div class="message-avatar" *ngIf="msg.sender === 'ai'">
+        <span class="avatar-icon">🤖</span>
+      </div>
+      
+      <div class="message-bubble">
+        <div class="message-content" [innerHTML]="formatMessage(msg.message)"></div>
+        <div class="message-timestamp">
+          {{ msg.timestamp | date:'short' }}
+        </div>
+        
+        <!-- Special content for different message types -->
+        <div class="message-data" *ngIf="msg.data">
+          <!-- Progress Data Widget -->
+          <div class="progress-widget" *ngIf="msg.type === 'progress'">
+            <div class="widget-header">📊 Quick Stats</div>
+            <div class="progress-grid">
+              <div class="progress-item">
+                <span class="label">Courses:</span>
+                <span class="value">{{ msg.data.totalCoursesEnrolled || 0 }}</span>
+              </div>
+              <div class="progress-item">
+                <span class="label">Completed:</span>
+                <span class="value">{{ msg.data.totalCoursesCompleted || 0 }}</span>
+              </div>
+              <div class="progress-item">
+                <span class="label">Hours:</span>
+                <span class="value">{{ msg.data.totalHoursLearned || 0 }}</span>
+              </div>
+              <div class="progress-item">
+                <span class="label">Streak:</span>
+                <span class="value">{{ msg.data.currentStreak || 0 }}🔥</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recommendation Widget -->
+          <div class="recommendation-widget" *ngIf="msg.type === 'recommendation' && msg.data.recommendations">
+            <div class="widget-header">🎯 Recommended Courses</div>
+            <div class="recommendation-list">
+              <div 
+                *ngFor="let rec of msg.data.recommendations.slice(0, 2)" 
+                class="recommendation-item">
+                <div class="rec-title">{{ rec.title }}</div>
+                <div class="rec-reason">{{ rec.reason }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Typing Indicator -->
+    <div class="message ai typing-indicator" *ngIf="isAITyping">
+      <div class="message-avatar">
+        <span class="avatar-icon typing">🤖</span>
+      </div>
+      <div class="message-bubble">
+        <div class="typing-animation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="typing-text">AI is thinking...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suggestions -->
+  <div class="suggestions" *ngIf="suggestions.length > 0 && !isAITyping">
+    <div class="suggestions-label">💡 Try asking:</div>
+    <div class="suggestion-chips">
+      <button 
+        *ngFor="let suggestion of suggestions.slice(0, 3)" 
+        class="suggestion-chip"
+        (click)="onSuggestionClick(suggestion)">
+        {{ suggestion }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Input -->
+  <div class="chat-input">
+    <div class="input-container">
+      <input 
+        type="text" 
+        placeholder="Ask me anything about your courses..." 
+        [(ngModel)]="newMessage"
+        (keyup.enter)="sendMessage()"
+        (input)="onTyping()"
+        class="message-input"
+        [disabled]="isAITyping"
+        maxlength="500">
+      
+      <button 
+        class="send-btn" 
+        (click)="sendMessage()"
+        [disabled]="!newMessage.trim() || isAITyping"
+        [title]="isAITyping ? 'AI is responding...' : 'Send message'">
+        <span *ngIf="!isAITyping" class="send-icon">📤</span>
+        <span *ngIf="isAITyping" class="loading-spinner"></span>
+      </button>
+    </div>
+    
+    <!-- Character Counter -->
+    <div class="input-footer">
+      <div class="typing-indicator" *ngIf="isTyping && newMessage.length > 0">
+        <span class="typing-dots">
+          <span></span><span></span><span></span>
+        </span>
+        You are typing...
+      </div>
+      <div class="char-counter" [ngClass]="{ 'warning': newMessage.length > 400 }">
+        {{ newMessage.length }}/500
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Learning Streak Component (Separate section) -->
+<div class="learning-streak">
+  <div class="streak-header">
+    <span class="streak-title">Learning Streak</span>
+    <span class="streak-info-icon" title="Study for consecutive days to build your streak!" (click)="showStreakInfo()">ℹ️</span>
+  </div>
+  <div class="streak-content">
+    <div class="streak-main">
+      <span class="streak-icon" [ngClass]="{ 'fire': (currentStreak$ | async) > 0 }">🔥</span>
+      <div class="streak-details">
+        <span class="streak-number">{{ (currentStreak$ | async) || 0 }}</span>
+        <div class="streak-text">
+          <div class="streak-days">Days in a row</div>
+          <div class="streak-encouragement">
+            {{ getStreakMessage((currentStreak$ | async) || 0) }}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Streak Progress Visualization -->
+    <div class="streak-progress">
+      <div class="progress-label">This week:</div>
+      <div class="progress-dots">
+        <div 
+          *ngFor="let dayInfo of getStreakDots(); let i = index" 
+          class="progress-dot"
+          [ngClass]="{ 'active': dayInfo.active, 'today': i === 6 }"
+          [title]="dayInfo.day + (dayInfo.active ? ' ✓' : '')">
+          <span class="dot-label">{{ dayInfo.day.charAt(0) }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Streak Goals -->
+    <div class="streak-goals" *ngIf="(currentStreak$ | async) > 0">
+      <div class="goal-progress">
+        <div class="goal-text">Next milestone: {{ getNextMilestone((currentStreak$ | async) || 0) }} days</div>
+        <div class="goal-bar">
+          <div class="goal-fill" [style.width.%]="getMilestoneProgress((currentStreak$ | async) || 0)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

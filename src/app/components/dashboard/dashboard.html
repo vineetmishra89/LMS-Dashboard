@@ -1,0 +1,162 @@
+<div class="dashboard" *ngIf="dashboardData$ | async as data; else loadingTemplate">
+  <!-- Error Message -->
+  <div class="error-banner" *ngIf="hasError$ | async as error">
+    <div class="error-content">
+      <span class="error-icon">⚠️</span>
+      <span class="error-message">{{ error }}</span>
+      <button class="retry-btn" (click)="refreshDashboard()">Retry</button>
+    </div>
+  </div>
+
+  <!-- Welcome Banner -->
+  <app-welcome-banner [user]="currentUser$ | async" [progress]="data.analytics?.overallProgress || 0"></app-welcome-banner>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <app-stats-card
+      icon="📚"
+      iconClass="blue"
+      label="Enrolled Courses"
+      [value]="data.stats.enrolledCourses"
+      [loading]="isLoading$ | async">
+    </app-stats-card>
+    <app-stats-card
+      icon="🏆"
+      iconClass="green"
+      label="Certificates"
+      [value]="data.stats.certificates"
+      [loading]="isLoading$ | async">
+    </app-stats-card>
+    <app-stats-card
+      icon="⏰"
+      iconClass="orange"
+      label="Hours Learned"
+      [value]="data.stats.hoursLearned"
+      [loading]="isLoading$ | async">
+    </app-stats-card>
+    <app-stats-card
+      icon="👥"
+      iconClass="purple"
+      label="Users Online"
+      [value]="data.stats.usersOnline | number"
+      [loading]="isLoading$ | async">
+    </app-stats-card>
+  </div>
+
+  <div class="main-content-grid">
+    <!-- Left Column -->
+    <div class="left-column">
+      <!-- Continue Learning Section -->
+      <section class="continue-learning" *ngIf="data.continueCourse">
+        <h2>Continue Learning</h2>
+        <app-course-card 
+          [course]="data.continueCourse" 
+          [enrollment]="data.enrollments?.find(e => e.courseId === data.continueCourse.id)"
+          (continueClick)="onContinueLearning($event)">
+        </app-course-card>
+      </section>
+
+      <!-- My Courses Section -->
+      <section class="my-courses" *ngIf="data.enrolledCourses?.length > 0">
+        <div class="section-header">
+          <h2>My Courses</h2>
+          <a href="#" class="view-all" (click)="onViewAllCourses()">View All</a>
+        </div>
+        <div class="courses-grid">
+          <app-course-card 
+            *ngFor="let course of data.enrolledCourses | slice:0:4" 
+            [course]="course"
+            [enrollment]="data.enrollments?.find(e => e.courseId === course.id)"
+            (continueClick)="onContinueLearning($event)">
+          </app-course-card>
+        </div>
+      </section>
+
+      <!-- Trending Courses Section -->
+      <section class="trending-courses" *ngIf="data.trendingCourses?.length > 0">
+        <h2>Trending Courses</h2>
+        <div class="trending-grid">
+          <app-course-card 
+            *ngFor="let course of data.trendingCourses" 
+            [course]="course"
+            [showEnrollButton]="true"
+            (enrollClick)="onCourseEnroll($event)">
+          </app-course-card>
+        </div>
+      </section>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="data.enrolledCourses?.length === 0 && data.trendingCourses?.length === 0">
+        <div class="empty-content">
+          <span class="empty-icon">📚</span>
+          <h3>Start Your Learning Journey</h3>
+          <p>Explore our course catalog and enroll in your first course to get started!</p>
+          <button class="btn btn-primary" (click)="onViewAllCourses()">Browse Courses</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-column">
+      <!-- AI Chat Assistant -->
+      <app-chat [userId]="(currentUser$ | async)?.id"></app-chat>
+
+      <!-- Learning Streak -->
+      <div class="learning-streak">
+        <div class="streak-header">Learning Streak</div>
+        <div class="streak-info">
+          <span class="streak-icon">🔥</span>
+          <span class="streak-number">{{ data.streak || 0 }}</span>
+          <div class="streak-text">
+            <div>Days in a row</div>
+            <div class="streak-encouragement">Keep it up! You're on fire!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Certificates -->
+      <div class="recent-certificates" *ngIf="data.certificates?.length > 0">
+        <div class="section-header">
+          <h3>Recent Certificates</h3>
+          <button class="view-all-btn" (click)="onViewAllCertificates()">View All Certificates</button>
+        </div>
+        <div class="certificates-list">
+          <div class="certificate-item" *ngFor="let cert of data.certificates">
+            <div class="cert-icon">🏆</div>
+            <div class="cert-info">
+              <div class="cert-title">{{ cert.title }}</div>
+              <div class="cert-date">Completed {{ cert.issuedAt | date:'MMM yyyy' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance Metrics -->
+  <div class="performance-section" *ngIf="data.analytics">
+    <h2>Your Learning Analytics</h2>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">{{ data.analytics.averageQuizScore | number:'1.1-1' }}%</div>
+        <div class="metric-label">Average Quiz Score</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">{{ data.analytics.skillsAcquired?.length || 0 }}</div>
+        <div class="metric-label">Skills Acquired</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">{{ data.analytics.longestStreak || 0 }}</div>
+        <div class="metric-label">Longest Streak</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+</ng-template>

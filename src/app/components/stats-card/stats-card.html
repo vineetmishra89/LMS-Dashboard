@@ -1,0 +1,16 @@
+<div class="stats-card" [class.loading]="loading">
+  <div class="stats-icon" [ngClass]="iconClass">
+    {{ icon }}
+  </div>
+  <div class="stats-content">
+    <div class="stats-label">{{ label }}</div>
+    <div class="stats-value" *ngIf="!loading">
+      {{ value }}
+      <span class="trend" *ngIf="trend && trendValue" [ngClass]="trend">
+        <span class="trend-icon">{{ trend === 'up' ? '↗️' : trend === 'down' ? '↘️' : '→' }}</span>
+        {{ trendValue }}%
+      </span>
+    </div>
+    <div class="loading-skeleton" *ngIf="loading"></div>
+  </div>
+</div>
