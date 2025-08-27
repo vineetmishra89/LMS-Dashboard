@@ -1,3 +1,5 @@
+
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { takeUntil, map, startWith, catchError } from 'rxjs/operators';
@@ -23,6 +25,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   currentUser$: Observable<User | null>;
   dashboardData$!: Observable<any>;
+  private latestVm: any = null;
 
   filters = { category: '', topic: '', instructor: '' };
 
@@ -99,7 +102,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     );
 
-    this.dashboardData$.subscribe((d: any) => d && this.isLoading$.next(false));
+    this.dashboardData$.subscribe((d: any) => {
+      if (d) {
+        this.latestVm = d;
+        this.isLoading$.next(false);
+      }
+    });
   }
 
   applyFilters(): void {
@@ -128,5 +136,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   refreshDashboard(): void {
     const currentUser = this.userService.getCurrentUser();
     if (currentUser) this.loadUserDashboardData(currentUser.id);
+  }
+
+  getEnrollmentFor(courseId: string) {
+    const vm = this.latestVm;
+    return vm?.enrollments?.find((e: any) => e.courseId === courseId) || null;
   }
 }

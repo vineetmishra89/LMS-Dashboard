@@ -37,7 +37,7 @@
         <app-course-card
           *ngFor="let course of data.catalog"
           [course]="course"
-          [enrollment]="data.enrollments?.find(e => e.courseId === course.id)"
+          [enrollment]="getEnrollmentFor(course.id)"
           (continueClick)="onContinueLearning($event)"
           (enrollClick)="onCourseEnroll($event)">
         </app-course-card>

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { HttpParams } from '@angular/common/http';
 import { Certificate } from '../models/certificate';
 import { ApiService } from './api.service';
 
@@ -10,7 +11,8 @@ export class CertificateService {
   constructor(private apiService: ApiService) {}
 
   getUserCertificates(userId: string): Observable<Certificate[]> {
-    return this.apiService.get<Certificate[]>(`certificates`, { userId });
+    const params = new HttpParams().set('userId', userId);
+    return this.apiService.get<Certificate[]>(`certificates`, params);
   }
 
   getCertificateById(certificateId: string): Observable<Certificate> {
