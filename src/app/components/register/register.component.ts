@@ -9,6 +9,18 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
+isUppercasePresent(): any {
+throw new Error('Method not implemented.');
+}
+isLowercasePresent(): any {
+throw new Error('Method not implemented.');
+}
+isNumberPresent(): any {
+throw new Error('Method not implemented.');
+}
+isSpecialCharPresent(): any {
+throw new Error('Method not implemented.');
+}
   registerForm!: FormGroup;
   isLoading = false;
   errorMessage = '';

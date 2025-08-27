@@ -3,7 +3,6 @@
     <div class="auth-header">
       <div class="logo">
         <h1>LMS</h1>
-      </div>
       <h2>Create Account</h2>
       <p>Start your learning journey today</p>
     </div>
@@ -75,16 +74,16 @@
             <div class="strength-fill"></div>
           </div>
           <div class="strength-requirements">
-            <div class="requirement" [ngClass]="{ 'met': registerForm.get('password')?.value?.match(/[A-Z]/) }">
+            <div class="requirement" [ngClass]="{ 'met': isUppercasePresent() }">
               ✓ One uppercase letter
             </div>
-            <div class="requirement" [ngClass]="{ 'met': registerForm.get('password')?.value?.match(/[a-z]/) }">
+            <div class="requirement" [ngClass]="{ 'met': isLowercasePresent() }">
               ✓ One lowercase letter
             </div>
-            <div class="requirement" [ngClass]="{ 'met': registerForm.get('password')?.value?.match(/\d/) }">
+            <div class="requirement" [ngClass]="{ 'met': isNumberPresent() }">
               ✓ One number
             </div>
-            <div class="requirement" [ngClass]="{ 'met': registerForm.get('password')?.value?.match(/[!@#$%^&*(),.?\":{}|<>]/) }">
+            <div class="requirement" [ngClass]="{ 'met': isSpecialCharPresent() }">
               ✓ One special character
             </div>
           </div>
@@ -146,18 +145,9 @@
       <div class="divider">
         <span>or sign up with</span>
       </div>
-      <div class="social-buttons">
-        <button class="btn btn-google" (click)="loginWithGoogle()" [disabled]="isLoading">
-          🔍 <span>Google</span>
-        </button>
-        <button class="btn btn-facebook" (click)="loginWithFacebook()" [disabled]="isLoading">
-          📘 <span>Facebook</span>
-        </button>
-      </div>
     </div>
     
     <div class="auth-footer">
       <p>Already have an account? <a routerLink="/login" class="signin-link">Sign in here</a></p>
     </div>
   </div>
-</div>

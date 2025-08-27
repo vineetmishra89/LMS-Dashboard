@@ -4,11 +4,18 @@ export const environment = {
   authUrl: 'http://localhost:3000/auth',
   fileUploadUrl: 'http://localhost:3000/uploads',
   websocketUrl: 'ws://localhost:3000',
+  enableDevTools: true,
+  logLevel: 'debug',
   features: {
     notifications: true,
     analytics: true,
     socialLogin: true,
     videoStreaming: true,
-    offlineMode: false
+    offlineMode: true,
+    chatSupport: true,
+    darkMode: true,
+    multiLanguage: false,
+    paymentGateway: false,
+    videoConferencing: false
   }
 };

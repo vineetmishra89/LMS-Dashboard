@@ -32,7 +32,7 @@ import { CourseCardComponent } from './components/course-card/course-card';
 import { ChatComponent } from './components/chat/chat';
 
 // Authentication Components
-import { LoginComponent } from './components/auth/auth.component';
+import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
