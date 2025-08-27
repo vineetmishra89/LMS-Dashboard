@@ -81,18 +81,19 @@ export class AuthService {
     );
   }
 
-  register(userData: RegisterData): Observable<User> {
+  register(userData: RegisterData): Observable<User | null> {
     return this.http.post<AuthResponse>(`${environment.authUrl}/register`, userData).pipe(
       tap(response => {
-        if (response.success) {
-          this.setAuthData(response.data);
-          this.currentUserSubject.next(response.data.user);
-          this.isAuthenticatedSubject.next(true);
+        if (response.success && response.data) {
+          if (response.data.token) {
+            this.setAuthData(response.data);
+            this.currentUserSubject.next(response.data.user);
+            this.isAuthenticatedSubject.next(true);
+          }
         }
       }),
-      map(response => response.data.user),
+      map(response => response.data?.user ?? null),
       catchError(error => {
-        console.error('Registration failed:', error);
         return throwError(() => error);
       })
     );
