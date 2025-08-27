@@ -100,7 +100,7 @@ export class EnrollmentService {
       params = params.set('limit', options.limit.toString());
     }
 
-    return this.apiService.get<Enrollment[]>(`users/${userId}/enrollments`, params).pipe(
+    return this.apiService.get<Enrollment[]>('enrollments', { userId, ...Object.fromEntries((params as any)?.keys?.() ? (params as any).keys().map((k: string) => [k, (params as any).get(k)]) : []) }).pipe(
       tap(enrollments => {
         this.enrollmentsSubject.next(enrollments);
       }),

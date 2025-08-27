@@ -5,7 +5,7 @@ export interface Course {
   instructor: Instructor;
   category: CourseCategory;
   level: 'beginner' | 'intermediate' | 'advanced';
-  duration: number; // in minutes
+  duration: number;
   rating: number;
   reviewCount: number;
   enrollmentCount: number;
@@ -28,7 +28,6 @@ export interface CourseModule {
   orderIndex: number;
   duration: number;
   lessons: Lesson[];
-  quiz?: any;
   isCompleted?: boolean;
 }
 

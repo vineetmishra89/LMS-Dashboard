@@ -21,6 +21,10 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 // Routing
 import { AppRoutingModule } from './app.routes';
 
+import { CompletedDetailComponent } from './components/details/completed-detail/completed-detail.component';
+import { EnrolledDetailComponent } from './components/details/enrolled-detail/enrolled-detail.component';
+import { HoursDetailComponent } from './components/details/hours-detail/hours-detail.component';
+
 // Core Components
 import { AppComponent } from './app';
 import { DashboardComponent } from './components/dashboard/dashboard';
@@ -123,14 +127,17 @@ import { environment } from '../environments/environment';
 
     TimeAgoPipe,
     SearchHighlightPipe,
-
+    
     // Feature Components
     ProfileComponent,
     CoursesComponent,
     CertificatesComponent,
     AnalyticsComponent,
-    NotificationsComponent
+    NotificationsComponent,
 
+    CompletedDetailComponent,
+    EnrolledDetailComponent,
+    HoursDetailComponent
   ],
   imports: [
     // Angular Core

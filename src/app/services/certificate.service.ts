@@ -10,7 +10,7 @@ export class CertificateService {
   constructor(private apiService: ApiService) {}
 
   getUserCertificates(userId: string): Observable<Certificate[]> {
-    return this.apiService.get<Certificate[]>(`users/${userId}/certificates`);
+    return this.apiService.get<Certificate[]>(`certificates`, { userId });
   }
 
   getCertificateById(certificateId: string): Observable<Certificate> {
