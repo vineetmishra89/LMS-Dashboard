@@ -117,17 +117,13 @@ import { environment } from '../environments/environment';
     UnauthorizedComponent,
     NotFoundComponent,
     
-    // Pipes
-    SafeHtmlPipe,
-    DurationPipe,
-    ProgressPipe,
-    TimeAgoPipe,
-    SearchHighlightPipe,
-    
     // Directives
     LazyLoadDirective,
     InViewportDirective,
     ClickOutsideDirective,
+
+    TimeAgoPipe,
+    SearchHighlightPipe,
 
     // Feature Components
     ProfileComponent,
@@ -145,7 +141,7 @@ import { environment } from '../environments/environment';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
     
     // Routing
     AppRoutingModule,
@@ -156,7 +152,11 @@ import { environment } from '../environments/environment';
     MatProgressBarModule,
     MatChipsModule,
     MatAutocompleteModule,
-    
+
+    SafeHtmlPipe,
+    DurationPipe,
+    ProgressPipe,
+
     // PWA Support
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,

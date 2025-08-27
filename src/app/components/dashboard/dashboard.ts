@@ -16,8 +16,8 @@ import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  templateUrl: './dashboard.html',
+  styleUrls: ['./dashboard.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -28,20 +28,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
   // User data
   currentUser$: Observable<User | null>;
-  userStats$: Observable<any>;
+  userStats$!: Observable<any>;
   
   // Course data
-  enrolledCourses$: Observable<Course[]>;
-  trendingCourses$: Observable<Course[]>;
-  continuelearningCourse$: Observable<Course | null>;
+  enrolledCourses$!: Observable<Course[]>;
+  trendingCourses$!: Observable<Course[]>;
+  continuelearningCourse$!: Observable<Course | null>;
   
   // Progress data
-  userAnalytics$: Observable<UserAnalytics>;
-  recentCertificates$: Observable<Certificate[]>;
-  currentStreak$: Observable<number>;
+  userAnalytics$!: Observable<UserAnalytics>;
+  recentCertificates$!: Observable<Certificate[]>;
+  currentStreak$!: Observable<number>;
   
   // Computed properties
-  dashboardData$: Observable<any>;
+  dashboardData$!: Observable<any>;
 
   constructor(
     private userService: UserService,
@@ -203,7 +203,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onCourseEnroll(courseId: string): void {
     const currentUser = this.userService.getCurrentUser();
     if (currentUser) {
-      this.enrollmentService.enrollInCourse(currentUser.id, courseId).subscribe({
+      this.enrollmentService.enrollInCourse({ userId: currentUser.id, courseId }).subscribe({
         next: (enrollment) => {
           console.log('Successfully enrolled in course:', enrollment);
           // Refresh dashboard data

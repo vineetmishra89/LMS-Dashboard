@@ -31,7 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
   isDarkMode = false;
   showSyncIndicator = false;
 
-  private showInstallPrompt = false;
+public showInstallPrompt = false;
 private deferredPrompt: any = null;
 
   constructor(

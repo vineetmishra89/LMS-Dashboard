@@ -1,12 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Course } from '../../models/course';
 import { Enrollment } from '../../models/enrollment';
-import { EnrollmentService } from '../../services/enrollment';
+import { EnrollmentService } from '../../services/enrollment.service';
+import { CourseService } from '../../services/course.service';
+import { AnalyticsService } from '../../services/analytics.service';
 
 @Component({
   selector: 'app-course-card',
-  templateUrl: './course-card.component.html',
-  styleUrls: ['./course-card.component.scss']
+  templateUrl: './course-card.html',
+  styleUrls: ['./course-card.scss']
 })
 export class CourseCardComponent implements OnInit {
   @Input() course!: Course;
@@ -22,8 +24,14 @@ export class CourseCardComponent implements OnInit {
   isEnrolling: boolean = false;
   progressPercentage: number = 0;
   timeRemaining: string = '';
+  isTyping: boolean = false;
+  typingSubject: any;
+  messagesContainer: any;
+  messages: never[] = [];
 
-  constructor(private enrollmentService: EnrollmentService) {}
+  constructor(private enrollmentService: EnrollmentService,
+    private courseService: CourseService,private analyticsService: AnalyticsService
+  ) {}
 
   ngOnInit(): void {
     this.calculateProgress();
@@ -56,67 +64,71 @@ export class CourseCardComponent implements OnInit {
     return `${mins}m`;
   }
 
-  onEnroll(): void {
+  async onEnroll(): Promise<any> {
     if (!this.isEnrolling) {
       this.isEnrolling = true;
       this.enrollClick.emit(this.course.id);
       
-      // Next lesson inquiry
-      if (lowerMessage.includes('next lesson') || lowerMessage.includes('what should i study')) {
-        const enrollments = await this.enrollmentService.getUserEnrollments(this.userId).toPromise();
-        const activeEnrollment = enrollments?.find(e => e.status === 'active' && e.progress.overallProgress < 100);
-        
-        if (activeEnrollment) {
-          const course = await this.courseService.getCourseById(activeEnrollment.courseId).toPromise();
+      try {
+        // Next lesson inquiry
+        const userMessage = ''; // TODO: Assign the actual user message here
+        const lowerMessage = userMessage.toLowerCase();
+
+        if (lowerMessage.includes('next lesson') || lowerMessage.includes('what should i study')) {
+          const enrollments = await this.enrollmentService.getUserEnrollments(this.userId).toPromise();
+          const activeEnrollment = enrollments?.find(e => e.status === 'active' && e.progress.overallProgress < 100);
+          
+          if (activeEnrollment) {
+            const course = await this.courseService.getCourseById(activeEnrollment.courseId).toPromise();
+            return {
+              message: `Your next lesson is in "${course?.title}":\n\n📖 ${activeEnrollment.progress.currentLesson || 'Getting Started'}\n📚 Module: ${activeEnrollment.progress.currentModule || 'Introduction'}\n\nReady to continue learning? 💪`,
+              type: 'text',
+              suggestions: ['Continue this lesson', 'Show course details', 'Set study reminder']
+            };
+          } else {
+            return {
+              message: `You don't have any active courses right now. Would you like me to recommend some courses to get started? 🚀`,
+              type: 'text',
+              suggestions: ['Show recommendations', 'Browse popular courses', 'Find courses by topic']
+            };
+          }
+        }
+
+        // Analytics inquiry
+        if (lowerMessage.includes('analytics') || lowerMessage.includes('stats')) {
+          const analytics = await this.analyticsService.getUserAnalytics(this.userId).toPromise();
           return {
-            message: `Your next lesson is in "${course?.title}":\n\n📖 ${activeEnrollment.progress.currentLesson || 'Getting Started'}\n📚 Module: ${activeEnrollment.progress.currentModule || 'Introduction'}\n\nReady to continue learning? 💪`,
+            message: `Here's your detailed learning analytics:\n\n📊 **Performance:**\n• Average quiz score: ${analytics?.averageQuizScore || 0}%\n• Skills acquired: ${analytics?.skillsAcquired?.length || 0}\n• Longest streak: ${analytics?.longestStreak || 0} days\n\n📈 **Activity:**\n• Total study time: ${analytics?.totalHoursLearned || 0} hours\n• Courses completed: ${analytics?.totalCoursesCompleted || 0}\n• Certificates earned: ${analytics?.totalCertificatesEarned || 0}`,
             type: 'text',
-            suggestions: ['Continue this lesson', 'Show course details', 'Set study reminder']
-          };
-        } else {
-          return {
-            message: `You don't have any active courses right now. Would you like me to recommend some courses to get started? 🚀`,
-            type: 'text',
-            suggestions: ['Show recommendations', 'Browse popular courses', 'Find courses by topic']
+            data: analytics
           };
         }
-      }
 
-      // Analytics inquiry
-      if (lowerMessage.includes('analytics') || lowerMessage.includes('stats')) {
-        const analytics = await this.analyticsService.getUserAnalytics(this.userId).toPromise();
+        // Default responses
+        const defaultResponses = [
+          "That's a great question! I'm here to help with your learning journey. Could you be more specific about what you'd like to know?",
+          "I understand you're looking for help. I can assist with course progress, recommendations, scheduling, and answering questions about your learning path.",
+          "Thanks for reaching out! I'm designed to support your educational goals. What specific area would you like help with today?",
+          "I'm here to make your learning experience better! Whether it's tracking progress, finding new courses, or getting study tips, I'm ready to help."
+        ];
+
         return {
-          message: `Here's your detailed learning analytics:\n\n📊 **Performance:**\n• Average quiz score: ${analytics?.averageQuizScore || 0}%\n• Skills acquired: ${analytics?.skillsAcquired?.length || 0}\n• Longest streak: ${analytics?.longestStreak || 0} days\n\n📈 **Activity:**\n• Total study time: ${analytics?.totalHoursLearned || 0} hours\n• Courses completed: ${analytics?.totalCoursesCompleted || 0}\n• Certificates earned: ${analytics?.totalCertificatesEarned || 0}`,
+          message: defaultResponses[Math.floor(Math.random() * defaultResponses.length)],
           type: 'text',
-          data: analytics
+          suggestions: [
+            "What's my progress?",
+            "Recommend courses",
+            "Study tips",
+            "Set study goals"
+          ]
+        };
+      } catch (error) {
+        console.error('Error getting AI response:', error);
+        return {
+          message: "I apologize, but I'm having trouble accessing your data right now. Please try again in a moment, or feel free to ask me something else!",
+          type: 'text'
         };
       }
-
-      // Default responses
-      const defaultResponses = [
-        "That's a great question! I'm here to help with your learning journey. Could you be more specific about what you'd like to know?",
-        "I understand you're looking for help. I can assist with course progress, recommendations, scheduling, and answering questions about your learning path.",
-        "Thanks for reaching out! I'm designed to support your educational goals. What specific area would you like help with today?",
-        "I'm here to make your learning experience better! Whether it's tracking progress, finding new courses, or getting study tips, I'm ready to help."
-      ];
-
-      return {
-        message: defaultResponses[Math.floor(Math.random() * defaultResponses.length)],
-        type: 'text',
-        suggestions: [
-          "What's my progress?",
-          "Recommend courses",
-          "Study tips",
-          "Set study goals"
-        ]
-      };
-
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      return {
-        message: "I apologize, but I'm having trouble accessing your data right now. Please try again in a moment, or feel free to ask me something else!",
-        type: 'text'
-      };
     }
   }
 
@@ -136,6 +148,9 @@ export class CourseCardComponent implements OnInit {
         break;
     }
   }
+  sendMessage(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
 
   onSuggestionClick(suggestion: string): void {
     this.sendMessage(suggestion);
@@ -144,6 +159,9 @@ export class CourseCardComponent implements OnInit {
   onTyping(): void {
     this.isTyping = true;
     this.typingSubject.next(this.newMessage);
+  }
+  newMessage(newMessage: any) {
+    throw new Error('Method not implemented.');
   }
 
   private scrollToBottom(): void {
@@ -161,6 +179,12 @@ export class CourseCardComponent implements OnInit {
     this.messages = [];
     this.addWelcomeMessage();
     this.saveChatHistory();
+  }
+  addWelcomeMessage() {
+    throw new Error('Method not implemented.');
+  }
+  saveChatHistory() {
+    throw new Error('Method not implemented.');
   }
 
   trackByMessageId(index: number, message: ChatMessage): string {
