@@ -7,46 +7,28 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
 import { DashboardComponent } from './components/dashboard/dashboard';
 import { UnauthorizedComponent } from './components/shared/unauthorized/unauthorized.component';
 import { NotFoundComponent } from './components/shared/not-found/not-found.component';
+import { LoginComponent } from './components/login/login.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { CoursesComponent } from './components/courses/courses.component';
+import { CertificatesComponent } from './components/certificates/certificates.component';
+import { AnalyticsComponent } from './components/analytics/analytics.component';
 
-const routes: Routes = [
-  // Public Routes
+export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'verify-email/:token', component: VerifyEmailComponent },
-  
-  // Protected Routes
-  { 
-    path: '', 
+  {
+    path: '',
     canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'courses', component: CoursesComponent },
-      { path: 'course/:id', component: CourseDetailComponent },
       { path: 'certificates', component: CertificatesComponent },
-      { path: 'analytics', component: AnalyticsComponent },
-      
-      // Admin Routes
-      {
-        path: 'admin',
-        canActivate: [RoleGuard],
-        data: { role: 'admin' },
-        loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
-      },
-      
-      // Instructor Routes
-      {
-        path: 'instructor',
-        canActivate: [RoleGuard],
-        data: { role: 'instructor' },
-        loadChildren: () => import('./instructor/instructor.module').then(m => m.InstructorModule)
-      }
+      { path: 'analytics', component: AnalyticsComponent }
     ]
   },
-  
-  // Error Routes
   { path: 'unauthorized', component: UnauthorizedComponent },
   { path: '404', component: NotFoundComponent },
   { path: '**', redirectTo: '/404' }

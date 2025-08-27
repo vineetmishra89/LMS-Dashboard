@@ -5,6 +5,8 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { CourseService } from '../../services/course.service';
 import { AnalyticsService } from '../../services/analytics.service';
 
+type ChatMessage = { id: string; message?: string };
+
 @Component({
   selector: 'app-course-card',
   templateUrl: './course-card.html',
@@ -16,6 +18,7 @@ export class CourseCardComponent implements OnInit {
   @Input() showEnrollButton: boolean = false;
   @Input() showProgress: boolean = true;
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
+  @Input() userId!: string;
   
   @Output() enrollClick = new EventEmitter<string>();
   @Output() continueClick = new EventEmitter<string>();
@@ -27,7 +30,7 @@ export class CourseCardComponent implements OnInit {
   isTyping: boolean = false;
   typingSubject: any;
   messagesContainer: any;
-  messages: never[] = [];
+  messages: ChatMessage[] = [];
 
   constructor(private enrollmentService: EnrollmentService,
     private courseService: CourseService,private analyticsService: AnalyticsService

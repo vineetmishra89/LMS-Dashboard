@@ -40,7 +40,6 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 // Feature Components
 import { ProfileComponent } from './components/profile/profile.component';
 import { CoursesComponent } from './components/courses/courses.component';
-import { CourseDetailComponent } from './components/course-detail/course-detail.component';
 import { CertificatesComponent } from './components/certificates/certificates.component';
 import { AnalyticsComponent } from './components/analytics/analytics.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
@@ -128,7 +127,6 @@ import { environment } from '../environments/environment';
     // Feature Components
     ProfileComponent,
     CoursesComponent,
-    CourseDetailComponent,
     CertificatesComponent,
     AnalyticsComponent,
     NotificationsComponent
@@ -186,6 +184,8 @@ import { environment } from '../environments/environment';
     NotificationService,
     DataSyncService,
     WebSocketService,
+    
+    LoadingInterceptor,
     
     // Guards
     AuthGuard,

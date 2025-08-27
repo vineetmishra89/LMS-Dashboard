@@ -38,6 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Progress data
   userAnalytics$!: Observable<UserAnalytics>;
   recentCertificates$!: Observable<Certificate[]>;
+  enrollments: Enrollment[] = [];
   currentStreak$!: Observable<number>;
   
   // Computed properties
@@ -108,13 +109,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.enrolledCourses$
     ]).pipe(
       map(([enrollments, courses]) => {
-        const activeEnrollment = enrollments
+        this.enrollments = enrollments || [];
+        const activeEnrollment = this.enrollments
           .filter(e => e.status === 'active' && e.progress.overallProgress < 100)
           .sort((a, b) => new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime())[0];
-        
-        return activeEnrollment ? 
-          courses.find(c => c.id === activeEnrollment.courseId) || null : 
-          null;
+        return activeEnrollment ? (courses.find(c => c.id === activeEnrollment.courseId) || null) : null;
       }),
       catchError(error => {
         console.error('Failed to load continue learning course:', error);
@@ -239,4 +238,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.loadUserDashboardData(currentUser.id);
     }
   }
+  getEnrollmentFor(courseId: string): Enrollment | null {
+    if (!courseId || !this.enrollments) return null;
+    return this.enrollments.find(e => e.courseId === courseId) || null;
+  }
+
 }

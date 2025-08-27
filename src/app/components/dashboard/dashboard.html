@@ -51,7 +51,7 @@
         <h2>Continue Learning</h2>
         <app-course-card 
           [course]="data.continueCourse" 
-          [enrollment]="data.enrollments?.find(e => e.courseId === data.continueCourse.id)"
+          [enrollment]="getEnrollmentFor(data.continueCourse.id)"
           (continueClick)="onContinueLearning($event)">
         </app-course-card>
       </section>
@@ -66,7 +66,7 @@
           <app-course-card 
             *ngFor="let course of data.enrolledCourses | slice:0:4" 
             [course]="course"
-            [enrollment]="data.enrollments?.find(e => e.courseId === course.id)"
+            [enrollment]="getEnrollmentFor(course.id)"
             (continueClick)="onContinueLearning($event)">
           </app-course-card>
         </div>

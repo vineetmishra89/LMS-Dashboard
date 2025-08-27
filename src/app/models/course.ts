@@ -28,7 +28,7 @@ export interface CourseModule {
   orderIndex: number;
   duration: number;
   lessons: Lesson[];
-  quiz?: Quiz;
+  quiz?: any;
   isCompleted?: boolean;
 }
 

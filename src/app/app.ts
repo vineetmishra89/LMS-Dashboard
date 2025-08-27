@@ -104,9 +104,9 @@ private deferredPrompt: any = null;
 
   private setupRouteTracking(): void {
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
-    ).subscribe((event: NavigationEnd) => {
+    ).subscribe((event) => {
       // Track page views
       this.monitoringService.trackUserInteraction('page_view', 'router', {
         url: event.url,
