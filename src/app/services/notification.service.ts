@@ -100,7 +100,7 @@ export class NotificationService {
     limit?: number;
     offset?: number;
   }): Observable<AppNotification[]> {
-    let endpoint = `users/${userId}/notifications`;
+    let endpoint = `notifications?userId=${userId}`;
     const params: any = {};
     
     if (options?.unreadOnly) params.unreadOnly = 'true';
@@ -131,7 +131,7 @@ export class NotificationService {
   }
 
   markAllAsRead(userId: string): Observable<void> {
-    return this.apiService.put<void>(`users/${userId}/notifications/read-all`, {}).pipe(
+    return this.apiService.put<void>(`notifications/read-all?userId=${userId}`, {}).pipe(
       tap(() => {
         // Update local notifications
         const notifications = this.notificationsSubject.value;

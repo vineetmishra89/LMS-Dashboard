@@ -14,7 +14,12 @@ public class AnalyticsController {
   public AnalyticsController(AnalyticsService analyticsService) { this.analyticsService = analyticsService; }
 
   @GetMapping("/summary")
-  public AnalyticsSummaryDto summary(@RequestParam UUID userId) {
+  public AnalyticsSummaryDto summary(@RequestParam String userId) {
     return analyticsService.getSummary(userId);
+  }
+
+  @GetMapping("/stats")
+  public Object getStats(@RequestParam String userId) {
+    return analyticsService.getStats(userId);
   }
 }

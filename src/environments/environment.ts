@@ -1,10 +1,11 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: 'http://localhost:5000/api',
   authUrl: 'http://localhost:3000/auth',
   fileUploadUrl: 'http://localhost:3000/uploads',
-  websocketUrl: 'ws://localhost:3000',
+  websocketUrl: 'ws://localhost:5000',
   enableDevTools: true,
+  devAutoLogin: true,
   logLevel: 'debug',
   features: {
     notifications: true,

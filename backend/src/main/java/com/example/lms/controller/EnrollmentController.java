@@ -16,19 +16,17 @@ public class EnrollmentController {
   public EnrollmentController(EnrollmentService enrollmentService) { this.enrollmentService = enrollmentService; }
 
   @GetMapping
-  public List<Enrollment> byUser(@RequestParam UUID userId) {
+  public List<Enrollment> byUser(@RequestParam String userId) {
     return enrollmentService.byUser(userId);
   }
 
   @PostMapping
   public Enrollment enroll(@RequestBody Map<String, String> body) {
-    UUID userId = UUID.fromString(body.get("userId"));
-    UUID courseId = UUID.fromString(body.get("courseId"));
-    return enrollmentService.enroll(userId, courseId);
+    return enrollmentService.enroll(body.get("userId"), body.get("courseId"));
   }
 
   @PatchMapping("/{id}")
-  public Enrollment patch(@PathVariable UUID id, @RequestBody Map<String, Object> body) {
+  public Enrollment patch(@PathVariable String id, @RequestBody Map<String, Object> body) {
     Integer progress = body.get("progressPercent") == null ? null : ((Number) body.get("progressPercent")).intValue();
     String status = (String) body.get("status");
     return enrollmentService.patch(id, progress, status);

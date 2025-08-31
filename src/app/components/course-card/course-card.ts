@@ -42,18 +42,20 @@ export class CourseCardComponent implements OnInit {
   }
 
   private calculateProgress(): void {
-    if (this.enrollment) {
+    if (this.enrollment?.progress?.overallProgress !== undefined) {
       this.progressPercentage = this.enrollment.progress.overallProgress;
+    } else {
+      this.progressPercentage = 0;
     }
   }
 
   private calculateTimeRemaining(): void {
-    if (this.course.duration && this.enrollment) {
-      const completedTime = (this.course.duration * this.progressPercentage) / 100;
-      const remaining = this.course.duration - completedTime;
+    if (this.course.durationMinutes && this.enrollment) {
+      const completedTime = (this.course.durationMinutes * this.progressPercentage) / 100;
+      const remaining = this.course.durationMinutes - completedTime;
       this.timeRemaining = this.formatDuration(remaining);
-    } else if (this.course.duration) {
-      this.timeRemaining = this.formatDuration(this.course.duration);
+    } else if (this.course.durationMinutes) {
+      this.timeRemaining = this.formatDuration(this.course.durationMinutes);
     }
   }
 

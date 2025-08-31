@@ -23,12 +23,12 @@ public class CourseController {
   }
 
   @GetMapping("/enrolled")
-  public List<Course> enrolled(@RequestParam UUID userId) {
+  public List<Course> enrolled(@RequestParam String userId) {
     return courseService.getEnrolledCourses(userId);
   }
 
   @GetMapping("/continue")
-  public Optional<Course> continueCourse(@RequestParam UUID userId) {
+  public Optional<Course> continueCourse(@RequestParam String userId) {
     return courseService.getContinueCourse(userId);
   }
 }

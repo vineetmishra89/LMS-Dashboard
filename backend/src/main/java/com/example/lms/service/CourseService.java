@@ -39,14 +39,14 @@ public class CourseService {
     return courseRepository.findAll();
   }
 
-  public List<Course> getEnrolledCourses(UUID userId) {
+  public List<Course> getEnrolledCourses(String userId) {
     List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
-    Set<UUID> courseIds = enrollments.stream().map(Enrollment::getCourseId).collect(Collectors.toSet());
+    Set<String> courseIds = enrollments.stream().map(Enrollment::getCourseId).collect(Collectors.toSet());
     if (courseIds.isEmpty()) return List.of();
     return courseRepository.findAllById(courseIds);
   }
 
-  public Optional<Course> getContinueCourse(UUID userId) {
+  public Optional<Course> getContinueCourse(String userId) {
     return enrollmentRepository.findByUserId(userId).stream()
       .filter(e -> "active".equalsIgnoreCase(e.getStatus()) && e.getProgressPercent() != null && e.getProgressPercent() < 100)
       .sorted(Comparator.comparing(Enrollment::getLastAccessedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())

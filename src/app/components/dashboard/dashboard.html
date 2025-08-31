@@ -6,7 +6,7 @@
   </div>
 
   <div class="content-grid">
-    <aside class="filters">
+    <aside class="filters card">
       <h3>Search Filters</h3>
       <div class="filter">
         <label>Category</label>
@@ -31,16 +31,19 @@
       </div>
     </aside>
 
-    <main class="catalog">
-      <h2>Course Catalog</h2>
+    <main class="catalog card">
+      <h3>Course Catalog</h3>
+      <br>
       <div class="course-list">
-        <app-course-card
-          *ngFor="let course of data.catalog"
-          [course]="course"
-          [enrollment]="getEnrollmentFor(course.id)"
-          (continueClick)="onContinueLearning($event)"
-          (enrollClick)="onCourseEnroll($event)">
-        </app-course-card>
+<app-course-card
+  *ngFor="let course of data.catalog"
+  [course]="course"
+  [enrollment]="getEnrollmentFor(course.id)"
+  [size]="'small'"
+  [showProgress]="false"
+  (continueClick)="onContinueLearning($event)"
+  (enrollClick)="onCourseEnroll($event)">
+</app-course-card>
       </div>
     </main>
 

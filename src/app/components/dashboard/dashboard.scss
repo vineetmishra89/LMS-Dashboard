@@ -1,0 +1,242 @@
+/* Dashboard page layout — matches the provided mock */
+.dashboard {
+  padding: 1.5rem;
+}
+
+/* Top stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* 3-column content */
+.content-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 360px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* Cards and panels */
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+
+.filters h3,
+.my-learning h3 {
+  margin: 0 0 .75rem 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.filter {
+  display: grid;
+  gap: .35rem;
+  margin-bottom: .75rem;
+}
+
+.filter label {
+  font-size: .85rem;
+  color: #374151;
+}
+
+.filter select {
+  width: 100%;
+  padding: .5rem .75rem;
+  border: 1px solid #d1d5db;
+  border-radius: .5rem;
+  background: #fff;
+}
+
+/* Catalog */
+.catalog h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 .75rem 0;
+}
+
+.course-list {
+  display: grid;
+  gap: .75rem;
+}
+
+.course-card {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: .75rem;
+  padding: .75rem 1rem;
+}
+
+.course-card .thumb {
+  height: 60px;
+  border-radius: .5rem;
+  background: #f3f4f6;
+  display: grid;
+  place-items: center;
+  font-size: .9rem;
+  color: #6b7280;
+}
+
+.course-card .meta h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.course-card .tags {
+  margin: .15rem 0 0;
+  color: #6b7280;
+  font-size: .9rem;
+}
+
+.actions .btn-primary,
+.actions .btn-continue {
+  border: 0;
+  border-radius: .6rem;
+  padding: .55rem .9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.actions .btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.actions .btn-continue {
+  background: #22c55e;
+  color: #fff;
+}
+
+/* My learning chip */
+.continue-chip {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  border-radius: .6rem;
+  padding: .65rem .8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Loading */
+.loading-container {
+  min-height: 40vh;
+  display: grid;
+  place-items: center;
+  gap: .5rem;
+}
+
+.loading-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2563eb;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .content-grid { grid-template-columns: 240px 1fr 320px; }
+}
+
+@media (max-width: 992px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .content-grid { grid-template-columns: 1fr; }
+  .my-learning, .filters { margin-bottom: 1rem; }
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  margin: .5rem 0 1rem 0;
+  color: #111827;
+}
+
+
+/* Make stat cards match screenshot spacing */
+.stats-grid app-stats-card {
+  display:block;
+}
+
+/* Make search filters and course catalog panels true white cards */
+.filters.card, .catalog.card, .my-learning.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+
+/* Inside the catalog card, keep list spacing clean */
+.catalog.card .course-list {
+  background: transparent;   /* no inner tint */
+  border: 0;                 /* no inner border */
+  padding: 0 .25rem .25rem;  /* subtle spacing only */
+}
+
+.catalog.card .course-card.small {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.02);
+}
+
+/* Inputs inside the filters card */
+.filters select {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+:host .catalog.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  padding: 16px;
+}
+
+/* IMPORTANT: override the child <app-course-card> styles inside the catalog */
+:host ::ng-deep .catalog.card app-course-card .course-card {
+  background: transparent !important;   /* remove darker tile */
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* Keep each row compact and aligned (text | action) */
+:host ::ng-deep .catalog.card app-course-card .course-content { display: contents !important; }
+:host ::ng-deep .catalog.card app-course-card .course-header  { grid-column: 1; text-align: left; }
+:host ::ng-deep .catalog.card app-course-card .course-actions { grid-column: 2; justify-self: end; }
+
+/* If any wrapper around the list adds tint, neutralize it */
+:host .catalog.card .course-list,
+:host .catalog.card .course-list > *[class*="panel"],
+:host .catalog.card .course-list > *[class*="inner"] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+

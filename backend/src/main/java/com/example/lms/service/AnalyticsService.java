@@ -20,10 +20,14 @@ public class AnalyticsService {
     this.learningHoursRepository = learningHoursRepository;
   }
 
-  public AnalyticsSummaryDto getSummary(UUID userId) {
+  public AnalyticsSummaryDto getSummary(String userId) {
     long enrolled = enrollmentRepository.findByUserId(userId).size();
     long completed = (int) enrollmentRepository.findByUserId(userId).stream().filter(e -> "completed".equalsIgnoreCase(e.getStatus())).count();
-    double hours = learningHoursRepository.findByUserId(userId.toString()).stream().mapToDouble(h -> h.getTotalHours()).sum();
+    double hours = learningHoursRepository.findByUserId(userId).stream().mapToDouble(h -> h.getTotalHours()).sum();
     return new AnalyticsSummaryDto(completed, enrolled, hours);
+  }
+
+  public Object getStats(String userId) {
+    return getSummary(userId);
   }
 }

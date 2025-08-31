@@ -1,8 +1,15 @@
 <div class="course-card" 
-     [ngClass]="[size, { 'trending-card': course.isTrending, 'enrolled': !!enrollment }]"
-     (click)="onViewDetails()">
+     [ngClass]="{ 
+       'small': size === 'small', 
+       'medium': size === 'medium', 
+       'large': size === 'large',
+       'trending-card': course.isTrending, 
+       'enrolled': !!enrollment 
+     }"
+     (click)="$event.stopPropagation(); onViewDetails()">
   
   <!-- Course Image -->
+  <div class="thumb" *ngIf="!course.thumbnail">Thumb</div>
   <div class="course-image" *ngIf="course.thumbnail">
     <img [src]="course.thumbnail" [alt]="course.title" loading="lazy">
     
@@ -11,8 +18,8 @@
       <div class="trending-badge" *ngIf="course.isTrending">
         🔥 Trending
       </div>
-      <div class="level-badge" [ngClass]="course.level">
-        {{ course.level | titlecase }}
+      <div class="category-badge">
+        {{ course.category }}
       </div>
       <div class="status-badge" *ngIf="enrollment" [ngClass]="enrollment.status">
         {{ getStatusText() }}
@@ -29,30 +36,26 @@
   <div class="course-content">
     <!-- Header -->
     <div class="course-header">
-      <h3 class="course-title">{{ course.title }}</h3>
+      <h1 class="course-title">{{ course.title }}</h1>
+        <p class="meta-line" *ngIf="size === 'small'">{{ course.category }} • {{ (course.topics?.length ? course.topics[0] : course.topic) }} • {{ formatDuration(course.durationMinutes) }}</p>
       <div class="course-category" *ngIf="course.category">
-        {{ course.category.name }}
+        {{ course.category }}
       </div>
     </div>
 
     <!-- Instructor -->
     <div class="course-instructor">
-      <img [src]="course.instructor.profileImage" 
-           [alt]="course.instructor.firstName + ' ' + course.instructor.lastName"
-           class="instructor-avatar">
       <div class="instructor-info">
         <span class="instructor-name">
-          {{ course.instructor.firstName }} {{ course.instructor.lastName }}
+          {{ course.instructorName }}
         </span>
         <div class="course-meta">
-          <span class="rating" *ngIf="course.rating > 0">
-            ⭐ {{ course.rating | number:'1.1-1' }}
+          <span class="duration" *ngIf="course.durationMinutes">
+            ⏱️ {{ formatDuration(course.durationMinutes) }}
           </span>
-          <span class="reviews" *ngIf="course.reviewCount > 0">
-            ({{ course.reviewCount | number }} reviews)
-          </span>
-          <span class="enrollment-count">
-            👥 {{ course.enrollmentCount | number }} students
+          <!--<span class="topics" *ngIf="course.topics && course.topics.length > 0">-->
+          <span class="topics">
+            📚 {{ course.topics }}
           </span>
         </div>
       </div>
@@ -62,7 +65,7 @@
     <div class="course-progress" *ngIf="enrollment && showProgress">
       <div class="progress-info">
         <span class="progress-text">
-          {{ enrollment.progress.currentModule || 'Getting Started' }}
+          {{ enrollment?.progress?.currentModule || 'Getting Started' }}
         </span>
         <span class="progress-percent">{{ progressPercentage }}% complete</span>
       </div>
@@ -74,7 +77,7 @@
       </div>
       <div class="progress-stats">
         <span class="completed-lessons">
-          {{ enrollment.progress.completedLessons.length }} lessons completed
+          {{ enrollment?.progress?.completedLessons?.length || 0 }} lessons completed
         </span>
         <span class="time-spent" *ngIf="enrollment.timeSpent > 0">
           {{ formatDuration(enrollment.timeSpent) }} spent
@@ -82,41 +85,35 @@
       </div>
     </div>
 
-    <!-- Price Section -->
-    <div class="course-price" *ngIf="!enrollment && course.price > 0">
-      <span class="price">{{ course.currency }}{{ course.price | number:'1.0-0' }}</span>
-      <span class="price-note" *ngIf="course.price === 0">Free</span>
-    </div>
 
     <!-- Actions -->
     <div class="course-actions" (click)="$event.stopPropagation()">
       <!-- Enrolled Course Actions -->
       <ng-container *ngIf="enrollment; else notEnrolledActions">
-        <button class="btn btn-primary" 
+        <button class="btn btn-continue" 
                 *ngIf="enrollment.status === 'active' && progressPercentage < 100"
-                (click)="onContinue()">
-          Continue Learning
+                (click)="$event.stopPropagation(); onContinue()">
+          Continue
         </button>
         <button class="btn btn-secondary" 
                 *ngIf="progressPercentage === 100"
-                (click)="onViewDetails()">
+                (click)="$event.stopPropagation(); onViewDetails()">
           View Certificate
         </button>
         <button class="btn btn-outline" 
                 *ngIf="enrollment.status === 'paused'"
-                (click)="onContinue()">
-          Resume
+                (click)="$event.stopPropagation(); onContinue()">
+          Continue
         </button>
       </ng-container>
 
       <!-- Non-enrolled Course Actions -->
       <ng-template #notEnrolledActions>
-        <button class="btn" 
-                [ngClass]="course.isTrending ? 'btn-primary' : 'btn-secondary'"
+        <button class="btn btn-primary"
                 [disabled]="isEnrolling"
-                (click)="onEnroll()">
+                (click)="$event.stopPropagation(); onEnroll()">
           <span *ngIf="!isEnrolling">
-            {{ course.price > 0 ? 'Enroll Now' : 'Start Free' }}
+            Enroll
           </span>
           <span *ngIf="isEnrolling" class="loading-text">
             <span class="spinner"></span>

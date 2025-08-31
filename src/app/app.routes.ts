@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'detail/enrolled', component: EnrolledDetailComponent },
   { path: 'detail/hours', component: HoursDetailComponent },
   { path: '404', component: NotFoundComponent },
-  { path: '**', redirectTo: '/404' }
+  { path: '**', redirectTo: 'dashboard' }
 ];
 
 @NgModule({

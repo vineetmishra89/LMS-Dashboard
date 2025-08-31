@@ -1,24 +1,28 @@
 export interface Course {
   id: string;
   title: string;
-  description: string;
-  instructor: Instructor;
-  category: CourseCategory;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  duration: number;
-  rating: number;
-  reviewCount: number;
-  enrollmentCount: number;
-  price: number;
-  currency: string;
+  category: string;
+  topics: string[];
+  instructorName: string;
+  durationMinutes: number;
   thumbnail: string;
-  videoUrl?: string;
-  modules: CourseModule[];
-  tags: string[];
-  isPublished: boolean;
-  isTrending: boolean;
   createdAt: Date;
   updatedAt: Date;
+  
+  description?: string;
+  instructor?: Instructor;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+  duration?: number;
+  rating?: number;
+  reviewCount?: number;
+  enrollmentCount?: number;
+  price?: number;
+  currency?: string;
+  videoUrl?: string;
+  modules?: CourseModule[];
+  tags?: string[];
+  isPublished?: boolean;
+  isTrending?: boolean;
 }
 
 export interface CourseModule {

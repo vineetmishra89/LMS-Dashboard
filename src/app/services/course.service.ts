@@ -39,7 +39,7 @@ export class CourseService {
   }
 
   getEnrolledCourses(userId: string): Observable<Course[]> {
-    return this.apiService.get<Course[]>(`users/${userId}/enrolled-courses`);
+    return this.apiService.get<Course[]>(`courses/enrolled?userId=${userId}`);
   }
 
   getTrendingCourses(limit: number = 10): Observable<Course[]> {

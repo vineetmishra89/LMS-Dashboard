@@ -12,7 +12,7 @@ public class CertificateService {
   private final CertificateRepository certificateRepository;
   public CertificateService(CertificateRepository certificateRepository) { this.certificateRepository = certificateRepository; }
 
-  public List<Certificate> byUser(UUID userId) {
+  public List<Certificate> byUser(String userId) {
     return certificateRepository.findByUserId(userId);
   }
 }

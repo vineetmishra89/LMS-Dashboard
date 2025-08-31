@@ -1,1 +1,5 @@
-export const environment = { production: false, apiBaseUrl: 'http://localhost:8080/api' };
+export const environment = { 
+    production: false, 
+    apiUrl: 'http://localhost:5000/api',
+devAutoLogin: true
+};

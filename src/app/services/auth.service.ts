@@ -59,9 +59,27 @@ export class AuthService {
     if (token && user && !this.isTokenExpired(token)) {
       this.currentUserSubject.next(user);
       this.isAuthenticatedSubject.next(true);
-    } else {
+      return;
+    } /*else {
       this.logout();
-    }
+    }*/
+
+  if (environment.devAutoLogin) {
+    const exp = Math.floor(Date.now()/1000) + 60*60*24*365;
+    const payload = btoa(JSON.stringify({ exp }));
+    localStorage.setItem(this.tokenKey, `x.${payload}.y`);
+
+    const demo = { id: 'demo-user', name: 'Vineet Mishra', email: 'vineet@example.com', role: 'student' } as any;
+    localStorage.setItem(this.userKey, JSON.stringify(demo));
+    localStorage.setItem('userId', demo.id);
+
+    this.currentUserSubject.next(demo);
+    this.isAuthenticatedSubject.next(true);
+    return;
+  }
+
+  // default: not authenticated
+  this.isAuthenticatedSubject.next(false);
   }
 
   login(credentials: LoginCredentials): Observable<User> {

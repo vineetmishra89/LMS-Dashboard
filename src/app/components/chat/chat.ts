@@ -342,7 +342,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             const progress = courseEnrollment?.progress.overallProgress || 0;
             
             coursesList += `${i + 1}. **${course.title}**\n`;
-            coursesList += `   • Instructor: ${course.instructor.firstName} ${course.instructor.lastName}\n`;
+            coursesList += `   • Instructor: ${course.instructorName}\n`;
             coursesList += `   • Progress: ${progress}% complete\n`;
             coursesList += `   • Status: ${courseEnrollment?.status || 'unknown'}\n\n`;
           }

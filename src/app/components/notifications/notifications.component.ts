@@ -32,8 +32,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadNotifications();
-    this.subscribeToUnreadCount();
+    //this.loadNotifications();
+    //this.subscribeToUnreadCount();
   }
 
   ngOnDestroy(): void {

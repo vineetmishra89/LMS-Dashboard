@@ -15,7 +15,7 @@ public class CertificateController {
   public CertificateController(CertificateService certificateService) { this.certificateService = certificateService; }
 
   @GetMapping
-  public List<Certificate> byUser(@RequestParam UUID userId) {
+  public List<Certificate> byUser(@RequestParam String userId) {
     return certificateService.byUser(userId);
   }
 }
