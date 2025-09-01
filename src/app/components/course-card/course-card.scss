@@ -2,7 +2,7 @@
 /* List row style for Dashboard catalog */
 .course-card.small {
   display: grid;
-  grid-template-columns: 96px 1fr auto;
+  grid-template-columns: 140px 1fr auto;
   align-items: center;
   gap: 16px;
   background: #ffffff;
@@ -12,8 +12,8 @@
 }
 .course-card.small .thumb,
 .course-card.small .course-image {
-  width: 110px;
-  height: 80px;
+  width: 140px;
+  height: 100px;
   border-radius: 10px;
   background: #eef2f7;
   display: grid;
@@ -58,7 +58,7 @@
 /* === Small list layout refinements (pixel-match) === */
 .course-card.small {
   display: grid;
-  grid-template-columns: 110px 1fr auto;
+  grid-template-columns: 140px 1fr auto;
   align-items: center;
   gap: 16px;
   background: #ffffff;
@@ -72,7 +72,7 @@
 .course-card.small > .course-actions { grid-column: 3; justify-self: end; align-self: center; }
 .course-card.small .thumb,
 .course-card.small .course-image {
-  width: 110px; height: 80px; border-radius: 10px; background: #eef2f7;
+  width: 140px; height: 100px; border-radius: 10px; background: #eef2f7;
   display: grid; place-items: center; color: #6b7280; font-weight: 600;
 }
 .course-card.small .course-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
@@ -94,7 +94,7 @@
 /* === Variant: with thumbnail (dashboard list) === */
 .course-card.small {
   display: grid;
-  grid-template-columns: 110px 1fr auto; /* thumbnail | text | action */
+  grid-template-columns: 140px 1fr auto; /* thumbnail | text | action */
   align-items: center;
   gap: 16px;
   background: #fff;

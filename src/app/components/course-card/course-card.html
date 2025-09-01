@@ -39,11 +39,6 @@
       <h1 class="course-title">{{ course.title }}</h1>
         <p class="meta-line" *ngIf="size === 'small'">
           {{ course.category }} • {{ (course.topics?.length ? course.topics[0] : course.topic) }} • {{ formatDuration(course.durationMinutes) }}
-          <span class="video-link" *ngIf="course.videoUrl">
-            • <a href="javascript:void(0)" (click)="$event.stopPropagation(); onWatchVideo()" class="video-link-text">
-              🎥 Watch Video
-            </a>
-          </span>
         </p>
       <div class="course-category" *ngIf="course.category">
         {{ course.category }}
@@ -63,11 +58,6 @@
           <!--<span class="topics" *ngIf="course.topics && course.topics.length > 0">-->
           <span class="topics">
             📚 {{ course.topics }}
-          </span>
-          <span class="video-link" *ngIf="course.videoUrl">
-            <a href="javascript:void(0)" (click)="$event.stopPropagation(); onWatchVideo()" class="video-link-text">
-              🎥 Watch Video
-            </a>
           </span>
         </div>
       </div>
