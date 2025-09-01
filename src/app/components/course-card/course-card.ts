@@ -235,6 +235,12 @@ getStreakMessage(streak: number): string {
     this.viewDetails.emit(this.course.id);
   }
 
+  onWatchVideo(): void {
+    if (this.course.videoUrl) {
+      window.open(this.course.videoUrl, '_blank');
+    }
+  }
+
     getStatusText(): string {
     if (!this.enrollment) return 'Not Enrolled';
     

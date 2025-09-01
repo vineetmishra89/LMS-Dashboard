@@ -88,6 +88,13 @@
 
     <!-- Actions -->
     <div class="course-actions" (click)="$event.stopPropagation()">
+      <!-- Video Link -->
+      <button class="btn btn-video" 
+              *ngIf="course.videoUrl"
+              (click)="$event.stopPropagation(); onWatchVideo()">
+        🎥 Watch Video
+      </button>
+
       <!-- Enrolled Course Actions -->
       <ng-container *ngIf="enrollment; else notEnrolledActions">
         <button class="btn btn-continue" 

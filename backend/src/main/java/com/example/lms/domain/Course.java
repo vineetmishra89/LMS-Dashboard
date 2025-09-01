@@ -1,6 +1,8 @@
 package com.example.lms.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import java.util.Date;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -20,6 +22,15 @@ public class Course {
   @Column(name = "training_topic")
   private String topics;
 
+  @Column(name = "thumbnail_url")
+  private String thumbnail;
+
+  @Column(name = "created_at")
+  private Date createdAt;
+
+  @Column(name = "updated_at")
+  private Date updatedAt;
+
   @Column(name = "instructor_name")
   private String instructorName;
 
@@ -27,6 +38,7 @@ public class Course {
   private Integer durationMinutes;
 
   @Column(name = "module_path")
+  @JsonProperty("videoUrl")
   private String trainingLink;
 
 
@@ -52,5 +64,29 @@ public class Course {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getThumbnail() {
+    return thumbnail;
+  }
+
+  public void setThumbnail(String thumbnail) {
+    this.thumbnail = thumbnail;
+  }
+
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
   }
 }

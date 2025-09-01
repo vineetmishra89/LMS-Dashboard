@@ -127,3 +127,19 @@
 .course-card.small .course-summary,
 .course-card.small .course-stats,
 .course-card.small .course-price { display: none !important; }
+.btn-video {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-right: 8px;
+}
+
+.btn-video:hover {
+  background: #7c3aed;
+}
