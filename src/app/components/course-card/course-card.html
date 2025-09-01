@@ -10,7 +10,8 @@
   
   <!-- Course Image -->
   <div class="course-image">
-    <img [src]="getThumbnailUrl()" [alt]="course.title" loading="lazy">
+    <!--<img [src]="getThumbnailUrl()" [alt]="course.title" loading="lazy">-->
+    <img src="data:image/jpeg;base64,{{getThumbnailUrl()}}" />
     
     <!-- Badges -->
     <div class="badges">
