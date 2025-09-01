@@ -9,9 +9,8 @@
      (click)="$event.stopPropagation(); onViewDetails()">
   
   <!-- Course Image -->
-  <div class="thumb" *ngIf="!course.thumbnail">Thumb</div>
-  <div class="course-image" *ngIf="course.thumbnail">
-    <img [src]="course.thumbnail" [alt]="course.title" loading="lazy">
+  <div class="course-image">
+    <img [src]="getThumbnailUrl()" [alt]="course.title" loading="lazy">
     
     <!-- Badges -->
     <div class="badges">
@@ -100,13 +99,6 @@
 
     <!-- Actions -->
     <div class="course-actions" (click)="$event.stopPropagation()">
-      <!-- Video Link -->
-      <button class="btn btn-video" 
-              *ngIf="course.videoUrl"
-              (click)="$event.stopPropagation(); onWatchVideo()">
-        🎥 Watch Video
-      </button>
-
       <!-- Enrolled Course Actions -->
       <ng-container *ngIf="enrollment; else notEnrolledActions">
         <button class="btn btn-continue" 

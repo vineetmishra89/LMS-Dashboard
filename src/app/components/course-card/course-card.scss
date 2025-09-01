@@ -91,10 +91,10 @@
 .course-card.small .course-actions .btn-continue { background: #22c55e; color: #fff; }
 .course-card.small .course-actions .btn-primary  { background: #2563eb; color: #fff; }
 
-/* === Variant: no thumbnail (dashboard list) === */
+/* === Variant: with thumbnail (dashboard list) === */
 .course-card.small {
   display: grid;
-  grid-template-columns: 1fr auto; /* text | action */
+  grid-template-columns: 110px 1fr auto; /* thumbnail | text | action */
   align-items: center;
   gap: 16px;
   background: #fff;
@@ -102,10 +102,6 @@
   border-radius: 12px;
   padding: 12px 16px;
 }
-
-/* hide image/placeholder entirely */
-.course-card.small .thumb,
-.course-card.small .course-image { display: none !important; }
 
 /* allow children of course-content to participate in parent grid */
 .course-card.small .course-content { display: contents; }

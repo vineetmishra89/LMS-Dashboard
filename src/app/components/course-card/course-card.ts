@@ -60,13 +60,13 @@ export class CourseCardComponent implements OnInit {
   }
 
   private formatDuration(minutes: number): string {
-    const hours = Math.floor(minutes / 60);
-    const mins = Math.floor(minutes % 60);
+    const minute = Math.floor(minutes / 60);
+    const sec = Math.floor(minutes % 60);
     
-    if (hours > 0) {
-      return `${hours}h ${mins}m`;
+    if (minute > 0) {
+      return `${minute}m ${sec}s`;
     }
-    return `${mins}m`;
+    return `${sec}m`;
   }
 
   async onEnroll(): Promise<any> {
@@ -239,6 +239,24 @@ getStreakMessage(streak: number): string {
     if (this.course.videoUrl) {
       window.open(this.course.videoUrl, '_blank');
     }
+  }
+
+  getDefaultThumbnail(category: string): string {
+    const defaultThumbnails: { [key: string]: string } = {
+      'Technology': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop&auto=format',
+      'Education': 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop&auto=format',
+      'Cloud': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&h=300&fit=crop&auto=format',
+      'Java': 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=400&h=300&fit=crop&auto=format',
+      'Programming': 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop&auto=format',
+      'Web Development': 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=400&h=300&fit=crop&auto=format',
+      'Data Science': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop&auto=format'
+    };
+    
+    return defaultThumbnails[category] || defaultThumbnails['Technology'];
+  }
+
+  getThumbnailUrl(): string {
+    return this.course.thumbnail || this.getDefaultThumbnail(this.course.category || 'Technology');
   }
 
     getStatusText(): string {
