@@ -14,6 +14,9 @@ public class Course {
   @Column(name = "training_detail_id")
   private String id;
 
+  @Column(name = "training_name")
+  private String title;
+
   @Column(name = "category")
   private String category;
 
@@ -42,6 +45,8 @@ public class Course {
   private String trainingLink;
 
 
+  public String getTitle() { return title; }
+  public void setTitle(String title) { this.title = title; }
   public String getCategory() { return category; }
   public void setCategory(String category) { this.category = category; }
   public String getTopics() { return topics; }
