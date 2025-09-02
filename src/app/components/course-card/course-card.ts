@@ -76,13 +76,6 @@ export class CourseCardComponent implements OnInit {
     }
   }
 
-
-
-
-
-
-
-
   onContinue(): void {
     this.continueClick.emit(this.course.id);
     if (this.course.videoUrl) {

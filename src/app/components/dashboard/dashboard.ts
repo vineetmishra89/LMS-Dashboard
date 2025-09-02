@@ -87,9 +87,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dashboardData$ = combineLatest([analytics$, enrolled$, enrollments$, continue$, catalog$]).pipe(
       map(([analytics, enrolled, enrollments, continueCourse, catalog]: any) => ({
         stats: {
-          completed: analytics.totalCoursesCompleted || 0,
-          enrolled: analytics.totalCoursesEnrolled || 0,
-          hours: analytics.totalHoursLearned || 0
+          completed: analytics.completedCount || 0,
+          enrolled: analytics.enrolledCount || 0,
+          hours: analytics.hoursLearned || 0
         },
         categories: [...new Set(catalog.map((c: any) => c.category))],
         topics: [...new Set(catalog.flatMap((c: any) => c.topics || []))],

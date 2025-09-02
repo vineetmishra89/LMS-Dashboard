@@ -12,8 +12,8 @@
 }
 .course-card.small .thumb,
 .course-card.small .course-image {
-  width: 140px;
-  height: 100px;
+  width: 390px;
+  height: 200px;
   border-radius: 10px;
   background: #eef2f7;
   display: grid;
@@ -71,10 +71,7 @@
 .course-card.small > .course-content { grid-column: 2; align-self: center; }
 .course-card.small > .course-actions { grid-column: 3; justify-self: end; align-self: center; }
 .course-card.small .thumb,
-.course-card.small .course-image {
-  width: 140px; height: 100px; border-radius: 10px; background: #eef2f7;
-  display: grid; place-items: center; color: #6b7280; font-weight: 600;
-}
+
 .course-card.small .course-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 .course-card.small .course-header { text-align: left; }
 .course-card.small .course-title { margin: 0 0 6px; font-size: 18px; font-weight: 800; color: #111827; }
