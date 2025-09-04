@@ -4,6 +4,8 @@ import com.example.lms.domain.Course;
 import com.example.lms.domain.Enrollment;
 import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
+  private static final Logger log = LoggerFactory.getLogger(CourseService.class);
   private final CourseRepository courseRepository;
   private final EnrollmentRepository enrollmentRepository;
 
@@ -22,6 +25,7 @@ public class CourseService {
 
   public List<Course> search(String category, String topic, String instructor) {
     Specification<Course> spec = Specification.where(null);
+    List<Course> courses = new ArrayList<>();
     if (category != null && !category.isBlank()) {
       spec = spec.and((root, q, cb) -> cb.equal(cb.lower(root.get("category")), category.toLowerCase()));
     }
@@ -29,10 +33,16 @@ public class CourseService {
       spec = spec.and((root, q, cb) -> cb.equal(cb.lower(root.get("instructorName")), instructor.toLowerCase()));
     }
     if (topic != null && !topic.isBlank()) {
-      spec = spec.and((root, q, cb) -> cb.isMember(topic, root.get("topics")));
+      spec = spec.and((root, q, cb) -> cb.equal(cb.lower(root.get("topics")), topic.toLowerCase()));
     }
     if (spec == null) return courseRepository.findAll();
-    return courseRepository.findAll(spec);
+
+    try{
+      courses = courseRepository.findAll(spec);
+    }catch(Exception ex){
+      log.error("Exception occurred : ",ex);
+    }
+    return courses;
   }
 
   public List<Course> getAll() {

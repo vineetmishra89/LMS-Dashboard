@@ -2,7 +2,7 @@
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, combineLatest, Subject, BehaviorSubject } from 'rxjs';
-import { takeUntil, map, startWith, catchError } from 'rxjs/operators';
+import { takeUntil, map, startWith, catchError, switchMap, distinctUntilChanged, debounceTime, take, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../../models/user';
 import { Enrollment } from '../../models/enrollment';
@@ -12,6 +12,7 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { CertificateService } from '../../services/certificate.service';
 import { NotificationService } from '../../services/notification.service';
+import { Course } from '../../models/course';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,8 +27,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   currentUser$: Observable<User | null>;
   dashboardData$!: Observable<any>;
   private latestVm: any = null;
-
+  catalog$!: Observable<any[]>;
+  catalogCopy$!: Observable<any[]>;
+  isFilterOperation: boolean = false;
   filters = { category: '', topic: '', instructor: '' };
+  private filters$ = new BehaviorSubject<{
+    category: string; topic: string; instructor: string;
+  }>(this.filters);
 
   constructor(
     private router: Router,
@@ -82,9 +88,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       catchError(() => [null])
     );
 
-    const catalog$ = this.courseService.getAllCourses(this.filters as any).pipe(catchError(() => []));
+    this.loadCourses();
 
-    this.dashboardData$ = combineLatest([analytics$, enrolled$, enrollments$, continue$, catalog$]).pipe(
+    this.dashboardData$ = combineLatest([analytics$, enrolled$, enrollments$, continue$, this.catalogCopy$]).pipe(
       map(([analytics, enrolled, enrollments, continueCourse, catalog]: any) => ({
         stats: {
           completed: analytics.completedCount || 0,
@@ -92,9 +98,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           hours: analytics.hoursLearned || 0
         },
         categories: [...new Set(catalog.map((c: any) => c.category))],
-        topics: [...new Set(catalog.flatMap((c: any) => c.topics || []))],
-        instructors: [...new Set(catalog.map((c: any) => (c.instructor?.name || c.instructor)))],
-        catalog,
+        topics: [...new Set(catalog.map((c: any) => c.topics))],
+        instructors: [...new Set(catalog.map((c: any) => c.instructorName))],
+        //catalog,
         enrollments,
         continueCourse
       })),
@@ -110,9 +116,48 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  private loadCourses() {
+    this.catalog$ = this.filters$.pipe(
+      // optional: debounce micro-changes if you type in a free-text filter
+      debounceTime(0),
+      //distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      switchMap(f => this.courseService.getAllCourses(f).pipe(catchError(() => [])).pipe(
+        map(courses => {
+          var out = courses;
+          var category = this.filters.category;
+          if (category && category !== '') {
+            out = out.filter(function (c) { return c.category === category; });
+          }
+          var topic = this.filters.topic;
+          if (topic && topic !== '') {
+            out = out.filter(function (c) { return c.topics === topic; });
+          }
+          var instructor = this.filters.instructor;
+          if (instructor && instructor !== '') {
+            out = out.filter(function (c) { return c.instructorName === instructor; });
+          }
+          console.log('Filtered Catalog courses loaded: ', out.length);
+          return out;
+        })
+      ))  // <-- new HTTP per change
+    );
+
+    this.catalogCopy$ = this.catalog$.pipe(
+      take(1),                                      // only first emission
+      map(list => list.map(c => ({ ...c }))),       // clone
+      shareReplay({ bufferSize: 1, refCount: true })// keep that first value forever
+    );
+  }
+
+  onFilterChange<K extends 'category' | 'topic' | 'instructor'>(key: K, value: string) {
+    console.log('Filter change', key, value);
+    this.isFilterOperation = true;
+    const next = { ...this.filters$.value, [key]: value ?? '' };
+    this.filters$.next(next);
+  }
+
   applyFilters(): void {
-    const u = this.userService.getCurrentUser();
-    if (u) this.loadUserDashboardData(u.id);
+    this.loadCourses();
   }
 
   onCourseEnroll(courseId: string): void {
@@ -141,5 +186,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getEnrollmentFor(courseId: string) {
     const vm = this.latestVm;
     return vm?.enrollments?.find((e: any) => e.courseId === courseId) || null;
+  }
+
+  private buildFilterParams(): any {
+    const params: any = {};
+
+    if (this.filters.category && this.filters.category !== '') {
+      params.category = this.filters.category;
+    }
+    if (this.filters.topic && this.filters.topic !== '') {
+      params.topic = this.filters.topic;
+    }
+    if (this.filters.instructor && this.filters.instructor !== '') {
+      params.instructor = this.filters.instructor;
+    }
+
+    return params;
   }
 }

@@ -39,9 +39,9 @@ export class CacheInterceptor implements HttpInterceptor {
     // Check for cached response
     const cacheKey = this.generateCacheKey(req);
     const cachedEntry = this.cache.get(cacheKey);
-
+     console.log('Serving from cache:', req.url);
     if (cachedEntry && this.isCacheValid(cachedEntry)) {
-      console.log('Serving from cache:', req.url);
+      console.log('Served from cache:', req.url);
       return of(cachedEntry.response.clone());
     }
 

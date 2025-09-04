@@ -2,7 +2,7 @@ export interface Course {
   id: string;
   title: string;
   category: string;
-  topics: string[];
+  topics: string;
   instructorName: string;
   durationMinutes: number;
   thumbnail: string;

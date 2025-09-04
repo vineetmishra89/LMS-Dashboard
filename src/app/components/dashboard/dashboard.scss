@@ -14,18 +14,17 @@
 /* 3-column content */
 .content-grid {
   display: grid;
-  grid-template-columns: 280px 1fr 360px;
+  grid-template-columns: 280px minmax(0, 1fr);
   gap: 1.25rem;
   align-items: start;
 }
 
 /* Cards and panels */
 .card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
+  background: #fff;
+  border-radius: 12px;
   padding: 1rem;
-  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  box-shadow: 0 1px 6px rgba(0,0,0,.08);
 }
 
 .filters h3,
@@ -33,17 +32,21 @@
   margin: 0 0 .75rem 0;
   font-size: 1.125rem;
   font-weight: 700;
+  position: sticky;
+  top: 1rem;
 }
 
 .filter {
   display: grid;
   gap: .35rem;
-  margin-bottom: .75rem;
+  margin-bottom: .9rem;
 }
 
 .filter label {
   font-size: .85rem;
   color: #374151;
+  display: block;
+  margin-bottom: .35rem;
 }
 
 .filter select {
@@ -63,8 +66,22 @@
 
 .course-list {
   display: grid;
-  gap: .75rem;
+grid-auto-rows: auto; 
+  gap: 1rem;
 }
+
+
+/* Make each course card fill its grid cell height */
+.course-list > * {
+  width: 100%;            /* each card takes full width of container */
+   justify-self: start;
+}
+
+/* Prevent layout “jump” from scrollbars on Windows */
+html { scrollbar-gutter: stable both-edges; }
+
+/* Optional: global sizing for consistency if not already set */
+*, *::before, *::after { box-sizing: border-box; }
 
 .course-card {
   display: grid;
@@ -150,14 +167,16 @@
   to { transform: rotate(360deg); }
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-  .content-grid { grid-template-columns: 240px 1fr 320px; }
+/* Stack on tablets/phones */
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .filters { position: static; } /* disable sticky on small screens */
 }
 
 @media (max-width: 992px) {
   .stats-grid { grid-template-columns: 1fr; }
-  .content-grid { grid-template-columns: 1fr; }
   .my-learning, .filters { margin-bottom: 1rem; }
 }
 
@@ -227,6 +246,12 @@
 :host ::ng-deep .catalog.card app-course-card .course-content { display: contents !important; }
 :host ::ng-deep .catalog.card app-course-card .course-header  { grid-column: 1; text-align: left; }
 :host ::ng-deep .catalog.card app-course-card .course-actions { grid-column: 2; justify-self: end; }
+
+:host ::ng-deep app-course-card .card,
+:host ::ng-deep app-course-card {
+  max-width: 640px;  /* prevents huge whitespace in wide containers */
+  width: 100%;
+}
 
 /* If any wrapper around the list adds tint, neutralize it */
 :host .catalog.card .course-list,

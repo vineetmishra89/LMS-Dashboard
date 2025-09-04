@@ -10,21 +10,21 @@
       <h3>Search Filters</h3>
       <div class="filter">
         <label>Category</label>
-        <select [(ngModel)]="filters.category" (ngModelChange)="applyFilters()">
+        <select [(ngModel)]="filters.category" (ngModelChange)="onFilterChange('category', $event)">
           <option value="">All</option>
           <option *ngFor="let c of data.categories" [value]="c">{{ c }}</option>
         </select>
       </div>
       <div class="filter">
         <label>Topic</label>
-        <select [(ngModel)]="filters.topic" (ngModelChange)="applyFilters()">
+        <select [(ngModel)]="filters.topic" (ngModelChange)="onFilterChange('topic', $event)">
           <option value="">All</option>
           <option *ngFor="let t of data.topics" [value]="t">{{ t }}</option>
         </select>
       </div>
       <div class="filter">
         <label>Instructor</label>
-        <select [(ngModel)]="filters.instructor" (ngModelChange)="applyFilters()">
+        <select [(ngModel)]="filters.instructor" (ngModelChange)="onFilterChange('instructor', $event)">
           <option value="">All</option>
           <option *ngFor="let i of data.instructors" [value]="i">{{ i }}</option>
         </select>
@@ -35,15 +35,12 @@
       <h3>Course Catalog</h3>
       <br>
       <div class="course-list">
-<app-course-card
-  *ngFor="let course of data.catalog"
-  [course]="course"
-  [enrollment]="getEnrollmentFor(course.id)"
-  [size]="'small'"
-  [showProgress]="false"
-  (continueClick)="onContinueLearning($event)"
-  (enrollClick)="onCourseEnroll($event)">
-</app-course-card>
+        <ng-container *ngIf="catalog$ | async as courses">
+          <app-course-card *ngFor="let course of courses" [course]="course" [enrollment]="getEnrollmentFor(course.id)"
+            [size]="'small'" [showProgress]="false" (continueClick)="onContinueLearning($event)"
+            (enrollClick)="onCourseEnroll($event)">
+          </app-course-card>
+        </ng-container>
       </div>
     </main>
 

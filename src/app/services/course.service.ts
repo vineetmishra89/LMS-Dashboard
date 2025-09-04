@@ -29,6 +29,7 @@ export class CourseService {
 
   // Course Retrieval
   getAllCourses(params?: any): Observable<Course[]> {
+    console.log('Fetching all courses with params:', params);
     return this.apiService.get<Course[]>('courses', params).pipe(
       tap(courses => this.coursesSubject.next(courses))
     );
