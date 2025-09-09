@@ -31,4 +31,9 @@ public class CourseController {
   public Optional<Course> continueCourse(@RequestParam String userId) {
     return courseService.getContinueCourse(userId);
   }
+
+  @GetMapping("/getCourseById/{courseId}")
+  public Course getCourseById(@PathVariable(required = true) String courseId) {
+    return courseService.search(courseId);
+  }
 }

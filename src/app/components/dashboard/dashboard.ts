@@ -12,6 +12,7 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { CertificateService } from '../../services/certificate.service';
 import { NotificationService } from '../../services/notification.service';
+import { VideoProgressService } from '../../services/video-progress.service';
 import { Course } from '../../models/course';
 
 @Component({
@@ -42,7 +43,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private enrollmentService: EnrollmentService,
     private analyticsService: AnalyticsService,
     private certificateService: CertificateService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private videoProgressService: VideoProgressService
   ) {
     this.currentUser$ = this.userService.currentUser$;
   }
@@ -76,6 +78,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       } as any])
     );
 
+    const learningHours$ = this.videoProgressService.getLearningHours(userId).pipe(
+      catchError(() => [{ totalHours: 0 }])
+    );
+
     const enrolled$ = this.courseService.getEnrolledCourses(userId).pipe(catchError(() => []));
     const enrollments$ = this.enrollmentService.getUserEnrollments(userId).pipe(catchError(() => []));
     const continue$ = combineLatest([enrollments$, enrolled$]).pipe(
@@ -90,12 +96,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.loadCourses();
 
-    this.dashboardData$ = combineLatest([analytics$, enrolled$, enrollments$, continue$, this.catalogCopy$]).pipe(
-      map(([analytics, enrolled, enrollments, continueCourse, catalog]: any) => ({
+    this.dashboardData$ = combineLatest([analytics$, enrolled$, enrollments$, continue$, this.catalogCopy$, learningHours$]).pipe(
+      map(([analytics, enrolled, enrollments, continueCourse, catalog, learningHours]: any) => ({
         stats: {
           completed: analytics.completedCount || 0,
           enrolled: analytics.enrolledCount || 0,
-          hours: analytics.hoursLearned || 0
+          hours: (learningHours && learningHours.totalHours) || 0
         },
         categories: [...new Set(catalog.map((c: any) => c.category))],
         topics: [...new Set(catalog.map((c: any) => c.topics))],
@@ -170,8 +176,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  onContinueLearning(courseId: string): void {
-    this.router.navigate(['/course', courseId]);
+  onContinueLearning(courseId: string, event?: Event): void {
+    console.log('Continue button clicked, courseId:', courseId);
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    const courseData = this.latestVm?.continueCourse;
+    if (courseData) {
+      console.log('Navigating to video player with course data:', courseData);
+      this.router.navigate(['/video-player', courseId], { 
+        state: { courseData: courseData }
+      }).then(
+        success => console.log('Navigation success:', success),
+        error => console.log('Navigation error:', error)
+      );
+    } else {
+      console.log('No course data available, navigating without state');
+      this.router.navigate(['/video-player', courseId]).then(
+        success => console.log('Navigation success:', success),
+        error => console.log('Navigation error:', error)
+      );
+    }
   }
 
   openCompleted(): void { this.router.navigate(['/detail/completed']); }

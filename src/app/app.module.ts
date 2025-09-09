@@ -24,6 +24,8 @@ import { AppRoutingModule } from './app.routes';
 import { CompletedDetailComponent } from './components/details/completed-detail/completed-detail.component';
 import { EnrolledDetailComponent } from './components/details/enrolled-detail/enrolled-detail.component';
 import { HoursDetailComponent } from './components/details/hours-detail/hours-detail.component';
+import { VideoPlayerComponent } from './components/video-player/video-player.component';
+import { VideoPlayerPageComponent } from './pages/video-player/video-player-page.component';
 
 // Core Components
 import { AppComponent } from './app';
@@ -67,6 +69,7 @@ import { CertificateService } from './services/certificate.service';
 import { NotificationService } from './services/notification.service';
 import { DataSyncService } from './services/data-sync.service';
 import { WebSocketService } from './services/websocket.service';
+import { VideoProgressService } from './services/video-progress.service';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -137,7 +140,9 @@ import { environment } from '../environments/environment';
 
     CompletedDetailComponent,
     EnrolledDetailComponent,
-    HoursDetailComponent
+    HoursDetailComponent,
+    VideoPlayerComponent,
+    VideoPlayerPageComponent
   ],
   imports: [
     // Angular Core
@@ -191,6 +196,7 @@ import { environment } from '../environments/environment';
     NotificationService,
     DataSyncService,
     WebSocketService,
+    VideoProgressService,
     
     LoadingInterceptor,
     

@@ -64,4 +64,15 @@ public class CourseService {
       .findFirst()
       .flatMap(courseRepository::findById);
   }
+
+  public Course search(String courseId) {
+    Course course = null;
+
+    try{
+      course = courseRepository.findById(courseId).orElse(null);
+    }catch(Exception ex){
+      log.error("Exception occurred : ",ex);
+    }
+    return course;
+  }
 }

@@ -36,7 +36,7 @@ export class CourseService {
   }
 
   getCourseById(courseId: string): Observable<Course> {
-    return this.apiService.get<Course>(`courses/${courseId}`);
+    return this.apiService.get<Course>(`courses/getCourseById/${courseId}`);
   }
 
   getEnrolledCourses(userId: string): Observable<Course[]> {

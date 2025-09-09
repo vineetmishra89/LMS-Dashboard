@@ -1,14 +1,19 @@
 CREATE TABLE IF NOT EXISTS onedrive_db.training_details
 (
-    training_detail_id character varying(4000) COLLATE pg_catalog."default" NOT NULL,
+    training_detail_id character varying(255) COLLATE pg_catalog."default" NOT NULL,
     training_id character varying(255) COLLATE pg_catalog."default",
     category character varying(255) COLLATE pg_catalog."default",
     module_duration integer,
     module_name character varying(4000) COLLATE pg_catalog."default",
     module_path character varying(255) COLLATE pg_catalog."default",
     module_topic character varying(4000) COLLATE pg_catalog."default",
-    training_topic character varying(4000) COLLATE pg_catalog."default",
-    instructor_name character varying(4000) COLLATE pg_catalog."default",
+    training_topic character varying(255) COLLATE pg_catalog."default",
+    instructor_name character varying(255) COLLATE pg_catalog."default",
+    thumbnail_url text COLLATE pg_catalog."default",
+    "training topic" character varying(255) COLLATE pg_catalog."default",
+    created_at timestamp(6) without time zone,
+    training_name character varying(255) COLLATE pg_catalog."default",
+    updated_at timestamp(6) without time zone,
     CONSTRAINT training_details_pkey PRIMARY KEY (training_detail_id)
 )
 

@@ -88,9 +88,7 @@ export class CourseCardComponent implements OnInit {
   }
 
   onWatchVideo(): void {
-    if (this.course.videoUrl) {
-      window.open(this.course.videoUrl, '_blank');
-    }
+    this.continueClick.emit(this.course.id);
   }
 
   getDefaultThumbnail(category: string): string {

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { Course } from '../../../models/course';
 import { Enrollment } from '../../../models/enrollment';
 import { CourseService } from '../../../services/course.service';
@@ -18,7 +19,8 @@ export class EnrolledDetailComponent implements OnInit {
 
   constructor(
     private courseService: CourseService,
-    private enrollmentService: EnrollmentService
+    private enrollmentService: EnrollmentService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -27,9 +29,7 @@ export class EnrolledDetailComponent implements OnInit {
   }
 
   onVideoClick(course: Course): void {
-    if (course.videoUrl) {
-      window.open(course.videoUrl, '_blank');
-    }
+    this.router.navigate(['/video-player', course.id]);
   }
 
   getEnrollmentFor(courseId: string): Observable<Enrollment | undefined> {

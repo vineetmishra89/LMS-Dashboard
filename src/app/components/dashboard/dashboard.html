@@ -46,7 +46,7 @@
 
     <section class="my-learning" *ngIf="data.continueCourse">
       <h3>My Learning</h3>
-      <button class="continue-btn" (click)="onContinueLearning(data.continueCourse.id)">
+      <button type="button" class="continue-btn" (click)="onContinueLearning(data.continueCourse.id, $event)">
         {{ data.continueCourse.title }} – {{ data.continueCourse.progress || 0 }}% complete
       </button>
     </section>

@@ -5,10 +5,12 @@ import { NotFoundComponent } from './components/shared/not-found/not-found.compo
 import { CompletedDetailComponent } from './components/details/completed-detail/completed-detail.component';
 import { EnrolledDetailComponent } from './components/details/enrolled-detail/enrolled-detail.component';
 import { HoursDetailComponent } from './components/details/hours-detail/hours-detail.component';
+import { VideoPlayerPageComponent } from './pages/video-player/video-player-page.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'video-player/:courseId', component: VideoPlayerPageComponent },
   { path: 'detail/completed', component: CompletedDetailComponent },
   { path: 'detail/enrolled', component: EnrolledDetailComponent },
   { path: 'detail/hours', component: HoursDetailComponent },
