@@ -3,7 +3,7 @@
 <td class="col name">{{ course.trainingName || course.title }}</td>
 <td class="col desc">{{ course.description }}</td>
 <td class="col outline">{{ course.outline || course.topics }}</td>
-<td class="col duration">{{ course.durationMinutes ? (course.durationMinutes + ' Minutes') : '' }}</td>
+<td class="col duration">{{ course.durationMinutes ? (((course.durationMinutes/60)/60) | number:'1.2-2') : '' }}</td>
 <td class="col trainer-fb">{{ course.trainerRating ?? '—' }}</td>
 <td class="col user-fb">{{ course.userRating ?? '—' }}</td>
 <td class="col review">{{ course.reviewComments || '—' }}</td>
