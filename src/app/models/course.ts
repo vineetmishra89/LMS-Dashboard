@@ -1,17 +1,20 @@
 export interface Course {
   id: string;
+  trainingName: string;
+  outline: string;
   title: string;
   category: string;
   topics: string;
   instructorName: string;
   durationMinutes: number;
-  thumbnail: string;
-  createdAt: Date;
-  updatedAt: Date;
-  
+  trainerRating: number;
+  userRating: number;
   description?: string;
   instructor?: Instructor;
   level?: 'beginner' | 'intermediate' | 'advanced';
+  reviewComments: string[];
+  prerequisite: string;
+  toolsNeeded: string;
   duration?: number;
   rating?: number;
   reviewCount?: number;

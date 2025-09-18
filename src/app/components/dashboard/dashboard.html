@@ -1,46 +1,93 @@
 <div class="dashboard" *ngIf="dashboardData$ | async as data; else loadingTemplate">
   <div class="stats-grid">
-    <app-stats-card icon="🏆" iconClass="green" label="Completed Courses" [value]="data.stats.completed" (click)="openCompleted()"></app-stats-card>
-    <app-stats-card icon="📚" iconClass="blue" label="Enrolled Courses" [value]="data.stats.enrolled" (click)="openEnrolled()"></app-stats-card>
-    <app-stats-card icon="⏰" iconClass="orange" label="Hours Learned" [value]="data.stats.hours" (click)="openHours()"></app-stats-card>
+    <app-stats-card icon="🏆" iconClass="green" label="Completed Courses" [value]="data.stats.completed"
+      (click)="openCompleted()"></app-stats-card>
+    <app-stats-card icon="📚" iconClass="blue" label="Enrolled Courses" [value]="data.stats.enrolled"
+      (click)="openEnrolled()"></app-stats-card>
+    <app-stats-card icon="⏰" iconClass="orange" label="Hours Learned" [value]="data.stats.hours"
+      (click)="openHours()"></app-stats-card>
   </div>
 
   <div class="content-grid">
-    <aside class="filters card">
-      <h3>Search Filters</h3>
-      <div class="filter">
-        <label>Category</label>
-        <select [(ngModel)]="filters.category" (ngModelChange)="onFilterChange('category', $event)">
-          <option value="">All</option>
-          <option *ngFor="let c of data.categories" [value]="c">{{ c }}</option>
-        </select>
-      </div>
-      <div class="filter">
-        <label>Topic</label>
-        <select [(ngModel)]="filters.topic" (ngModelChange)="onFilterChange('topic', $event)">
-          <option value="">All</option>
-          <option *ngFor="let t of data.topics" [value]="t">{{ t }}</option>
-        </select>
-      </div>
-      <div class="filter">
-        <label>Instructor</label>
-        <select [(ngModel)]="filters.instructor" (ngModelChange)="onFilterChange('instructor', $event)">
-          <option value="">All</option>
-          <option *ngFor="let i of data.instructors" [value]="i">{{ i }}</option>
-        </select>
-      </div>
-    </aside>
+    <section class="filters-panel">
+      <table class="panel-table">
+        <thead>
+          <tr>
+            <th colspan="2">Search Filters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Category -->
+          <tr>
+            <td class="label">Category</td>
+            <td class="control">
+              <!-- Native select version -->
+              <select [(ngModel)]="pendingFilters.category" class="u-select">
+                <option value="">All</option>
+                <option *ngFor="let c of data.categories" [value]="c">{{ c }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="label">Topic</td>
+            <td class="control">
+              <select [(ngModel)]="pendingFilters.topic"  class="u-select">
+                <option value="">All</option>
+                <option *ngFor="let t of data.topics" [value]="t">{{ t }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="label">Instructor</td>
+            <td class="control">
+              <select [(ngModel)]="pendingFilters.instructor"
+                class="u-select">
+                <option value="">All</option>
+                <option *ngFor="let i of data.instructors" [value]="i">{{ i }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr class="actions-row">
+            <td colspan="2" class="actions">
+              <button type="button" class="btn" (click)="onClearFilters()">Clear</button>
+              <button type="button" class="btn primary" (click)="onApplyFilters()">Apply</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
     <main class="catalog card">
-      <h3>Course Catalog</h3>
-      <br>
-      <div class="course-list">
-        <ng-container *ngIf="catalog$ | async as courses">
-          <app-course-card *ngFor="let course of courses" [course]="course" [enrollment]="getEnrollmentFor(course.id)"
-            [size]="'small'" [showProgress]="false" (continueClick)="onContinueLearning($event)"
-            (enrollClick)="onCourseEnroll($event)">
-          </app-course-card>
-        </ng-container>
+      <div class="table-scroll">
+        <table class="catalog-table">
+          <thead>
+            <tr>
+              <th class="col-name">Training Name</th>
+              <th class="col-desc">Description</th>
+              <th class="col-outline">Outline/Content</th>
+              <th class="col-duration">Duration</th>
+              <th class="col-trainer-fb">Trainers<br>Current feedback</th>
+              <th class="col-user-fb">Current User<br>feedback</th>
+              <th class="col-review">Review Comments</th>
+              <th class="col-trainer">Trainer/Name</th>
+              <th class="col-prereq">Pre-requisite</th>
+              <th class="col-level">Level (Beginner)</th>
+              <th class="col-tools">Tools needed</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="catalog$ | async as courses">
+              <tr *ngFor="let course of courses">
+                <app-course-card [course]="course" [enrollment]="getEnrollmentFor(course.id)" [size]="'small'"
+                  [showProgress]="false" (continueClick)="onContinueLearning($event)"
+                  (enrollClick)="onCourseEnroll($event)">
+                </app-course-card>
+              </tr>
+
+            </ng-container>
+          </tbody>
+        </table>
       </div>
     </main>
 

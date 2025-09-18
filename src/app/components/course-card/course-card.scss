@@ -1,125 +1,18 @@
 
-/* List row style for Dashboard catalog */
-.course-card.small {
-  display: grid;
-  grid-template-columns: 140px 1fr auto;
-  align-items: center;
-  gap: 16px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 12px 16px;
-}
-.course-card.small .thumb,
-.course-card.small .course-image {
-  width: 390px;
-  height: 200px;
-  border-radius: 10px;
-  background: #eef2f7;
-  display: grid;
-  place-items: center;
-  color: #6b7280;
-  font-weight: 600;
-}
-.course-card.small .course-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-}
-.course-card.small .course-title {
-  margin: 0 0 6px 0;
-  font-size: 18px;
-  font-weight: 800;
-  color: #111827;
-}
-.course-card.small .meta-line {
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-.course-card.small .badges,
-.course-card.small .course-progress,
-.course-card.small .progress-info,
-.course-card.small .progress-bar,
-.course-card.small .progress-stats,
-.course-card.small .course-extra,
-.course-card.small .course-summary,
-.course-card.small .course-stats,
-.course-card.small .instructor {
-  display: none !important;
-}
-.course-card.small .course-actions { margin-left: 12px; }
-.course-card.small .course-actions .btn { border-radius: 10px; padding: 10px 18px; font-weight: 700; border: 0; }
-.course-card.small .course-actions .btn-continue { background: #22c55e; color: #fff; }
-.course-card.small .course-actions .btn-primary { background: #2563eb; color: #fff; }
-.course-card.small .course-details { margin: 0; }
+.course-actions .btn { border: 0; 
+  border-radius: 10px; 
+  padding: 10px 12px; 
+  font-weight: 700; 
+  display: inline-block;
+  min-width: 96px;
+  line-height: 1.2;
+  border-radius: 8px;     /* less “pill”, more roomy */
+  white-space: nowrap;
 
-/* === Small list layout refinements (pixel-match) === */
-.course-card.small {
-  display: grid;
-  grid-template-columns: 140px 1fr auto;
-  align-items: center;
-  gap: 16px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 12px 16px;
 }
-.course-card.small > .thumb,
-.course-card.small > .course-image { grid-column: 1; }
-.course-card.small > .course-content { grid-column: 2; align-self: center; }
-.course-card.small > .course-actions { grid-column: 3; justify-self: end; align-self: center; }
-.course-card.small .thumb,
+.course-actions .btn-continue { background: #22c55e; color: #fff; }
+.course-actions .btn-primary  { background: #2563eb; color: #fff; }
 
-.course-card.small .course-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
-.course-card.small .course-header { text-align: left; }
-.course-card.small .course-title { margin: 0 0 6px; font-size: 18px; font-weight: 800; color: #111827; }
-.course-card.small .meta-line { margin: 0; color: #6b7280; font-size: 14px; }
-.course-card.small .course-category,
-.course-card.small .course-instructor,
-.course-card.small .course-meta,
-.course-card.small .course-progress,
-.course-card.small .course-extra,
-.course-card.small .course-summary,
-.course-card.small .course-stats,
-.course-card.small .course-price { display: none !important; }
-.course-card.small .course-actions .btn { border: 0; border-radius: 10px; padding: 10px 18px; font-weight: 700; }
-.course-card.small .course-actions .btn-continue { background: #22c55e; color: #fff; }
-.course-card.small .course-actions .btn-primary  { background: #2563eb; color: #fff; }
-
-/* === Variant: with thumbnail (dashboard list) === */
-.course-card.small {
-  display: grid;
-  grid-template-columns: 140px 1fr auto; /* thumbnail | text | action */
-  align-items: center;
-  gap: 16px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 12px 16px;
-}
-
-/* allow children of course-content to participate in parent grid */
-.course-card.small .course-content { display: contents; }
-
-/* put title/meta in first column */
-.course-card.small .course-header { grid-column: 1; text-align: left; }
-.course-card.small .course-title { margin: 0 0 6px; font-size: 18px; font-weight: 800; }
-.course-card.small .meta-line { margin: 0; color: #6b7280; font-size: 14px; }
-
-/* actions in second column, right aligned */
-.course-card.small .course-actions { grid-column: 2; justify-self: end; align-self: center; }
-
-/* keep heavy blocks hidden in list view */
-.course-card.small .course-category,
-.course-card.small .course-instructor,
-.course-card.small .course-meta,
-.course-card.small .course-progress,
-.course-card.small .course-extra,
-.course-card.small .course-summary,
-.course-card.small .course-stats,
-.course-card.small .course-price { display: none !important; }
 
 .video-link {
   margin-left: 8px;
@@ -138,3 +31,38 @@
   color: #7c3aed;
   text-decoration: underline;
 }
+
+/* host is <tr>; its direct children are the <td>s */
+:host { display: table-row; }
+:host > td { text-align: center; vertical-align: middle; padding: 1px; }
+:host > td .wrap { display: inline-block; text-align: center; }
+:host > td.action .btn { display: inline-block; }  /* Enroll/Continue */
+
+/* center the cell content and give breathing room */
+:host > td.action {
+  text-align: center;
+  vertical-align: middle;
+  padding: 10px 12px;     /* top/bottom space around the pill */
+  white-space: nowrap;    /* keep button on one line */
+}
+
+/* flex wrapper to center nicely */
+:host > td.action .actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;               /* in case you add more actions later */
+  width: 100%;
+}
+
+
+/* primary color button */
+:host > td.action .btn.primary {
+  background: #3f51b5;
+  color: #fff;
+  border: none;
+}
+
+
+
+

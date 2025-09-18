@@ -36,3 +36,11 @@ body {
     }
   }
 }
+
+/* restore native arrow globally or just scope to the filters area */
+.filters-panel select {
+  appearance: auto !important;
+  -webkit-appearance: menulist !important;
+  -moz-appearance: auto !important;
+  background-image: none !important;
+}

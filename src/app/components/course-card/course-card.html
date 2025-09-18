@@ -1,128 +1,48 @@
-<div class="course-card" 
-     [ngClass]="{ 
-       'small': size === 'small', 
-       'medium': size === 'medium', 
-       'large': size === 'large',
-       'trending-card': course.isTrending, 
-       'enrolled': !!enrollment 
-     }"
-     (click)="$event.stopPropagation(); onViewDetails()">
-  
-  <!-- Course Image -->
-  <div class="course-image">
-    <!--<img [src]="getThumbnailUrl()" [alt]="course.title" loading="lazy">-->
-    <img src="data:image/jpeg;base64,{{getThumbnailUrl()}}" />
-    
-    <!-- Badges -->
-    <div class="badges">
-      <div class="trending-badge" *ngIf="course.isTrending">
-        🔥 Trending
-      </div>
-      <div class="category-badge">
-        {{ course.category }}
-      </div>
-      <div class="status-badge" *ngIf="enrollment" [ngClass]="enrollment.status">
-        {{ getStatusText() }}
-      </div>
-    </div>
-    
-    <!-- Duration overlay -->
-    <div class="duration-overlay" *ngIf="timeRemaining">
-      <span class="duration-text">⏱️ {{ timeRemaining }}</span>
-    </div>
+<!-- Course Content -->
+
+<td class="col name">{{ course.trainingName || course.title }}</td>
+<td class="col desc">{{ course.description }}</td>
+<td class="col outline">{{ course.outline || course.topics }}</td>
+<td class="col duration">{{ course.durationMinutes ? (course.durationMinutes + ' Minutes') : '' }}</td>
+<td class="col trainer-fb">{{ course.trainerRating ?? '—' }}</td>
+<td class="col user-fb">{{ course.userRating ?? '—' }}</td>
+<td class="col review">{{ course.reviewComments || '—' }}</td>
+<td class="col trainer">{{ course.instructorName }}</td>
+<td class="col prereq">{{ course.prerequisite || '—' }}</td>
+<td class="col level">{{ course.level || '—' }}</td>
+<td class="col tools">{{ course.toolsNeeded || '—' }}</td>
+
+<!-- Enroll / Continue -->
+<td class="col action">
+  <!-- Actions -->
+  <div class="course-actions" (click)="$event.stopPropagation()">
+    <!-- Enrolled Course Actions -->
+    <ng-container *ngIf="enrollment; else notEnrolledActions">
+      <button class="btn btn-continue" *ngIf="enrollment.status === 'active' && progressPercentage < 100"
+        (click)="$event.stopPropagation(); onContinue()">
+        Continue
+      </button>
+      <button class="btn btn-secondary" *ngIf="progressPercentage === 100"
+        (click)="$event.stopPropagation(); onViewDetails()">
+        View Certificate
+      </button>
+      <button class="btn btn-outline" *ngIf="enrollment.status === 'paused'"
+        (click)="$event.stopPropagation(); onContinue()">
+        Continue
+      </button>
+    </ng-container>
+
+    <!-- Non-enrolled Course Actions -->
+    <ng-template #notEnrolledActions>
+      <button class="btn btn-primary" [disabled]="isEnrolling" (click)="$event.stopPropagation(); onEnroll()">
+        <span *ngIf="!isEnrolling">
+          Enroll
+        </span>
+        <span *ngIf="isEnrolling" class="loading-text">
+          <span class="spinner"></span>
+          Enrolling...
+        </span>
+      </button>
+    </ng-template>
   </div>
-
-  <!-- Course Content -->
-  <div class="course-content">
-    <!-- Header -->
-    <div class="course-header">
-      <h1 class="course-title">{{ course.title }}</h1>
-        <p class="meta-line" *ngIf="size === 'small'">
-          {{ course.category }} • {{ (course.topics?.length ? course.topics[0] : course.topic) }} • {{ formatDuration(course.durationMinutes) }}
-        </p>
-      <div class="course-category" *ngIf="course.category">
-        {{ course.category }}
-      </div>
-    </div>
-
-    <!-- Instructor -->
-    <div class="course-instructor">
-      <div class="instructor-info">
-        <span class="instructor-name">
-          {{ course.instructorName }}
-        </span>
-        <div class="course-meta">
-          <!--<span class="duration" *ngIf="course.durationMinutes">
-            ⏱️ {{ formatDuration(course.durationMinutes) }}
-          </span>-->
-          <!--<span class="topics" *ngIf="course.topics && course.topics.length > 0">-->
-          <span class="topics">
-            📚 {{ course.topics }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Progress Section -->
-    <div class="course-progress" *ngIf="enrollment && showProgress">
-      <div class="progress-info">
-        <span class="progress-text">
-          {{ enrollment?.progress?.currentModule || 'Getting Started' }}
-        </span>
-        <span class="progress-percent">{{ progressPercentage }}% complete</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" 
-             [style.width.%]="progressPercentage"
-             [style.background-color]="getProgressColor()">
-        </div>
-      </div>
-      <div class="progress-stats">
-        <span class="completed-lessons">
-          {{ enrollment?.progress?.completedLessons?.length || 0 }} lessons completed
-        </span>
-        <span class="time-spent" *ngIf="enrollment.timeSpent > 0">
-          {{ formatDuration(enrollment.timeSpent) }} spent
-        </span>
-      </div>
-    </div>
-
-
-    <!-- Actions -->
-    <div class="course-actions" (click)="$event.stopPropagation()">
-      <!-- Enrolled Course Actions -->
-      <ng-container *ngIf="enrollment; else notEnrolledActions">
-        <button class="btn btn-continue" 
-                *ngIf="enrollment.status === 'active' && progressPercentage < 100"
-                (click)="$event.stopPropagation(); onContinue()">
-          Continue
-        </button>
-        <button class="btn btn-secondary" 
-                *ngIf="progressPercentage === 100"
-                (click)="$event.stopPropagation(); onViewDetails()">
-          View Certificate
-        </button>
-        <button class="btn btn-outline" 
-                *ngIf="enrollment.status === 'paused'"
-                (click)="$event.stopPropagation(); onContinue()">
-          Continue
-        </button>
-      </ng-container>
-
-      <!-- Non-enrolled Course Actions -->
-      <ng-template #notEnrolledActions>
-        <button class="btn btn-primary"
-                [disabled]="isEnrolling"
-                (click)="$event.stopPropagation(); onEnroll()">
-          <span *ngIf="!isEnrolling">
-            Enroll
-          </span>
-          <span *ngIf="isEnrolling" class="loading-text">
-            <span class="spinner"></span>
-            Enrolling...
-          </span>
-        </button>
-      </ng-template>
-    </div>
-  </div>
-</div>
+</td>

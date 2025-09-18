@@ -31,10 +31,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   catalog$!: Observable<any[]>;
   catalogCopy$!: Observable<any[]>;
   isFilterOperation: boolean = false;
-  filters = { category: '', topic: '', instructor: '' };
-  private filters$ = new BehaviorSubject<{
+  pendingFilters = { category: '', topic: '', instructor: '' };
+  private appliedFilters$ = new BehaviorSubject<{
     category: string; topic: string; instructor: string;
-  }>(this.filters);
+  }>(this.pendingFilters);
 
   constructor(
     private router: Router,
@@ -123,22 +123,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadCourses() {
-    this.catalog$ = this.filters$.pipe(
+    this.catalog$ = this.appliedFilters$.pipe(
       // optional: debounce micro-changes if you type in a free-text filter
       debounceTime(0),
       //distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       switchMap(f => this.courseService.getAllCourses(f).pipe(catchError(() => [])).pipe(
         map(courses => {
           var out = courses;
-          var category = this.filters.category;
+          var category = this.pendingFilters.category;
           if (category && category !== '') {
             out = out.filter(function (c) { return c.category === category; });
           }
-          var topic = this.filters.topic;
+          var topic = this.pendingFilters.topic;
           if (topic && topic !== '') {
             out = out.filter(function (c) { return c.topics === topic; });
           }
-          var instructor = this.filters.instructor;
+          var instructor = this.pendingFilters.instructor;
           if (instructor && instructor !== '') {
             out = out.filter(function (c) { return c.instructorName === instructor; });
           }
@@ -153,13 +153,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       map(list => list.map(c => ({ ...c }))),       // clone
       shareReplay({ bufferSize: 1, refCount: true })// keep that first value forever
     );
-  }
-
-  onFilterChange<K extends 'category' | 'topic' | 'instructor'>(key: K, value: string) {
-    console.log('Filter change', key, value);
-    this.isFilterOperation = true;
-    const next = { ...this.filters$.value, [key]: value ?? '' };
-    this.filters$.next(next);
   }
 
   applyFilters(): void {
@@ -215,19 +208,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return vm?.enrollments?.find((e: any) => e.courseId === courseId) || null;
   }
 
-  private buildFilterParams(): any {
-    const params: any = {};
 
-    if (this.filters.category && this.filters.category !== '') {
-      params.category = this.filters.category;
-    }
-    if (this.filters.topic && this.filters.topic !== '') {
-      params.topic = this.filters.topic;
-    }
-    if (this.filters.instructor && this.filters.instructor !== '') {
-      params.instructor = this.filters.instructor;
-    }
+  onApplyFilters(): void {
+  // take whatever the user picked and make it live
+  this.appliedFilters$.next({ ...this.pendingFilters });
+  // if your loadCourses() builds streams that depend on filters, you can call it here.
+  // But with the combineLatest approach below, it's not required to rebuild anything.
+}
 
-    return params;
-  }
+onClearFilters(): void {
+  this.pendingFilters = { category: '', topic: '', instructor: '' };
+  this.appliedFilters$.next({ ...this.pendingFilters });
+}
 }
