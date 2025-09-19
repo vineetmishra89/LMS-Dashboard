@@ -63,6 +63,15 @@
   border: none;
 }
 
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;      /* <-- show 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  word-break: break-word;
+}
+
 
 :host > td .wrap{ white-space:normal; }
 :host > td.action .actions{ display:inline-flex; gap:8px; }

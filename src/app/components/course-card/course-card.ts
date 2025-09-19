@@ -24,14 +24,13 @@ export class CourseCardComponent implements OnInit {
   @Output() enrollClick = new EventEmitter<string>();
   @Output() continueClick = new EventEmitter<string>();
   @Output() viewDetails = new EventEmitter<string>();
-
-  @Input() master!: CourseMaster;
+  
   @Input() enrolled = false;
   @Output() enroll = new EventEmitter<CourseMaster>();
   @Output() view = new EventEmitter<CourseMaster>();
 
-  onEnrollClick(){ this.enroll.emit(this.master); }
-  onViewClick(){ this.view.emit(this.master); }
+  onEnrollClick(){ this.enroll.emit(this.course); }
+  onViewClick(){ this.view.emit(this.course); }
 
   isEnrolling: boolean = false;
   progressPercentage: number = 0;

@@ -2,7 +2,7 @@
 
 <td class="col name">{{ course.trainingName }}</td>
 <td class="col desc">{{ course.description }}</td>
-<td class="col outline">{{ course.content || course.topics }}</td>
+<td class="clamp-3">{{ course.content || course.topics }}</td>
 <td class="col duration">{{ course.duration ? (((course.duration/60)/60) | number:'1.2-2') : '' }}</td>
 <td class="col review">{{ course.reviewComments || '—' }}</td>
 <td class="col trainer">{{ course.instructorName }}</td>
