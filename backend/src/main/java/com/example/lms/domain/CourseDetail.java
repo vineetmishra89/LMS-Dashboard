@@ -20,11 +20,11 @@ public class CourseDetail {
   @Column(name = "training_detail_id")
   private String trainingDetailId;
 
-  @Column(name = "training_id")
-  private String trainingId;
-
   @Column(name = "thumbnail_url")
   private String thumbnail;
+
+  @Column(name = "topic")
+  private String topic;
 
   @Column(name = "created_at")
   private Date createdAt;
