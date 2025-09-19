@@ -39,7 +39,6 @@ public class CourseDetail {
   private String instructorName;
 
   @Column(name = "module_path")
-  @JsonProperty("videoUrl")
   private String trainingLink;
 
   @Column(name = "trainers_current_feedback")

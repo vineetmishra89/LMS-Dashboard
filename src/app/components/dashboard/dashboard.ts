@@ -266,6 +266,7 @@ onClearFilters(): void {
     if (!detail.trainingLink) return;
     // If you have a player route, navigate there instead:
     // this.router.navigate(['/player', detail.trainingId, detail.trainingDetailId]);
+    console.log('opening video');
     window.open(detail.trainingLink, '_blank', 'noopener');
   }
 
