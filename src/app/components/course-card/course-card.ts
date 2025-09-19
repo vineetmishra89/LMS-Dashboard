@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { Course } from '../../models/course';
+import { CourseDetail, CourseMaster } from '../../models/course';
 import { Enrollment } from '../../models/enrollment';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { CourseService } from '../../services/course.service';
@@ -13,16 +13,25 @@ type ChatMessage = { id: string; message?: string };
   styleUrls: ['./course-card.scss']
 })
 export class CourseCardComponent implements OnInit {
-  @Input() course!: Course;
+  @Input() course!: CourseMaster;
   @Input() enrollment?: Enrollment;
   @Input() showEnrollButton: boolean = false;
   @Input() showProgress: boolean = true;
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
   @Input() userId!: string;
+  courseDetail!: CourseDetail;
   
   @Output() enrollClick = new EventEmitter<string>();
   @Output() continueClick = new EventEmitter<string>();
   @Output() viewDetails = new EventEmitter<string>();
+
+  @Input() master!: CourseMaster;
+  @Input() enrolled = false;
+  @Output() enroll = new EventEmitter<CourseMaster>();
+  @Output() view = new EventEmitter<CourseMaster>();
+
+  onEnrollClick(){ this.enroll.emit(this.master); }
+  onViewClick(){ this.view.emit(this.master); }
 
   isEnrolling: boolean = false;
   progressPercentage: number = 0;
@@ -50,12 +59,12 @@ export class CourseCardComponent implements OnInit {
   }
 
   private calculateTimeRemaining(): void {
-    if (this.course.durationMinutes && this.enrollment) {
-      const completedTime = (this.course.durationMinutes * this.progressPercentage) / 100;
-      const remaining = this.course.durationMinutes - completedTime;
+    if (this.course.duration && this.enrollment) {
+      const completedTime = (this.course.duration * this.progressPercentage) / 100;
+      const remaining = this.course.duration - completedTime;
       this.timeRemaining = this.formatDuration(remaining);
-    } else if (this.course.durationMinutes) {
-      this.timeRemaining = this.formatDuration(this.course.durationMinutes);
+    } else if (this.course.duration) {
+      this.timeRemaining = this.formatDuration(this.course.duration);
     }
   }
 
@@ -72,23 +81,23 @@ export class CourseCardComponent implements OnInit {
   onEnroll(): void {
     if (!this.isEnrolling) {
       this.isEnrolling = true;
-      this.enrollClick.emit(this.course.id);
+      this.enrollClick.emit(this.course.trainingId);
     }
   }
 
   onContinue(): void {
-    this.continueClick.emit(this.course.id);
-    if (this.course.videoUrl) {
+    this.continueClick.emit(this.courseDetail.trainingDetailId);
+    if (this.courseDetail.trainingLink) {
       this.onWatchVideo();
     }
   }
 
   onViewDetails(): void {
-    this.viewDetails.emit(this.course.id);
+    this.viewDetails.emit(this.course.trainingId);
   }
 
   onWatchVideo(): void {
-    this.continueClick.emit(this.course.id);
+    this.continueClick.emit(this.courseDetail.trainingDetailId);
   }
 
     getStatusText(): string {

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { Course } from '../../../models/course';
+import { CourseDetail, CourseMaster } from '../../../models/course';
 import { Enrollment } from '../../../models/enrollment';
 import { CourseService } from '../../../services/course.service';
 import { EnrollmentService } from '../../../services/enrollment.service';
@@ -13,7 +13,7 @@ import { EnrollmentService } from '../../../services/enrollment.service';
   styleUrls: ['./enrolled-detail.component.scss']
 })
 export class EnrolledDetailComponent implements OnInit {
-  enrolledCourses$!: Observable<Course[]>;
+  enrolledCourses$!: Observable<CourseMaster[]>;
   enrollments$!: Observable<Enrollment[]>;
   userId: string = 'vm02102';
 
@@ -28,8 +28,8 @@ export class EnrolledDetailComponent implements OnInit {
     this.enrollments$ = this.enrollmentService.getUserEnrollments(this.userId);
   }
 
-  onVideoClick(course: Course): void {
-    this.router.navigate(['/video-player', course.id]);
+  onVideoClick(course: CourseDetail): void {
+    this.router.navigate(['/video-player', course.trainingDetailId]);
   }
 
   getEnrollmentFor(courseId: string): Observable<Enrollment | undefined> {

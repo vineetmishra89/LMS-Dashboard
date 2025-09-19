@@ -1,6 +1,7 @@
 package com.example.lms.service;
 
-import com.example.lms.domain.TrainingDetails;
+import com.example.lms.domain.CourseDetail;
+import com.example.lms.domain.CourseMaster;
 import com.example.lms.domain.Enrollment;
 import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentRepository;
@@ -43,7 +44,7 @@ public class EnrollmentService {
 
   public Map<String, Object> getWithCourse(String id) {
     Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow();
-    TrainingDetails course = courseRepository.findById(enrollment.getCourseId()).orElse(null);
+    CourseMaster course = courseRepository.findById(enrollment.getCourseId()).orElse(null);
 
     Map<String, Object> result = new HashMap<>();
     result.put("enrollment", enrollment);

@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject, throwError, timer } from 'rxjs';
 import { tap, map, catchError, switchMap, retry } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
 import { Enrollment, EnrollmentProgress, QuizScore } from '../models/enrollment';
-import { Course } from '../models/course';
+import { CourseMaster } from '../models/course';
 import { ApiService } from './api.service';
 import { NotificationService } from './notification.service';
 import { AnalyticsService } from './analytics.service';
@@ -120,8 +120,8 @@ export class EnrollmentService {
     );
   }
 
-  getEnrollmentWithCourse(enrollmentId: string): Observable<{ enrollment: Enrollment; course: Course }> {
-    return this.apiService.get<{ enrollment: Enrollment; course: Course }>(`enrollments/${enrollmentId}/with-course`);
+  getEnrollmentWithCourse(enrollmentId: string): Observable<{ enrollment: Enrollment; course: CourseMaster }> {
+    return this.apiService.get<{ enrollment: Enrollment; course: CourseMaster }>(`enrollments/${enrollmentId}/with-course`);
   }
 
   // PROGRESS TRACKING
@@ -369,7 +369,7 @@ export class EnrollmentService {
   }
 
   // PROGRESS CALCULATIONS
-  calculateOverallProgress(enrollment: Enrollment, course?: Course): number {
+  calculateOverallProgress(enrollment: Enrollment, course?: CourseMaster): number {
     if (!enrollment.progress) return 0;
     
     const totalLessons = this.getTotalLessonsCount(enrollment, course);
@@ -388,7 +388,7 @@ export class EnrollmentService {
     return totalModuleLessons > 0 ? Math.round((moduleProgress / totalModuleLessons) * 100) : 0;
   }
 
-  calculateTimeToCompletion(enrollment: Enrollment, course?: Course): { hours: number; days: number } {
+  calculateTimeToCompletion(enrollment: Enrollment, course?: CourseMaster): { hours: number; days: number } {
     const totalDuration = course?.duration || 0; // in minutes
     const currentProgress = enrollment.progress.overallProgress;
     const remainingDuration = (totalDuration * (100 - currentProgress)) / 100;
@@ -540,7 +540,7 @@ export class EnrollmentService {
     }
   }
 
-  private getTotalLessonsCount(enrollment: Enrollment, course?: Course): number {
+  private getTotalLessonsCount(enrollment: Enrollment, course?: CourseMaster): number {
     // Since backend doesn't provide modules structure, return estimated count
     // This could be enhanced to call a backend API for actual lesson count
     return 20;

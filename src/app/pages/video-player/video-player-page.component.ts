@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Course } from '../../models/course';
+import { CourseMaster } from '../../models/course';
 import { CourseService } from '../../services/course.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { CourseService } from '../../services/course.service';
   styleUrls: ['./video-player-page.component.scss']
 })
 export class VideoPlayerPageComponent implements OnInit {
-  course: Course | null = null;
+  course: CourseMaster | null = null;
   isLoading = true;
   
   constructor(

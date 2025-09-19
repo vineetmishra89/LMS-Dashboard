@@ -13,7 +13,7 @@ import { AnalyticsService } from '../../services/analytics.service';
 import { CertificateService } from '../../services/certificate.service';
 import { NotificationService } from '../../services/notification.service';
 import { VideoProgressService } from '../../services/video-progress.service';
-import { Course } from '../../models/course';
+import { CourseDetail, CourseMaster } from '../../models/course';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,6 +35,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private appliedFilters$ = new BehaviorSubject<{
     category: string; topic: string; instructor: string;
   }>(this.pendingFilters);
+
+  /** Track enrolled masters in-memory (mirror your real enrollment state if you have it) */
+  private enrolledIds = new Set<string>();
+  enrolledIds$ = new BehaviorSubject<Set<string>>(this.enrolledIds);
+
+  /** Modal state */
+  showDetails = false;
+  selectedMaster: CourseMaster | null = null;
+
+  displayedColumns = [
+    'trainingName','description','topics','level','instructorName',
+    'duration','category','prerequisite','toolsNeeded','reviewComments','action'
+  ] as const;
 
   constructor(
     private router: Router,
@@ -220,4 +233,41 @@ onClearFilters(): void {
   this.pendingFilters = { category: '', topic: '', instructor: '' };
   this.appliedFilters$.next({ ...this.pendingFilters });
 }
+
+ trackByMaster = (_: number, m: CourseMaster) => m.trainingId;
+
+  /** Enroll => mark as enrolled and (optionally) call backend */
+  onEnroll(m: CourseMaster) {
+    // this.enrollmentService.enroll(m.trainingId).subscribe(() => {
+    this.enrolledIds.add(m.trainingId);
+    this.enrolledIds$.next(new Set(this.enrolledIds));
+    // });
+  }
+
+  /** Whether master is enrolled */
+  isEnrolled(trainingId: string): boolean {
+    return this.enrolledIds.has(trainingId);
+  }
+
+  /** Open modal */
+  openDetails(m: CourseMaster) {
+    this.selectedMaster = m;
+    this.showDetails = true;
+  }
+
+  /** Close modal */
+  closeDetails() {
+    this.showDetails = false;
+    this.selectedMaster = null;
+  }
+
+  /** Watch a detail video */
+  onWatch(detail: CourseDetail) {
+    if (!detail.trainingLink) return;
+    // If you have a player route, navigate there instead:
+    // this.router.navigate(['/player', detail.trainingId, detail.trainingDetailId]);
+    window.open(detail.trainingLink, '_blank', 'noopener');
+  }
+
+
 }

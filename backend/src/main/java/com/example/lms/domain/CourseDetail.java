@@ -1,17 +1,20 @@
 package com.example.lms.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
-@Table(name = "course_details")
-@Getter
-@Setter
-public class TrainingDetails {
+@Table(name = "course_detail")
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class CourseDetail {
 
   @Id
   @Column(name = "training_detail_id")
@@ -44,4 +47,9 @@ public class TrainingDetails {
 
   @Column(name = "current_user_feedback")
   private String currentUserFeedback;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "course_id")
+  @JsonBackReference("course-details")
+  private CourseMaster course;
 }

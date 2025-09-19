@@ -338,7 +338,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           for (let i = 0; i < enrolledCourses.length; i++) {
             const course = enrolledCourses[i];
             const enrollment = await this.enrollmentService.getUserEnrollments(this.userId).toPromise();
-            const courseEnrollment = enrollment?.find(e => e.courseId === course.id);
+            const courseEnrollment = enrollment?.find(e => e.courseId === course.trainingId);
             const progress = courseEnrollment?.progress.overallProgress || 0;
             
             //coursesList += `${i + 1}. **${course.title}**\n`;

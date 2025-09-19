@@ -1,17 +1,23 @@
 package com.example.lms.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "course_master")
-@Getter
-@Setter
-public class TrainingMaster {
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NamedEntityGraph(
+  name = "CourseMaster.withDetails",
+  attributeNodes = @NamedAttributeNode("details"))
+public class CourseMaster {
 
   @Id
   @Column(name = "id")
@@ -51,4 +57,23 @@ public class TrainingMaster {
 
   @Column(name = "tools_needed")
   private String toolsNeeded;
+
+  @OneToMany(
+    mappedBy = "course",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true,
+    fetch = FetchType.LAZY
+  )
+  @JsonManagedReference("course-details")
+  private List<CourseDetail> details = new ArrayList<>();
+
+  // helpers to keep both sides in sync
+  public void addDetail(CourseDetail d) {
+    details.add(d);
+    d.setCourse(this);
+  }
+  public void removeDetail(CourseDetail d) {
+    details.remove(d);
+    d.setCourse(null);
+  }
 }

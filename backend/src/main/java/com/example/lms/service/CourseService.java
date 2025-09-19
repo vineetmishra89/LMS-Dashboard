@@ -1,7 +1,9 @@
 package com.example.lms.service;
 
-import com.example.lms.domain.TrainingDetails;
+import com.example.lms.domain.CourseDetail;
+import com.example.lms.domain.CourseMaster;
 import com.example.lms.domain.Enrollment;
+import com.example.lms.repo.CourseDetailRepository;
 import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentRepository;
 import org.slf4j.Logger;
@@ -17,15 +19,17 @@ public class CourseService {
   private static final Logger log = LoggerFactory.getLogger(CourseService.class);
   private final CourseRepository courseRepository;
   private final EnrollmentRepository enrollmentRepository;
+  private final CourseDetailRepository courseDetailRepository;
 
-  public CourseService(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository) {
+  public CourseService(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository,CourseDetailRepository courseDetailRepository) {
     this.courseRepository = courseRepository;
     this.enrollmentRepository = enrollmentRepository;
+    this.courseDetailRepository = courseDetailRepository;
   }
 
-  public List<TrainingDetails> search(String category, String topic, String instructor) {
-    Specification<TrainingDetails> spec = Specification.where(null);
-    List<TrainingDetails> courses = new ArrayList<>();
+  public List<CourseMaster> search(String category, String topic, String instructor) {
+    Specification<CourseMaster> spec = Specification.where(null);
+    List<CourseMaster> courses = new ArrayList<>();
     if (category != null && !category.isBlank()) {
       spec = spec.and((root, q, cb) -> cb.equal(cb.lower(root.get("category")), category.toLowerCase()));
     }
@@ -45,18 +49,18 @@ public class CourseService {
     return courses;
   }
 
-  public List<TrainingDetails> getAll() {
+  public List<CourseMaster> getAll() {
     return courseRepository.findAll();
   }
 
-  public List<TrainingDetails> getEnrolledCourses(String userId) {
+  public List<CourseMaster> getEnrolledCourses(String userId) {
     List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
     Set<String> courseIds = enrollments.stream().map(Enrollment::getCourseId).collect(Collectors.toSet());
     if (courseIds.isEmpty()) return List.of();
     return courseRepository.findAllById(courseIds);
   }
 
-  public Optional<TrainingDetails> getContinueCourse(String userId) {
+  public Optional<CourseMaster> getContinueCourse(String userId) {
     return enrollmentRepository.findByUserId(userId).stream()
       .filter(e -> "active".equalsIgnoreCase(e.getStatus()) && e.getProgressPercent() != null && e.getProgressPercent() < 100)
       .sorted(Comparator.comparing(Enrollment::getLastAccessedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
@@ -65,11 +69,11 @@ public class CourseService {
       .flatMap(courseRepository::findById);
   }
 
-  public TrainingDetails search(String courseId) {
-    TrainingDetails course = null;
+  public CourseDetail search(String courseId) {
+    CourseDetail course = null;
 
     try{
-      course = courseRepository.findById(courseId).orElse(null);
+      course = courseDetailRepository.findById(courseId).orElse(null);
     }catch(Exception ex){
       log.error("Exception occurred : ",ex);
     }

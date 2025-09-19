@@ -66,12 +66,10 @@
               <th class="col-desc">Description</th>
               <th class="col-outline">Outline/Content</th>
               <th class="col-duration">Duration(Hours)</th>
-              <th class="col-trainer-fb">Trainers<br>Current feedback</th>
-              <th class="col-user-fb">Current User<br>feedback</th>
               <th class="col-review">Review Comments</th>
-              <th class="col-trainer">Trainer/Name</th>
+              <th class="col-trainer">Trainer Name</th>
               <th class="col-prereq">Pre-requisite</th>
-              <th class="col-level">Level (Beginner)</th>
+              <th class="col-level">Level</th>
               <th class="col-tools">Tools needed</th>
               <th class="col-action">Action</th>
             </tr>
@@ -106,3 +104,52 @@
     <p>Loading...</p>
   </div>
 </ng-template>
+
+<!-- ===== Modal: Course Details ===== -->
+<div class="modal-backdrop" *ngIf="showDetails" (click)="closeDetails()"></div>
+
+<div class="modal" *ngIf="showDetails" role="dialog" aria-modal="true">
+  <header class="modal-head">
+    <h3>{{ selectedMaster?.trainingName }} — Courses</h3>
+    <button class="icon-btn" (click)="closeDetails()" aria-label="Close">×</button>
+  </header>
+
+  <div class="modal-body">
+    <ng-container *ngIf="selectedMaster?.details?.length; else noDetails">
+      <table class="details-table">
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Instructor</th>
+            <th>Duration</th>
+            <th>Trainer Feedback</th>
+            <th>User Feedback</th>
+            <th>Watch</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of selectedMaster!.details">
+            <td class="wrap">{{ d.topic || '—' }}</td>
+            <td>{{ d.instructorName || selectedMaster?.instructorName || '—' }}</td>
+            <td>{{ (d.duration ?? 0) | number:'1.2-2' }}</td>
+            <td>{{ d.trainersCurrentFeedback ?? '—' }}</td>
+            <td>{{ d.currentUserFeedback ?? '—' }}</td>
+            <td>
+              <button class="btn small"
+                      [disabled]="!d.trainingLink"
+                      (click)="onWatch(d)">Watch video</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+    <ng-template #noDetails>
+      <p class="muted">No course details available for this training yet.</p>
+    </ng-template>
+  </div>
+
+  <footer class="modal-foot">
+    <button class="btn" (click)="closeDetails()">Close</button>
+  </footer>
+</div>

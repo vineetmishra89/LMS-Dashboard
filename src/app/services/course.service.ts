@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { Course, CourseCategory, CourseFilters } from '../models/course';
+import { CourseDetail, CourseCategory, CourseFilters, CourseMaster } from '../models/course';
 import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CourseService {
-  private coursesSubject = new BehaviorSubject<Course[]>([]);
+  private coursesSubject = new BehaviorSubject<CourseMaster[]>([]);
   private categoriesSubject = new BehaviorSubject<CourseCategory[]>([]);
   private filtersSubject = new BehaviorSubject<CourseFilters>({
     category: [],
@@ -28,37 +28,37 @@ export class CourseService {
   }
 
   // Course Retrieval
-  getAllCourses(params?: any): Observable<Course[]> {
+  getAllCourses(params?: any): Observable<CourseMaster[]> {
     console.log('Fetching all courses with params:', params);
-    return this.apiService.get<Course[]>('courses', params).pipe(
+    return this.apiService.get<CourseMaster[]>('courses', params).pipe(
       tap(courses => this.coursesSubject.next(courses))
     );
   }
 
-  getCourseById(courseId: string): Observable<Course> {
-    return this.apiService.get<Course>(`courses/getCourseById/${courseId}`);
+  getCourseById(courseId: string): Observable<CourseMaster> {
+    return this.apiService.get<CourseMaster>(`courses/getCourseById/${courseId}`);
   }
 
-  getEnrolledCourses(userId: string): Observable<Course[]> {
-    return this.apiService.get<Course[]>(`courses/enrolled?userId=${userId}`);
+  getEnrolledCourses(userId: string): Observable<CourseMaster[]> {
+    return this.apiService.get<CourseMaster[]>(`courses/enrolled?userId=${userId}`);
   }
 
-  getTrendingCourses(limit: number = 10): Observable<Course[]> {
-    return this.apiService.get<Course[]>(`courses/trending?limit=${limit}`);
+  getTrendingCourses(limit: number = 10): Observable<CourseMaster[]> {
+    return this.apiService.get<CourseMaster[]>(`courses/trending?limit=${limit}`);
   }
 
-  getCoursesByCategory(categoryId: string): Observable<Course[]> {
-    return this.apiService.get<Course[]>(`courses/category/${categoryId}`);
+  getCoursesByCategory(categoryId: string): Observable<CourseMaster[]> {
+    return this.apiService.get<CourseMaster[]>(`courses/category/${categoryId}`);
   }
 
-  getCoursesByInstructor(instructorId: string): Observable<Course[]> {
-    return this.apiService.get<Course[]>(`courses/instructor/${instructorId}`);
+  getCoursesByInstructor(instructorId: string): Observable<CourseMaster[]> {
+    return this.apiService.get<CourseMaster[]>(`courses/instructor/${instructorId}`);
   }
 
   // Search and Filtering
-  searchCourses(query: string, filters?: CourseFilters): Observable<Course[]> {
+  searchCourses(query: string, filters?: CourseFilters): Observable<CourseMaster[]> {
     const params = this.buildSearchParams(query, filters);
-    return this.apiService.get<Course[]>('courses/search', params);
+    return this.apiService.get<CourseMaster[]>('courses/search', params);
   }
 
   private buildSearchParams(query: string, filters?: CourseFilters): any {

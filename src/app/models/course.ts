@@ -1,29 +1,28 @@
-export interface Course {
-  id: string;
-  trainingName: string;
-  outline: string;
-  category: string;
-  topics: string;
-  instructorName: string;
-  durationMinutes: number;
-  description?: string;
-  level?: 'beginner' | 'intermediate' | 'advanced';
-  reviewComments: string[];
-  prerequisite: string;
-  toolsNeeded: string;
-  trainersCurrentFeedback: string;
-  currentUserFeedback: string
+export interface CourseDetail {
+  trainingDetailId: string;
+  trainingId: string;
+  trainersCurrentFeedback?: number;
+  currentUserFeedback?: number;
+  instructorName?: string;
+  topic?: string;
   duration?: number;
-  rating?: number;
-  reviewCount?: number;
-  enrollmentCount?: number;
-  price?: number;
-  currency?: string;
-  videoUrl?: string;
-  modules?: CourseModule[];
-  tags?: string[];
-  isPublished?: boolean;
-  isTrending?: boolean;
+  trainingLink?: string;
+}
+
+export interface CourseMaster {
+  trainingId: string;
+  trainingName: string;                 // Training Name
+  description?: string;
+  topics?: string;
+  level?: string;
+  content?: string;
+  instructorName?: string;
+  duration?: number;       // or minutes if that’s what you store
+  category?: string;
+  details: CourseDetail[];
+  reviewComments?: string;
+  prerequisite?: string;
+  toolsNeeded?: string;
 }
 
 export interface CourseModule {
