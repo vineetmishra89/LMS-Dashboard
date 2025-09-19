@@ -1,13 +1,12 @@
 package com.example.lms.repo;
 
-import com.example.lms.domain.Course;
+import com.example.lms.domain.TrainingDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface CourseRepository extends JpaRepository<Course, String>, JpaSpecificationExecutor<Course> {
-  List<Course> findByCategoryIgnoreCase(String category);
-  List<Course> findByInstructorNameIgnoreCase(String instructorName);
+public interface CourseRepository extends JpaRepository<TrainingDetails, String>, JpaSpecificationExecutor<TrainingDetails> {
+  List<TrainingDetails> findByCategoryIgnoreCase(String category);
+  List<TrainingDetails> findByInstructorNameIgnoreCase(String instructorName);
 }

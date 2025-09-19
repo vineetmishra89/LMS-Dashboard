@@ -1,12 +1,11 @@
 package com.example.lms.controller;
 
-import com.example.lms.domain.Course;
+import com.example.lms.domain.TrainingDetails;
 import com.example.lms.service.CourseService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -16,24 +15,24 @@ public class CourseController {
   public CourseController(CourseService courseService) { this.courseService = courseService; }
 
   @GetMapping
-  public List<Course> list(@RequestParam(required = false) String category,
-                           @RequestParam(required = false) String topic,
-                           @RequestParam(required = false) String instructor) {
+  public List<TrainingDetails> list(@RequestParam(required = false) String category,
+                                    @RequestParam(required = false) String topic,
+                                    @RequestParam(required = false) String instructor) {
     return courseService.search(category, topic, instructor);
   }
 
   @GetMapping("/enrolled")
-  public List<Course> enrolled(@RequestParam String userId) {
+  public List<TrainingDetails> enrolled(@RequestParam String userId) {
     return courseService.getEnrolledCourses(userId);
   }
 
   @GetMapping("/continue")
-  public Optional<Course> continueCourse(@RequestParam String userId) {
+  public Optional<TrainingDetails> continueCourse(@RequestParam String userId) {
     return courseService.getContinueCourse(userId);
   }
 
   @GetMapping("/getCourseById/{courseId}")
-  public Course getCourseById(@PathVariable(required = true) String courseId) {
+  public TrainingDetails getCourseById(@PathVariable(required = true) String courseId) {
     return courseService.search(courseId);
   }
 }

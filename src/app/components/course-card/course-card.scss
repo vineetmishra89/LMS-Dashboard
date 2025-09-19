@@ -34,7 +34,7 @@
 
 /* host is <tr>; its direct children are the <td>s */
 :host { display: table-row; }
-:host > td { text-align: center; vertical-align: middle; padding: 1px; }
+:host > td { text-align: center; vertical-align: middle; padding: 10px; }
 :host > td .wrap { display: inline-block; text-align: center; }
 :host > td.action .btn { display: inline-block; }  /* Enroll/Continue */
 

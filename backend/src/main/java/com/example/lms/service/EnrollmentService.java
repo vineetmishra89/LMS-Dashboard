@@ -1,6 +1,6 @@
 package com.example.lms.service;
 
-import com.example.lms.domain.Course;
+import com.example.lms.domain.TrainingDetails;
 import com.example.lms.domain.Enrollment;
 import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentRepository;
@@ -16,9 +16,9 @@ import java.util.UUID;
 public class EnrollmentService {
   private final EnrollmentRepository enrollmentRepository;
   private final CourseRepository courseRepository;
-  
-  public EnrollmentService(EnrollmentRepository enrollmentRepository, CourseRepository courseRepository) { 
-    this.enrollmentRepository = enrollmentRepository; 
+
+  public EnrollmentService(EnrollmentRepository enrollmentRepository, CourseRepository courseRepository) {
+    this.enrollmentRepository = enrollmentRepository;
     this.courseRepository = courseRepository;
   }
 
@@ -43,8 +43,8 @@ public class EnrollmentService {
 
   public Map<String, Object> getWithCourse(String id) {
     Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow();
-    Course course = courseRepository.findById(enrollment.getCourseId()).orElse(null);
-    
+    TrainingDetails course = courseRepository.findById(enrollment.getCourseId()).orElse(null);
+
     Map<String, Object> result = new HashMap<>();
     result.put("enrollment", enrollment);
     result.put("course", course);
@@ -53,19 +53,19 @@ public class EnrollmentService {
 
   public Enrollment updateProgress(String id, Map<String, Object> progressData) {
     Enrollment e = enrollmentRepository.findById(id).orElseThrow();
-    
+
     if (progressData.containsKey("overallProgress")) {
       Integer progress = ((Number) progressData.get("overallProgress")).intValue();
       e.setProgressPercent(progress);
     }
-    
+
     e.setLastAccessedAt(OffsetDateTime.now());
     return enrollmentRepository.save(e);
   }
 
   public Map<String, Object> getStats(String userId) {
     List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
-    
+
     long totalEnrollments = enrollments.size();
     long activeEnrollments = enrollments.stream().filter(e -> "active".equals(e.getStatus())).count();
     long completedEnrollments = enrollments.stream().filter(e -> "completed".equals(e.getStatus())).count();
@@ -74,13 +74,13 @@ public class EnrollmentService {
         .mapToInt(Enrollment::getProgressPercent)
         .average()
         .orElse(0.0);
-    
+
     Map<String, Object> stats = new HashMap<>();
     stats.put("totalEnrollments", totalEnrollments);
     stats.put("activeEnrollments", activeEnrollments);
     stats.put("completedEnrollments", completedEnrollments);
     stats.put("averageProgress", Math.round(avgProgress));
-    
+
     return stats;
   }
 
