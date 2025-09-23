@@ -75,23 +75,14 @@
     </div>
   </div>
   <div class="actions" style="margin-top: auto">
-    @if(enrolled === false) {
+    
       <button 
       pButton 
       pRipple 
-      label="Enroll" 
+      label="View Course" 
       style="width: 100%"
-      class="p-button-primary" (click)="onEnrollClick()">
+      class="p-button-primary" (click)="viewCourse()">
   </button>
-    } @else() {
-      <button 
-      pButton 
-      pRipple 
-      label="View Courses" 
-      style="width: 100%"
-      class="p-button-primary" (click)="onViewClick()">
-  </button>
-    }
    
     <!-- <button *ngIf="!enrolled; else viewTpl" type="button" style="width: 100%" class="btn primary" (click)="onEnrollClick()">Enroll</button>
     <ng-template #viewTpl>

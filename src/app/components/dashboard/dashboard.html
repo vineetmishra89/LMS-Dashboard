@@ -68,7 +68,7 @@
 
     </div>
     <div *ngIf="catalog$ | async as courses" style="display: flex; flex-wrap: wrap;">
-      <div *ngFor="let course of courses" style="width: 30%">
+      <div *ngFor="let course of courses" style="width: 300px; min-width: 300px">
         <app-course-card [course]="course"
       [enrolled]="isEnrolled(course.trainingId)"
       (enroll)="onEnroll($event)"

@@ -31,6 +31,7 @@ export class CourseCardComponent implements OnInit {
 
   onEnrollClick(){ this.enroll.emit(this.course); }
   onViewClick(){ this.view.emit(this.course); }
+  viewCourse(){ this.view.emit(this.course); }
 
   isEnrolling: boolean = false;
   progressPercentage: number = 0;
@@ -122,4 +123,5 @@ export class CourseCardComponent implements OnInit {
     if (this.progressPercentage >= 30) return '#f59e0b'; // yellow
     return '#ef4444'; // red
   }
+
 }
