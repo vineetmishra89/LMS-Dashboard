@@ -8,6 +8,9 @@
 
 # Node
 /node_modules
+/node_modules1
+/backend/target
+/.gitignore
 npm-debug.log
 yarn-error.log
 

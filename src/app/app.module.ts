@@ -94,6 +94,13 @@ import { LazyLoadDirective } from './directives/lazy-load.directive';
 import { InViewportDirective } from './directives/in-viewport.directive';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 
+import { PrimeNGConfig } from 'primeng/api';
+import { DropdownModule } from 'primeng/dropdown';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+
+import { CardModule } from 'primeng/card';
+import { ChipModule } from 'primeng/chip';
 // Environment
 import { environment } from '../environments/environment';
 
@@ -162,6 +169,14 @@ import { environment } from '../environments/environment';
     MatProgressBarModule,
     MatChipsModule,
     MatAutocompleteModule,
+
+    // Prime ng
+
+    DropdownModule, 
+    TagModule,
+    ButtonModule,
+    CardModule, 
+    ChipModule ,
 
     SafeHtmlPipe,
     DurationPipe,

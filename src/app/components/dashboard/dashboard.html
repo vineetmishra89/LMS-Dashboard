@@ -7,21 +7,24 @@
     <app-stats-card icon="⏰" iconClass="orange" label="Hours Learned" [value]="data.stats.hours"
       (click)="openHours()"></app-stats-card>
   </div>
+  
+ 
 
-  <div class="content-grid">
+  <div class="content-grid" style="display: flex">
     <section class="filters-panel">
       <table class="panel-table">
         <thead>
           <tr>
-            <th colspan="2">Search Filters</th>
+            <th colspan="1">Search Filters</th>
           </tr>
         </thead>
         <tbody>
           <!-- Category -->
           <tr>
-            <td class="label">Category</td>
             <td class="control">
-              <!-- Native select version -->
+              <div style="font-size: 13px; margin-bottom: 4px">
+                Category
+              </div>
               <select [(ngModel)]="pendingFilters.category" class="u-select">
                 <option value="">All</option>
                 <option *ngFor="let c of data.categories" [value]="c">{{ c }}</option>
@@ -29,8 +32,10 @@
             </td>
           </tr>
           <tr>
-            <td class="label">Topic</td>
             <td class="control">
+              <div style="font-size: 13px; margin-bottom: 4px">
+                Topic
+              </div>
               <select [(ngModel)]="pendingFilters.topic"  class="u-select">
                 <option value="">All</option>
                 <option *ngFor="let t of data.topics" [value]="t">{{ t }}</option>
@@ -38,8 +43,10 @@
             </td>
           </tr>
           <tr>
-            <td class="label">Instructor</td>
             <td class="control">
+              <div style="font-size: 13px; margin-bottom: 4px">
+                Instructor
+              </div>
               <select [(ngModel)]="pendingFilters.instructor"
                 class="u-select">
                 <option value="">All</option>
@@ -57,7 +64,22 @@
       </table>
     </section>
 
-    <main class="catalog card">
+    <div>
+
+    </div>
+    <div *ngIf="catalog$ | async as courses" style="display: flex; flex-wrap: wrap;">
+      <div *ngFor="let course of courses" style="width: 30%">
+        <app-course-card [course]="course"
+      [enrolled]="isEnrolled(course.trainingId)"
+      (enroll)="onEnroll($event)"
+      (view)="openDetails($event)">
+        </app-course-card>
+      </div>
+
+    </div>
+    
+
+    <main *ngIf="false" class="catalog card">
       <div class="table-scroll">
         <table class="catalog-table">
           <thead>
