@@ -103,6 +103,7 @@ import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
 // Environment
 import { environment } from '../environments/environment';
+import { CarouselModule } from 'primeng/carousel';
 
 @NgModule({
   declarations: [
@@ -159,9 +160,9 @@ import { environment } from '../environments/environment';
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    
     // Routing
     AppRoutingModule,
+    CarouselModule,
     
     // Angular Material
     MatDialogModule,

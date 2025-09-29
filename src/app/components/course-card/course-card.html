@@ -50,17 +50,8 @@
   <div style="font-weight: 500; font-size: 18px; margin-top: 4px">{{course['trainingName']}}</div>
   <div style="font-size: 14px; font-weight: 400; opacity: 0.7; margin-top: 5px; height: 45px">{{course['description']}}</div>
   <div style="font-size: 12px; font-weight: 400; opacity: 0.7; margin-top: 5px">{{course['instructorName']}}</div>
-  <!-- <div class="flex align-items-center gap-2 flex-wrap">
-    <p-chip 
-        label="{{course['instructorName']}}" 
-        image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png" 
-        alt="Avatar image" />
-</div> -->
+  
   <div style="margin-top: 10px">
-    <!-- <div style="font-size: 13px; display: flex; justify-content: space-between; margin-top: 10px">
-      <div style="opacity: 0.85;">Trainer Name</div>
-      <div style="font-weight: 400">{{course['instructorName']}}</div>
-    </div> -->
     <div style="font-size: 13px; display: flex; justify-content: space-between;margin-top: 5px">
       <div style="opacity: 0.85;">Duration</div>
       <div style="font-weight: 400">{{course['duration']}}</div>
@@ -84,9 +75,5 @@
       class="p-button-primary" (click)="viewCourse()">
   </button>
    
-    <!-- <button *ngIf="!enrolled; else viewTpl" type="button" style="width: 100%" class="btn primary" (click)="onEnrollClick()">Enroll</button>
-    <ng-template #viewTpl>
-      <button class="btn primary" style="width: 100%" (click)="onViewClick()">View courses</button>
-    </ng-template> -->
   </div>
 </div>

@@ -14,6 +14,10 @@ import { CertificateService } from '../../services/certificate.service';
 import { NotificationService } from '../../services/notification.service';
 import { VideoProgressService } from '../../services/video-progress.service';
 import { CourseDetail, CourseMaster } from '../../models/course';
+interface City {
+  name: string;
+  code: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +25,12 @@ import { CourseDetail, CourseMaster } from '../../models/course';
   styleUrls: ['./dashboard.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+
+  cities: City[] | undefined;
+
+  selectedCity: City | undefined;
+
+
   private destroy$ = new Subject<void>();
   isLoading$ = new BehaviorSubject<boolean>(true);
   hasError$ = new BehaviorSubject<string | null>(null);
@@ -31,7 +41,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   catalog$!: Observable<any[]>;
   catalogCopy$!: Observable<any[]>;
   isFilterOperation: boolean = false;
-  pendingFilters = { category: '', topic: '', instructor: '' };
+  pendingFilters = { category: '', topic: '', instructor: '', level: '' };
   private appliedFilters$ = new BehaviorSubject<{
     category: string; topic: string; instructor: string;
   }>(this.pendingFilters);
@@ -49,6 +59,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     'duration','category','prerequisite','toolsNeeded','reviewComments','action'
   ] as const;
 
+  responsiveOptions: any[] | undefined;
+
   constructor(
     private router: Router,
     private userService: UserService,
@@ -60,10 +72,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private videoProgressService: VideoProgressService
   ) {
     this.currentUser$ = this.userService.currentUser$;
+
+    this.cities = [
+      { name: 'New York', code: 'NY' },
+      { name: 'Rome', code: 'RM' },
+      { name: 'London', code: 'LDN' },
+      { name: 'Istanbul', code: 'IST' },
+      { name: 'Paris', code: 'PRS' }
+  ];
   }
 
   ngOnInit(): void {
     this.initializeDashboard();
+
+    this.responsiveOptions = [
+      {
+          breakpoint: '1199px',
+          numVisible: 1,
+          numScroll: 1
+      },
+      {
+          breakpoint: '991px',
+          numVisible: 2,
+          numScroll: 1
+      },
+      {
+          breakpoint: '767px',
+          numVisible: 1,
+          numScroll: 1
+      }
+  ];
   }
 
   ngOnDestroy(): void {
@@ -155,6 +193,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
           if (instructor && instructor !== '') {
             out = out.filter(function (c) { return c.instructorName === instructor; });
           }
+
+          var level = this.pendingFilters.level;
+          if (level && level !== '') {
+            out = out.filter(function (c) { return c.level === level; });
+          }
           console.log('Filtered Catalog courses loaded: ', out.length);
           return out;
         })
@@ -230,7 +273,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 }
 
 onClearFilters(): void {
-  this.pendingFilters = { category: '', topic: '', instructor: '' };
+  this.pendingFilters = { category: '', topic: '', instructor: '', level: '' };
   this.appliedFilters$.next({ ...this.pendingFilters });
 }
 

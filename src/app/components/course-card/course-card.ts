@@ -4,6 +4,7 @@ import { Enrollment } from '../../models/enrollment';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { CourseService } from '../../services/course.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { Router } from '@angular/router';
 
 type ChatMessage = { id: string; message?: string };
 
@@ -31,7 +32,7 @@ export class CourseCardComponent implements OnInit {
 
   onEnrollClick(){ this.enroll.emit(this.course); }
   onViewClick(){ this.view.emit(this.course); }
-  viewCourse(){ this.view.emit(this.course); }
+  //viewCourse(){ this.view.emit(this.course); }
 
   isEnrolling: boolean = false;
   progressPercentage: number = 0;
@@ -41,13 +42,17 @@ export class CourseCardComponent implements OnInit {
   messagesContainer: any;
   messages: ChatMessage[] = [];
 
-  constructor(private enrollmentService: EnrollmentService,
+  constructor(private enrollmentService: EnrollmentService, public router: Router,
     private courseService: CourseService,private analyticsService: AnalyticsService
   ) {}
 
   ngOnInit(): void {
     this.calculateProgress();
     this.calculateTimeRemaining();
+  }
+
+  viewCourse() {
+    this.router.navigate(['viewCourse'])
   }
 
   private calculateProgress(): void {

@@ -6,16 +6,27 @@ import { CompletedDetailComponent } from './components/details/completed-detail/
 import { EnrolledDetailComponent } from './components/details/enrolled-detail/enrolled-detail.component';
 import { HoursDetailComponent } from './components/details/hours-detail/hours-detail.component';
 import { VideoPlayerPageComponent } from './pages/video-player/video-player-page.component';
+//import { ViewCourseComponent } from './components/view-course/view-course.component';
+import { PlayCourseComponent } from './components/play-course/play-course.component';
+import { HomeComponent } from './components/home/home.component';
+import { SearchComponent } from './components/search/search.component';
+import { SupportComponent } from './components/support/support.component';
+import { ViewCourseComponent } from './components/view-course/view-course.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
+  { path: 'search', component: DashboardComponent },
+  { path: 'support', component: SupportComponent },
+  { path: 'dashboard', component: SearchComponent },
+  { path: 'viewCourse', component: ViewCourseComponent },
+  { path: 'runningCourse', component: PlayCourseComponent },
   { path: 'video-player/:courseId', component: VideoPlayerPageComponent },
   { path: 'detail/completed', component: CompletedDetailComponent },
   { path: 'detail/enrolled', component: EnrolledDetailComponent },
   { path: 'detail/hours', component: HoursDetailComponent },
   { path: '404', component: NotFoundComponent },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({

@@ -1,5 +1,5 @@
-<div class="dashboard" *ngIf="dashboardData$ | async as data; else loadingTemplate">
-  <div class="stats-grid">
+<div class="dashboard1" *ngIf="dashboardData$ | async as data; else loadingTemplate">
+  <!-- <div class="stats-grid">
     <app-stats-card icon="🏆" iconClass="green" label="Completed Courses" [value]="data.stats.completed"
       (click)="openCompleted()"></app-stats-card>
     <app-stats-card icon="📚" iconClass="blue" label="Enrolled Courses" [value]="data.stats.enrolled"
@@ -7,10 +7,11 @@
     <app-stats-card icon="⏰" iconClass="orange" label="Hours Learned" [value]="data.stats.hours"
       (click)="openHours()"></app-stats-card>
   </div>
-  
+   -->
  
 
-  <div class="content-grid" style="display: flex">
+
+  <div *ngIf="false" class="content-grid" style="display: flex">
     <section class="filters-panel">
       <table class="panel-table">
         <thead>
@@ -46,6 +47,18 @@
             <td class="control">
               <div style="font-size: 13px; margin-bottom: 4px">
                 Instructor
+              </div>
+              <select [(ngModel)]="pendingFilters.instructor"
+                class="u-select">
+                <option value="">All</option>
+                <option *ngFor="let i of data.instructors" [value]="i">{{ i }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="control">
+              <div style="font-size: 13px; margin-bottom: 4px">
+                Level
               </div>
               <select [(ngModel)]="pendingFilters.instructor"
                 class="u-select">
@@ -121,6 +134,41 @@
   </div>
 </div>
 
+<div style="margin: 5px 10px 30px 10px">
+  <p-dropdown 
+    [options]="cities" 
+    [(ngModel)]="selectedCity" 
+    optionLabel="name"  style="margin-left: 20px" 
+    placeholder="Select a Category" />
+    <p-dropdown 
+    [options]="cities" 
+    [(ngModel)]="selectedCity" 
+    optionLabel="name"  style="margin-left: 20px" 
+    placeholder="Select a Topic" />
+    <p-dropdown 
+    [options]="cities" 
+    [(ngModel)]="selectedCity" 
+    optionLabel="name"  style="margin-left: 20px" 
+    placeholder="Select a Instructor" />
+    <p-dropdown 
+    [options]="cities" 
+    [(ngModel)]="selectedCity" 
+    optionLabel="name"  style="margin-left: 20px" 
+    placeholder="Select a Level" />
+    <p-button label="Search" style="margin-left: 20px" />
+</div>
+<div style="margin: 0px 20px">
+  <div *ngIf="catalog$ | async as courses" style="display: flex; flex-wrap: wrap;">
+    <div *ngFor="let course of courses" style="width: 300px; min-width: 300px">
+      <app-course-card [course]="course"
+    [enrolled]="isEnrolled(course.trainingId)"
+    (enroll)="onEnroll($event)"
+    (view)="openDetails($event)">
+      </app-course-card>
+    </div>
+
+  </div>
+</div>
 <ng-template #loadingTemplate>
   <div class="loading-container">
     <div class="loading-spinner"></div>
