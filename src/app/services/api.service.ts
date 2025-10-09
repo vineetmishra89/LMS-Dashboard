@@ -28,10 +28,8 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
     return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : ''
+      'Content-Type': 'application/json'
     });
   }
 
@@ -49,7 +47,7 @@ export class ApiService {
 
   get<T>(endpoint: string, params?: HttpParams): Observable<T> {
     this.setLoading(true);
-    return this.http.get<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, {
+    return this.http.get<T>(`${this.baseUrl}/${endpoint}`, {
       headers: this.getHeaders(),
       params
     }).pipe(
@@ -57,10 +55,7 @@ export class ApiService {
       retry(2),
       map(response => {
         this.setLoading(false);
-        if (response.success) {
-          return response.data;
-        }
-        throw new Error(response.message || 'API request failed');
+        return response;
       }),
       catchError(this.handleError(`GET ${endpoint}`))
     );
@@ -68,16 +63,13 @@ export class ApiService {
 
   post<T>(endpoint: string, data: any): Observable<T> {
     this.setLoading(true);
-    return this.http.post<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, data, {
+    return this.http.post<T>(`${this.baseUrl}/${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(
       timeout(30000),
       map(response => {
         this.setLoading(false);
-        if (response.success) {
-          return response.data;
-        }
-        throw new Error(response.message || 'API request failed');
+        return response;
       }),
       catchError(this.handleError(`POST ${endpoint}`))
     );
@@ -85,16 +77,13 @@ export class ApiService {
 
   put<T>(endpoint: string, data: any): Observable<T> {
     this.setLoading(true);
-    return this.http.put<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, data, {
+    return this.http.put<T>(`${this.baseUrl}/${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(
       timeout(30000),
       map(response => {
         this.setLoading(false);
-        if (response.success) {
-          return response.data;
-        }
-        throw new Error(response.message || 'API request failed');
+        return response;
       }),
       catchError(this.handleError(`PUT ${endpoint}`))
     );
@@ -102,16 +91,13 @@ export class ApiService {
 
   delete<T>(endpoint: string): Observable<T> {
     this.setLoading(true);
-    return this.http.delete<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, {
+    return this.http.delete<T>(`${this.baseUrl}/${endpoint}`, {
       headers: this.getHeaders()
     }).pipe(
       timeout(30000),
       map(response => {
         this.setLoading(false);
-        if (response.success) {
-          return response.data;
-        }
-        throw new Error(response.message || 'API request failed');
+        return response;
       }),
       catchError(this.handleError(`DELETE ${endpoint}`))
     );

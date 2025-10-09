@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, BehaviorSubject, combineLatest } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Course, CourseCategory, CourseFilters } from '../../models/course';
+import { CourseMaster, CourseCategory, CourseFilters } from '../../models/course';
 import { CourseService } from '../../services/course.service';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { UserService } from '../../services/user.service';
@@ -15,8 +15,8 @@ export class CoursesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private searchSubject = new BehaviorSubject<string>('');
   
-  courses: Course[] = [];
-  filteredCourses: Course[] = [];
+  courses: CourseMaster[] = [];
+  filteredCourses: CourseMaster[] = [];
   categories: CourseCategory[] = [];
   filters: CourseFilters = {
     category: [],

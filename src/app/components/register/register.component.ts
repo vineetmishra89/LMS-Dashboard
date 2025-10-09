@@ -9,23 +9,28 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-isUppercasePresent(): any {
-throw new Error('Method not implemented.');
-}
-isLowercasePresent(): any {
-throw new Error('Method not implemented.');
-}
-isNumberPresent(): any {
-throw new Error('Method not implemented.');
-}
-isSpecialCharPresent(): any {
-throw new Error('Method not implemented.');
-}
   registerForm!: FormGroup;
   isLoading = false;
   errorMessage = '';
   showPassword = false;
   showConfirmPassword = false;
+
+  isUppercasePresent(): boolean {
+    const v = this.registerForm?.get('password')?.value || '';
+    return /[A-Z]/.test(v);
+  }
+  isLowercasePresent(): boolean {
+    const v = this.registerForm?.get('password')?.value || '';
+    return /[a-z]/.test(v);
+  }
+  isNumberPresent(): boolean {
+    const v = this.registerForm?.get('password')?.value || '';
+    return /\d/.test(v);
+  }
+  isSpecialCharPresent(): boolean {
+    const v = this.registerForm?.get('password')?.value || '';
+    return /[!@#$%^&*(),.?":{}|<>]/.test(v);
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -94,12 +99,15 @@ throw new Error('Method not implemented.');
     delete userData.confirmPassword; // Don't send confirm password
     
     this.authService.register(userData).subscribe({
-      next: (user) => {
-        console.log('Registration successful:', user);
-        this.router.navigate(['/dashboard']);
+      next: () => {
+        if (this.authService.isLoggedIn()) {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigate(['/login'], { queryParams: { registered: '1' } });
+        }
       },
       error: (error) => {
-        this.errorMessage = error.userMessage || 'Registration failed. Please try again.';
+        this.errorMessage = error?.error?.message || error.userMessage || 'Registration failed. Please try again.';
         this.isLoading = false;
       }
     });

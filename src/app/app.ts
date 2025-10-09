@@ -11,6 +11,7 @@ import { WebSocketService } from './services/websocket.service';
 import { MonitoringService } from './services/monitoring.service';
 import { ConfigService } from './services/config.service';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
+import { PrimeNGConfig } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
@@ -42,12 +43,14 @@ private deferredPrompt: any = null;
     private monitoringService: MonitoringService,
     private configService: ConfigService,
     private loadingInterceptor: LoadingInterceptor,
-    private router: Router
+    private router: Router,
+    private primengConfig: PrimeNGConfig
   ) {
     this.initializeApp();
   }
 
   ngOnInit(): void {
+    this.primengConfig.ripple = true;
     this.setupAuthenticationListener();
     this.setupRouteTracking();
     this.setupSyncStatusListener();
@@ -104,9 +107,9 @@ private deferredPrompt: any = null;
 
   private setupRouteTracking(): void {
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
-    ).subscribe((event: NavigationEnd) => {
+    ).subscribe((event) => {
       // Track page views
       this.monitoringService.trackUserInteraction('page_view', 'router', {
         url: event.url,

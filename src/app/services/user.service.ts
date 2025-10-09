@@ -11,16 +11,26 @@ export class UserService {
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private apiService: ApiService) {
+    localStorage.setItem('userId', 'vm02102');
     this.loadCurrentUser();
   }
 
   private loadCurrentUser(): void {
     const userId = localStorage.getItem('userId');
     if (userId) {
-      this.getUserById(userId).subscribe(
-        user => this.currentUserSubject.next(user),
-        error => console.error('Failed to load current user:', error)
-      );
+      this.getUserById(userId).subscribe({
+        next: user => this.currentUserSubject.next(user),
+        error: error => {
+          console.error('Failed to load current user:', error);
+          const fallbackUser = {
+            id: userId,
+            name: 'Test User',
+            email: 'test@example.com',
+            role: 'student'
+          };
+          this.currentUserSubject.next(fallbackUser as any);
+        }
+      });
     }
   }
 
@@ -37,16 +47,16 @@ export class UserService {
   }
 
   updatePreferences(userId: string, preferences: UserPreferences): Observable<UserPreferences> {
-    return this.apiService.put<UserPreferences>(`users/${userId}/preferences`, preferences);
+    return this.apiService.put<UserPreferences>(`preferences?userId=${userId}`, preferences);
   }
 
   uploadProfileImage(userId: string, imageFile: File): Observable<string> {
     const formData = new FormData();
     formData.append('image', imageFile);
-    return this.apiService.post<string>(`users/${userId}/profile-image`, formData);
+    return this.apiService.post<string>(`profile-image?userId=${userId}`, formData);
   }
 
   getUserStats(userId: string): Observable<any> {
-    return this.apiService.get(`users/${userId}/stats`);
+    return this.apiService.get(`stats?userId=${userId}`);
   }
 }

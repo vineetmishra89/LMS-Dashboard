@@ -1,162 +1,226 @@
-<div class="dashboard" *ngIf="dashboardData$ | async as data; else loadingTemplate">
-  <!-- Error Message -->
-  <div class="error-banner" *ngIf="hasError$ | async as error">
-    <div class="error-content">
-      <span class="error-icon">⚠️</span>
-      <span class="error-message">{{ error }}</span>
-      <button class="retry-btn" (click)="refreshDashboard()">Retry</button>
+<div class="dashboard1" *ngIf="dashboardData$ | async as data; else loadingTemplate">
+  <!-- <div class="stats-grid">
+    <app-stats-card icon="🏆" iconClass="green" label="Completed Courses" [value]="data.stats.completed"
+      (click)="openCompleted()"></app-stats-card>
+    <app-stats-card icon="📚" iconClass="blue" label="Enrolled Courses" [value]="data.stats.enrolled"
+      (click)="openEnrolled()"></app-stats-card>
+    <app-stats-card icon="⏰" iconClass="orange" label="Hours Learned" [value]="data.stats.hours"
+      (click)="openHours()"></app-stats-card>
+  </div>
+   -->
+ 
+
+
+  <div *ngIf="false" class="content-grid" style="display: flex">
+    <section class="filters-panel">
+      <table class="panel-table">
+        <thead>
+          <tr>
+            <th colspan="1">Search Filters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Category -->
+          <tr>
+            <td class="control">
+              <div style="font-size: 13px; margin-bottom: 4px">
+                Category
+              </div>
+              <select [(ngModel)]="pendingFilters.category" class="u-select">
+                <option value="">All</option>
+                <option *ngFor="let c of data.categories" [value]="c">{{ c }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="control">
+              <div style="font-size: 13px; margin-bottom: 4px">
+                Topic
+              </div>
+              <select [(ngModel)]="pendingFilters.topic"  class="u-select">
+                <option value="">All</option>
+                <option *ngFor="let t of data.topics" [value]="t">{{ t }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="control">
+              <div style="font-size: 13px; margin-bottom: 4px">
+                Instructor
+              </div>
+              <select [(ngModel)]="pendingFilters.instructor"
+                class="u-select">
+                <option value="">All</option>
+                <option *ngFor="let i of data.instructors" [value]="i">{{ i }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="control">
+              <div style="font-size: 13px; margin-bottom: 4px">
+                Level
+              </div>
+              <select [(ngModel)]="pendingFilters.instructor"
+                class="u-select">
+                <option value="">All</option>
+                <option *ngFor="let i of data.instructors" [value]="i">{{ i }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr class="actions-row">
+            <td colspan="2" class="actions">
+              <button type="button" class="btn" (click)="onClearFilters()">Clear</button>
+              <button type="button" class="btn primary" (click)="onApplyFilters()">Apply</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div>
+
     </div>
-  </div>
-
-  <!-- Welcome Banner -->
-  <app-welcome-banner [user]="currentUser$ | async" [progress]="data.analytics?.overallProgress || 0"></app-welcome-banner>
-
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    <app-stats-card
-      icon="📚"
-      iconClass="blue"
-      label="Enrolled Courses"
-      [value]="data.stats.enrolledCourses"
-      [loading]="isLoading$ | async">
-    </app-stats-card>
-    <app-stats-card
-      icon="🏆"
-      iconClass="green"
-      label="Certificates"
-      [value]="data.stats.certificates"
-      [loading]="isLoading$ | async">
-    </app-stats-card>
-    <app-stats-card
-      icon="⏰"
-      iconClass="orange"
-      label="Hours Learned"
-      [value]="data.stats.hoursLearned"
-      [loading]="isLoading$ | async">
-    </app-stats-card>
-    <app-stats-card
-      icon="👥"
-      iconClass="purple"
-      label="Users Online"
-      [value]="data.stats.usersOnline | number"
-      [loading]="isLoading$ | async">
-    </app-stats-card>
-  </div>
-
-  <div class="main-content-grid">
-    <!-- Left Column -->
-    <div class="left-column">
-      <!-- Continue Learning Section -->
-      <section class="continue-learning" *ngIf="data.continueCourse">
-        <h2>Continue Learning</h2>
-        <app-course-card 
-          [course]="data.continueCourse" 
-          [enrollment]="data.enrollments?.find(e => e.courseId === data.continueCourse.id)"
-          (continueClick)="onContinueLearning($event)">
+    <div *ngIf="catalog$ | async as courses" style="display: flex; flex-wrap: wrap;">
+      <div *ngFor="let course of courses" style="width: 300px; min-width: 300px">
+        <app-course-card [course]="course"
+      [enrolled]="isEnrolled(course.trainingId)"
+      (enroll)="onEnroll($event)"
+      (view)="openDetails($event)">
         </app-course-card>
-      </section>
-
-      <!-- My Courses Section -->
-      <section class="my-courses" *ngIf="data.enrolledCourses?.length > 0">
-        <div class="section-header">
-          <h2>My Courses</h2>
-          <a href="#" class="view-all" (click)="onViewAllCourses()">View All</a>
-        </div>
-        <div class="courses-grid">
-          <app-course-card 
-            *ngFor="let course of data.enrolledCourses | slice:0:4" 
-            [course]="course"
-            [enrollment]="data.enrollments?.find(e => e.courseId === course.id)"
-            (continueClick)="onContinueLearning($event)">
-          </app-course-card>
-        </div>
-      </section>
-
-      <!-- Trending Courses Section -->
-      <section class="trending-courses" *ngIf="data.trendingCourses?.length > 0">
-        <h2>Trending Courses</h2>
-        <div class="trending-grid">
-          <app-course-card 
-            *ngFor="let course of data.trendingCourses" 
-            [course]="course"
-            [showEnrollButton]="true"
-            (enrollClick)="onCourseEnroll($event)">
-          </app-course-card>
-        </div>
-      </section>
-
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="data.enrolledCourses?.length === 0 && data.trendingCourses?.length === 0">
-        <div class="empty-content">
-          <span class="empty-icon">📚</span>
-          <h3>Start Your Learning Journey</h3>
-          <p>Explore our course catalog and enroll in your first course to get started!</p>
-          <button class="btn btn-primary" (click)="onViewAllCourses()">Browse Courses</button>
-        </div>
       </div>
+
     </div>
+    
 
-    <!-- Right Column -->
-    <div class="right-column">
-      <!-- AI Chat Assistant -->
-      <app-chat [userId]="(currentUser$ | async)?.id"></app-chat>
+    <main *ngIf="false" class="catalog card">
+      <div class="table-scroll">
+        <table class="catalog-table">
+          <thead>
+            <tr>
+              <th class="col-name">Training Name</th>
+              <th class="col-desc">Description</th>
+              <th class="col-outline">Outline/Content</th>
+              <th class="col-duration">Duration(Hours)</th>
+              <th class="col-review">Review Comments</th>
+              <th class="col-trainer">Trainer Name</th>
+              <th class="col-prereq">Pre-requisite</th>
+              <th class="col-level">Level</th>
+              <th class="col-tools">Tools needed</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="catalog$ | async as courses">
+              <tr *ngFor="let course of courses">
+                <app-course-card [course]="course"
+              [enrolled]="isEnrolled(course.trainingId)"
+              (enroll)="onEnroll($event)"
+              (view)="openDetails($event)">
+                </app-course-card>
+              </tr>
 
-      <!-- Learning Streak -->
-      <div class="learning-streak">
-        <div class="streak-header">Learning Streak</div>
-        <div class="streak-info">
-          <span class="streak-icon">🔥</span>
-          <span class="streak-number">{{ data.streak || 0 }}</span>
-          <div class="streak-text">
-            <div>Days in a row</div>
-            <div class="streak-encouragement">Keep it up! You're on fire!</div>
-          </div>
-        </div>
+            </ng-container>
+          </tbody>
+        </table>
       </div>
+    </main>
 
-      <!-- Recent Certificates -->
-      <div class="recent-certificates" *ngIf="data.certificates?.length > 0">
-        <div class="section-header">
-          <h3>Recent Certificates</h3>
-          <button class="view-all-btn" (click)="onViewAllCertificates()">View All Certificates</button>
-        </div>
-        <div class="certificates-list">
-          <div class="certificate-item" *ngFor="let cert of data.certificates">
-            <div class="cert-icon">🏆</div>
-            <div class="cert-info">
-              <div class="cert-title">{{ cert.title }}</div>
-              <div class="cert-date">Completed {{ cert.issuedAt | date:'MMM yyyy' }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Performance Metrics -->
-  <div class="performance-section" *ngIf="data.analytics">
-    <h2>Your Learning Analytics</h2>
-    <div class="metrics-grid">
-      <div class="metric-card">
-        <div class="metric-value">{{ data.analytics.averageQuizScore | number:'1.1-1' }}%</div>
-        <div class="metric-label">Average Quiz Score</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-value">{{ data.analytics.skillsAcquired?.length || 0 }}</div>
-        <div class="metric-label">Skills Acquired</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-value">{{ data.analytics.longestStreak || 0 }}</div>
-        <div class="metric-label">Longest Streak</div>
-      </div>
-    </div>
+    <section class="my-learning" *ngIf="data.continueCourse">
+      <h3>My Learning</h3>
+      <button type="button" class="continue-btn" (click)="onContinueLearning(data.continueCourse.id, $event)">
+        {{ data.continueCourse.title }} – {{ data.continueCourse.progress || 0 }}% complete
+      </button>
+    </section>
   </div>
 </div>
 
-<!-- Loading Template -->
+<div style="margin: 5px 10px 30px 10px">
+  <p-dropdown 
+    [options]="cities" 
+    [(ngModel)]="selectedCity" 
+    optionLabel="name"  style="margin-left: 20px" 
+    placeholder="Select a Category" />
+    <p-dropdown 
+    [options]="cities" 
+    [(ngModel)]="selectedCity" 
+    optionLabel="name"  style="margin-left: 20px" 
+    placeholder="Select a Topic" />
+    <p-dropdown 
+    [options]="cities" 
+    [(ngModel)]="selectedCity" 
+    optionLabel="name"  style="margin-left: 20px" 
+    placeholder="Select a Instructor" />
+    <p-dropdown 
+    [options]="cities" 
+    [(ngModel)]="selectedCity" 
+    optionLabel="name"  style="margin-left: 20px" 
+    placeholder="Select a Level" />
+    <p-button label="Search" style="margin-left: 20px" />
+</div>
+<div style="margin: 0px 20px">
+  <div *ngIf="catalog$ | async as courses" style="display: flex; flex-wrap: wrap;">
+    <div *ngFor="let course of courses" style="width: 300px; min-width: 300px">
+      <app-course-card [course]="course"
+    [enrolled]="isEnrolled(course.trainingId)"
+    (enroll)="onEnroll($event)"
+    (view)="openDetails($event)">
+      </app-course-card>
+    </div>
+
+  </div>
+</div>
 <ng-template #loadingTemplate>
   <div class="loading-container">
     <div class="loading-spinner"></div>
-    <p>Loading your dashboard...</p>
+    <p>Loading...</p>
   </div>
 </ng-template>
+
+<!-- ===== Modal: Course Details ===== -->
+<div class="modal-backdrop" *ngIf="showDetails" (click)="closeDetails()"></div>
+
+<div class="modal" *ngIf="showDetails" role="dialog" aria-modal="true">
+  <header class="modal-head">
+    <h3>{{ selectedMaster?.trainingName }} — Courses</h3>
+    <button class="icon-btn" (click)="closeDetails()" aria-label="Close">×</button>
+  </header>
+
+  <div class="modal-body">
+    <ng-container *ngIf="selectedMaster?.details?.length; else noDetails">
+      <table class="details-table">
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Instructor</th>
+            <th>Duration</th>
+            <th>Trainer Feedback</th>
+            <th>User Feedback</th>
+            <th>Watch</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of selectedMaster!.details">
+            <td class="wrap">{{ d.topic || '—' }}</td>
+            <td>{{ d.instructorName || selectedMaster?.instructorName || '—' }}</td>
+            <td>{{ (d.duration ?? 0) | number:'1.2-2' }}</td>
+            <td>{{ d.trainersCurrentFeedback ?? '—' }}</td>
+            <td>{{ d.currentUserFeedback ?? '—' }}</td>
+            <td>
+              <button class="btn small"
+                      [disabled]="!d.trainingLink"
+                      (click)="onContinueLearning(d.trainingDetailId)">Watch video</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+    <ng-template #noDetails>
+      <p class="muted">No course details available for this training yet.</p>
+    </ng-template>
+  </div>
+
+  <footer class="modal-foot">
+    <button class="btn" (click)="closeDetails()">Close</button>
+  </footer>
+</div>

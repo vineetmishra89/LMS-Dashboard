@@ -21,6 +21,12 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 // Routing
 import { AppRoutingModule } from './app.routes';
 
+import { CompletedDetailComponent } from './components/details/completed-detail/completed-detail.component';
+import { EnrolledDetailComponent } from './components/details/enrolled-detail/enrolled-detail.component';
+import { HoursDetailComponent } from './components/details/hours-detail/hours-detail.component';
+import { VideoPlayerComponent } from './components/video-player/video-player.component';
+import { VideoPlayerPageComponent } from './pages/video-player/video-player-page.component';
+
 // Core Components
 import { AppComponent } from './app';
 import { DashboardComponent } from './components/dashboard/dashboard';
@@ -40,7 +46,6 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 // Feature Components
 import { ProfileComponent } from './components/profile/profile.component';
 import { CoursesComponent } from './components/courses/courses.component';
-import { CourseDetailComponent } from './components/course-detail/course-detail.component';
 import { CertificatesComponent } from './components/certificates/certificates.component';
 import { AnalyticsComponent } from './components/analytics/analytics.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
@@ -64,6 +69,7 @@ import { CertificateService } from './services/certificate.service';
 import { NotificationService } from './services/notification.service';
 import { DataSyncService } from './services/data-sync.service';
 import { WebSocketService } from './services/websocket.service';
+import { VideoProgressService } from './services/video-progress.service';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -88,8 +94,16 @@ import { LazyLoadDirective } from './directives/lazy-load.directive';
 import { InViewportDirective } from './directives/in-viewport.directive';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 
+import { PrimeNGConfig } from 'primeng/api';
+import { DropdownModule } from 'primeng/dropdown';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+
+import { CardModule } from 'primeng/card';
+import { ChipModule } from 'primeng/chip';
 // Environment
 import { environment } from '../environments/environment';
+import { CarouselModule } from 'primeng/carousel';
 
 @NgModule({
   declarations: [
@@ -124,15 +138,19 @@ import { environment } from '../environments/environment';
 
     TimeAgoPipe,
     SearchHighlightPipe,
-
+    
     // Feature Components
     ProfileComponent,
     CoursesComponent,
-    CourseDetailComponent,
     CertificatesComponent,
     AnalyticsComponent,
-    NotificationsComponent
+    NotificationsComponent,
 
+    CompletedDetailComponent,
+    EnrolledDetailComponent,
+    HoursDetailComponent,
+    VideoPlayerComponent,
+    VideoPlayerPageComponent
   ],
   imports: [
     // Angular Core
@@ -142,9 +160,9 @@ import { environment } from '../environments/environment';
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    
     // Routing
     AppRoutingModule,
+    CarouselModule,
     
     // Angular Material
     MatDialogModule,
@@ -152,6 +170,14 @@ import { environment } from '../environments/environment';
     MatProgressBarModule,
     MatChipsModule,
     MatAutocompleteModule,
+
+    // Prime ng
+
+    DropdownModule, 
+    TagModule,
+    ButtonModule,
+    CardModule, 
+    ChipModule ,
 
     SafeHtmlPipe,
     DurationPipe,
@@ -186,6 +212,9 @@ import { environment } from '../environments/environment';
     NotificationService,
     DataSyncService,
     WebSocketService,
+    VideoProgressService,
+    
+    LoadingInterceptor,
     
     // Guards
     AuthGuard,

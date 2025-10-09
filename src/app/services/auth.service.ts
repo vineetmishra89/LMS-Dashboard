@@ -59,9 +59,27 @@ export class AuthService {
     if (token && user && !this.isTokenExpired(token)) {
       this.currentUserSubject.next(user);
       this.isAuthenticatedSubject.next(true);
-    } else {
+      return;
+    } /*else {
       this.logout();
-    }
+    }*/
+
+  if (environment.devAutoLogin) {
+    const exp = Math.floor(Date.now()/1000) + 60*60*24*365;
+    const payload = btoa(JSON.stringify({ exp }));
+    localStorage.setItem(this.tokenKey, `x.${payload}.y`);
+
+    const demo = { id: 'demo-user', name: 'Vineet Mishra', email: 'vineet@example.com', role: 'student' } as any;
+    localStorage.setItem(this.userKey, JSON.stringify(demo));
+    localStorage.setItem('userId', demo.id);
+
+    this.currentUserSubject.next(demo);
+    this.isAuthenticatedSubject.next(true);
+    return;
+  }
+
+  // default: not authenticated
+  this.isAuthenticatedSubject.next(false);
   }
 
   login(credentials: LoginCredentials): Observable<User> {
@@ -81,18 +99,19 @@ export class AuthService {
     );
   }
 
-  register(userData: RegisterData): Observable<User> {
+  register(userData: RegisterData): Observable<User | null> {
     return this.http.post<AuthResponse>(`${environment.authUrl}/register`, userData).pipe(
       tap(response => {
-        if (response.success) {
-          this.setAuthData(response.data);
-          this.currentUserSubject.next(response.data.user);
-          this.isAuthenticatedSubject.next(true);
+        if (response.success && response.data) {
+          if (response.data.token) {
+            this.setAuthData(response.data);
+            this.currentUserSubject.next(response.data.user);
+            this.isAuthenticatedSubject.next(true);
+          }
         }
       }),
-      map(response => response.data.user),
+      map(response => response.data?.user ?? null),
       catchError(error => {
-        console.error('Registration failed:', error);
         return throwError(() => error);
       })
     );

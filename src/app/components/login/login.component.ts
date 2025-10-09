@@ -24,7 +24,10 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-    
+    const registered = this.route.snapshot.queryParams['registered'] === '1';
+    if (registered) {
+      this.errorMessage = '';
+    }
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],

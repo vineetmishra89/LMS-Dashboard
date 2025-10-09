@@ -1,0 +1,71 @@
+<div style="display: flex">
+    <div class="left" style="width: 70%">
+        <div class="video-container">
+            <video
+              [src]="videoUrl" 
+              controls
+              autoplay
+              muted
+              loop
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
+        
+        <div class="detail" style="margin-top: 20px">
+            <div>
+                <div style="font-size: 18px; font-weight: bold;">Forum Discussion</div>
+                <div style="margin-top: 20px;
+    margin-left: 20px;">
+                    <textarea 
+    rows="2"
+    cols="30"
+    style="width: 100%" 
+    pInputTextarea 
+    [(ngModel)]="value">
+</textarea>
+<p-button label="Submit"  size="small" />
+                </div>
+                <div>
+               
+                    @for(item of forumDiscussion; track item) {
+                        <div style="    width: 100%;
+                        margin: 20px;
+                        padding: 20px 15px 20px 15px;
+                        border-top: 1px solid var(--gray-300);">
+                          <div>
+                            <div>
+                              <div style="font-size: 13px; font-weight: bold;">{{ item.user }}</div>
+                              <div>
+                                <span><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
+                                    ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
+                                    ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
+                                    ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
+                                    ><i class="pi pi-star-half-fill" style="color: #c4710d; font-size: 9px"></i>
+                                </span>
+                                <span style="    font-size: 12px;
+                                margin-left: 5px;
+                                color: var(--bluegray-500);">{{ item.when }}</span>
+                            </div>
+                            </div>
+                          </div>
+                          <div style="font-size: 13px; margin-top: 10px">
+                            {{ item.comments }}
+                          </div>
+                        </div>
+                        }
+                    
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    <div class="right" style="width: 40%">
+        <ul style="list-style: none;">
+        @for(item of playlist; track item) {
+         <li style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300)">{{item.name}}</li>   
+        }
+    </ul>
+    </div>
+</div>

@@ -1,18 +1,23 @@
+
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, combineLatest, Subject, BehaviorSubject } from 'rxjs';
-import { takeUntil, map, startWith, catchError } from 'rxjs/operators';
+import { takeUntil, map, startWith, catchError, switchMap, distinctUntilChanged, debounceTime, take, shareReplay } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { User } from '../../models/user';
-import { Course } from '../../models/course';
 import { Enrollment } from '../../models/enrollment';
-import { UserAnalytics } from '../../models/analytics';
-import { Certificate } from '../../models/certificate';
-
 import { UserService } from '../../services/user.service';
 import { CourseService } from '../../services/course.service';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { CertificateService } from '../../services/certificate.service';
 import { NotificationService } from '../../services/notification.service';
+import { VideoProgressService } from '../../services/video-progress.service';
+import { CourseDetail, CourseMaster } from '../../models/course';
+interface City {
+  name: string;
+  code: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -20,42 +25,83 @@ import { NotificationService } from '../../services/notification.service';
   styleUrls: ['./dashboard.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+
+  cities: City[] | undefined;
+
+  selectedCity: City | undefined;
+
+
   private destroy$ = new Subject<void>();
-  
-  // Loading states
   isLoading$ = new BehaviorSubject<boolean>(true);
   hasError$ = new BehaviorSubject<string | null>(null);
-  
-  // User data
+
   currentUser$: Observable<User | null>;
-  userStats$!: Observable<any>;
-  
-  // Course data
-  enrolledCourses$!: Observable<Course[]>;
-  trendingCourses$!: Observable<Course[]>;
-  continuelearningCourse$!: Observable<Course | null>;
-  
-  // Progress data
-  userAnalytics$!: Observable<UserAnalytics>;
-  recentCertificates$!: Observable<Certificate[]>;
-  currentStreak$!: Observable<number>;
-  
-  // Computed properties
   dashboardData$!: Observable<any>;
+  private latestVm: any = null;
+  catalog$!: Observable<any[]>;
+  catalogCopy$!: Observable<any[]>;
+  isFilterOperation: boolean = false;
+  pendingFilters = { category: '', topic: '', instructor: '', level: '' };
+  private appliedFilters$ = new BehaviorSubject<{
+    category: string; topic: string; instructor: string;
+  }>(this.pendingFilters);
+
+  /** Track enrolled masters in-memory (mirror your real enrollment state if you have it) */
+  private enrolledIds = new Set<string>();
+  enrolledIds$ = new BehaviorSubject<Set<string>>(this.enrolledIds);
+
+  /** Modal state */
+  showDetails = false;
+  selectedMaster: CourseMaster | null = null;
+
+  displayedColumns = [
+    'trainingName','description','topics','level','instructorName',
+    'duration','category','prerequisite','toolsNeeded','reviewComments','action'
+  ] as const;
+
+  responsiveOptions: any[] | undefined;
 
   constructor(
+    private router: Router,
     private userService: UserService,
     private courseService: CourseService,
     private enrollmentService: EnrollmentService,
     private analyticsService: AnalyticsService,
     private certificateService: CertificateService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private videoProgressService: VideoProgressService
   ) {
     this.currentUser$ = this.userService.currentUser$;
+
+    this.cities = [
+      { name: 'New York', code: 'NY' },
+      { name: 'Rome', code: 'RM' },
+      { name: 'London', code: 'LDN' },
+      { name: 'Istanbul', code: 'IST' },
+      { name: 'Paris', code: 'PRS' }
+  ];
   }
 
   ngOnInit(): void {
     this.initializeDashboard();
+
+    this.responsiveOptions = [
+      {
+          breakpoint: '1199px',
+          numVisible: 1,
+          numScroll: 1
+      },
+      {
+          breakpoint: '991px',
+          numVisible: 2,
+          numScroll: 1
+      },
+      {
+          breakpoint: '767px',
+          numVisible: 1,
+          numScroll: 1
+      }
+  ];
   }
 
   ngOnDestroy(): void {
@@ -64,12 +110,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private initializeDashboard(): void {
-    this.currentUser$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(user => {
-      if (user) {
-        this.loadUserDashboardData(user.id);
-      }
+    this.currentUser$.pipe(takeUntil(this.destroy$)).subscribe((u: User | null) => {
+      if (u) this.loadUserDashboardData(u.id);
     });
   }
 
@@ -77,166 +119,199 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isLoading$.next(true);
     this.hasError$.next(null);
 
-    // Load user statistics
-    this.userStats$ = this.analyticsService.getUserStats(userId).pipe(
-      catchError(error => {
-        console.error('Failed to load user stats:', error);
-        this.hasError$.next('Failed to load user statistics');
-        return [];
-      })
+    const analytics$ = this.analyticsService.getUserAnalytics(userId).pipe(
+      catchError(() => [{
+        userId,
+        totalCoursesEnrolled: 0,
+        totalCoursesCompleted: 0,
+        totalCertificatesEarned: 0,
+        totalHoursLearned: 0
+      } as any])
     );
 
-    // Load enrolled courses
-    this.enrolledCourses$ = this.courseService.getEnrolledCourses(userId).pipe(
-      catchError(error => {
-        console.error('Failed to load enrolled courses:', error);
-        return [];
-      })
+    const learningHours$ = this.videoProgressService.getLearningHours(userId).pipe(
+      catchError(() => [{ totalHours: 0 }])
     );
 
-    // Load trending courses
-    this.trendingCourses$ = this.courseService.getTrendingCourses(6).pipe(
-      catchError(error => {
-        console.error('Failed to load trending courses:', error);
-        return [];
-      })
-    );
-
-    // Get current learning course (most recently accessed)
-    this.continuelearningCourse$ = combineLatest([
-      this.enrollmentService.getUserEnrollments(userId),
-      this.enrolledCourses$
-    ]).pipe(
-      map(([enrollments, courses]) => {
-        const activeEnrollment = enrollments
-          .filter(e => e.status === 'active' && e.progress.overallProgress < 100)
-          .sort((a, b) => new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime())[0];
-        
-        return activeEnrollment ? 
-          courses.find(c => c.id === activeEnrollment.courseId) || null : 
-          null;
+    const enrolled$ = this.courseService.getEnrolledCourses(userId).pipe(catchError(() => []));
+    const enrollments$ = this.enrollmentService.getUserEnrollments(userId).pipe(catchError(() => []));
+    const continue$ = combineLatest([enrollments$, enrolled$]).pipe(
+      map(([enrollments, courses]: any) => {
+        const active = enrollments
+          .filter((e: any) => e.status === 'active' && e.progress.overallProgress < 100)
+          .sort((a: any, b: any) => new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime())[0];
+        return active ? courses.find((c: any) => c.id === active.courseId) || null : null;
       }),
-      catchError(error => {
-        console.error('Failed to load continue learning course:', error);
-        return [null];
-      })
+      catchError(() => [null])
     );
 
-    // Load user analytics
-    this.userAnalytics$ = this.analyticsService.getUserAnalytics(userId).pipe(
-      catchError(error => {
-        console.error('Failed to load user analytics:', error);
-        return [{
-          userId,
-          totalCoursesEnrolled: 0,
-          totalCoursesCompleted: 0,
-          totalCertificatesEarned: 0,
-          totalHoursLearned: 0,
-          currentStreak: 0,
-          longestStreak: 0,
-          averageQuizScore: 0,
-          skillsAcquired: [],
-          learningPath: [],
-          weeklyActivity: []
-        }];
-      })
-    );
+    this.loadCourses();
 
-    // Load recent certificates
-    this.recentCertificates$ = this.certificateService.getUserCertificates(userId).pipe(
-      map(certificates => certificates
-        .sort((a, b) => new Date(b.issuedAt).getTime() - new Date(a.issuedAt).getTime())
-        .slice(0, 5)
-      ),
-      catchError(error => {
-        console.error('Failed to load certificates:', error);
-        return [];
-      })
-    );
-
-    // Load learning streak
-    this.currentStreak$ = this.analyticsService.getLearningStreak(userId).pipe(
-      map(streak => streak.current),
-      catchError(error => {
-        console.error('Failed to load learning streak:', error);
-        return [0];
-      })
-    );
-
-    // Combine all data for the template
-    this.dashboardData$ = combineLatest([
-      this.userStats$,
-      this.userAnalytics$,
-      this.enrolledCourses$,
-      this.trendingCourses$,
-      this.continuelearningCourse$,
-      this.recentCertificates$,
-      this.currentStreak$
-    ]).pipe(
-      map(([stats, analytics, enrolledCourses, trendingCourses, continueCourse, certificates, streak]) => ({
+    this.dashboardData$ = combineLatest([analytics$, enrolled$, enrollments$, continue$, this.catalogCopy$, learningHours$]).pipe(
+      map(([analytics, enrolled, enrollments, continueCourse, catalog, learningHours]: any) => ({
         stats: {
-          enrolledCourses: analytics.totalCoursesEnrolled,
-          certificates: analytics.totalCertificatesEarned,
-          hoursLearned: analytics.totalHoursLearned,
-          usersOnline: stats.usersOnline || 2341 // Fallback for demo
+          completed: analytics.completedCount || 0,
+          enrolled: analytics.enrolledCount || 0,
+          hours: (learningHours && learningHours.totalHours) || 0
         },
-        analytics,
-        enrolledCourses,
-        trendingCourses,
-        continueCourse,
-        certificates,
-        streak
+        categories: [...new Set(catalog.map((c: any) => c.category))],
+        topics: [...new Set(catalog.map((c: any) => c.topics))],
+        instructors: [...new Set(catalog.map((c: any) => c.instructorName))],
+        //catalog,
+        enrollments,
+        continueCourse
       })),
       startWith(null),
       takeUntil(this.destroy$)
     );
 
-    // Set loading to false after data loads
-    this.dashboardData$.subscribe(data => {
-      if (data) {
+    this.dashboardData$.subscribe((d: any) => {
+      if (d) {
+        this.latestVm = d;
         this.isLoading$.next(false);
       }
     });
   }
 
-  // Template helper methods
+  private loadCourses() {
+    this.catalog$ = this.appliedFilters$.pipe(
+      // optional: debounce micro-changes if you type in a free-text filter
+      debounceTime(0),
+      //distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      switchMap(f => this.courseService.getAllCourses(f).pipe(catchError(() => [])).pipe(
+        map(courses => {
+          var out = courses;
+          var category = this.pendingFilters.category;
+          if (category && category !== '') {
+            out = out.filter(function (c) { return c.category === category; });
+          }
+          var topic = this.pendingFilters.topic;
+          if (topic && topic !== '') {
+            out = out.filter(function (c) { return c.topics === topic; });
+          }
+          var instructor = this.pendingFilters.instructor;
+          if (instructor && instructor !== '') {
+            out = out.filter(function (c) { return c.instructorName === instructor; });
+          }
+
+          var level = this.pendingFilters.level;
+          if (level && level !== '') {
+            out = out.filter(function (c) { return c.level === level; });
+          }
+          console.log('Filtered Catalog courses loaded: ', out.length);
+          return out;
+        })
+      ))  // <-- new HTTP per change
+    );
+
+    this.catalogCopy$ = this.catalog$.pipe(
+      take(1),                                      // only first emission
+      map(list => list.map(c => ({ ...c }))),       // clone
+      shareReplay({ bufferSize: 1, refCount: true })// keep that first value forever
+    );
+  }
+
+  applyFilters(): void {
+    this.loadCourses();
+  }
+
   onCourseEnroll(courseId: string): void {
     const currentUser = this.userService.getCurrentUser();
     if (currentUser) {
       this.enrollmentService.enrollInCourse({ userId: currentUser.id, courseId }).subscribe({
-        next: (enrollment) => {
-          console.log('Successfully enrolled in course:', enrollment);
-          // Refresh dashboard data
-          this.loadUserDashboardData(currentUser.id);
-        },
-        error: (error) => {
-          console.error('Failed to enroll in course:', error);
-          this.hasError$.next('Failed to enroll in course. Please try again.');
-        }
+        next: () => this.loadUserDashboardData(currentUser.id),
+        error: () => this.hasError$.next('Failed to enroll in course. Please try again.')
       });
     }
   }
 
-  onContinueLearning(courseId: string): void {
-    // Navigate to course player or course detail page
-    // This would typically use Angular Router
-    console.log('Continue learning course:', courseId);
+  onContinueLearning(courseId: string, event?: Event): void {
+    console.log('Continue button clicked, courseId:', courseId);
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    const courseData = this.latestVm?.continueCourse;
+    if (courseData) {
+      console.log('Navigating to video player with course data:', courseData);
+      this.router.navigate(['/video-player', courseId], { 
+        state: { courseData: courseData }
+      }).then(
+        success => console.log('Navigation success:', success),
+        error => console.log('Navigation error:', error)
+      );
+    } else {
+      console.log('No course data available, navigating without state');
+      this.router.navigate(['/video-player', courseId]).then(
+        success => console.log('Navigation success:', success),
+        error => console.log('Navigation error:', error)
+      );
+    }
   }
 
-  onViewAllCourses(): void {
-    // Navigate to courses page
-    console.log('View all courses');
-  }
-
-  onViewAllCertificates(): void {
-    // Navigate to certificates page
-    console.log('View all certificates');
-  }
+  openCompleted(): void { this.router.navigate(['/detail/completed']); }
+  openEnrolled(): void { this.router.navigate(['/detail/enrolled']); }
+  openHours(): void { this.router.navigate(['/detail/hours']); }
 
   refreshDashboard(): void {
     const currentUser = this.userService.getCurrentUser();
-    if (currentUser) {
-      this.loadUserDashboardData(currentUser.id);
-    }
+    if (currentUser) this.loadUserDashboardData(currentUser.id);
   }
+
+  getEnrollmentFor(courseId: string) {
+    const vm = this.latestVm;
+    return vm?.enrollments?.find((e: any) => e.courseId === courseId) || null;
+  }
+
+
+  onApplyFilters(): void {
+  // take whatever the user picked and make it live
+  this.appliedFilters$.next({ ...this.pendingFilters });
+  // if your loadCourses() builds streams that depend on filters, you can call it here.
+  // But with the combineLatest approach below, it's not required to rebuild anything.
+}
+
+onClearFilters(): void {
+  this.pendingFilters = { category: '', topic: '', instructor: '', level: '' };
+  this.appliedFilters$.next({ ...this.pendingFilters });
+}
+
+ trackByMaster = (_: number, m: CourseMaster) => m.trainingId;
+
+  /** Enroll => mark as enrolled and (optionally) call backend */
+  onEnroll(m: CourseMaster) {
+    // this.enrollmentService.enroll(m.trainingId).subscribe(() => {
+    this.enrolledIds.add(m.trainingId);
+    this.enrolledIds$.next(new Set(this.enrolledIds));
+    // });
+  }
+
+  /** Whether master is enrolled */
+  isEnrolled(trainingId: string): boolean {
+    return this.enrolledIds.has(trainingId);
+  }
+
+  /** Open modal */
+  openDetails(m: CourseMaster) {
+    this.selectedMaster = m;
+    this.showDetails = true;
+  }
+
+  /** Close modal */
+  closeDetails() {
+    this.showDetails = false;
+    this.selectedMaster = null;
+  }
+
+  /** Watch a detail video */
+  onWatch(detail: CourseDetail) {
+    if (!detail.trainingLink) return;
+    // If you have a player route, navigate there instead:
+    // this.router.navigate(['/player', detail.trainingId, detail.trainingDetailId]);
+    console.log('opening video');
+    window.open(detail.trainingLink, '_blank', 'noopener');
+  }
+
+
 }

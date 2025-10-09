@@ -1,61 +1,36 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './guards/auth.guard';
-import { RoleGuard } from './guards/role.guard';
-import { RegisterComponent } from './components/register/register.component';
-import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard';
-import { UnauthorizedComponent } from './components/shared/unauthorized/unauthorized.component';
 import { NotFoundComponent } from './components/shared/not-found/not-found.component';
+import { CompletedDetailComponent } from './components/details/completed-detail/completed-detail.component';
+import { EnrolledDetailComponent } from './components/details/enrolled-detail/enrolled-detail.component';
+import { HoursDetailComponent } from './components/details/hours-detail/hours-detail.component';
+import { VideoPlayerPageComponent } from './pages/video-player/video-player-page.component';
+//import { ViewCourseComponent } from './components/view-course/view-course.component';
+import { PlayCourseComponent } from './components/play-course/play-course.component';
+import { HomeComponent } from './components/home/home.component';
+import { SearchComponent } from './components/search/search.component';
+import { SupportComponent } from './components/support/support.component';
+import { ViewCourseComponent } from './components/view-course/view-course.component';
 
 const routes: Routes = [
-  // Public Routes
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'verify-email/:token', component: VerifyEmailComponent },
-  
-  // Protected Routes
-  { 
-    path: '', 
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: 'courses', component: CoursesComponent },
-      { path: 'course/:id', component: CourseDetailComponent },
-      { path: 'certificates', component: CertificatesComponent },
-      { path: 'analytics', component: AnalyticsComponent },
-      
-      // Admin Routes
-      {
-        path: 'admin',
-        canActivate: [RoleGuard],
-        data: { role: 'admin' },
-        loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
-      },
-      
-      // Instructor Routes
-      {
-        path: 'instructor',
-        canActivate: [RoleGuard],
-        data: { role: 'instructor' },
-        loadChildren: () => import('./instructor/instructor.module').then(m => m.InstructorModule)
-      }
-    ]
-  },
-  
-  // Error Routes
-  { path: 'unauthorized', component: UnauthorizedComponent },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
+  { path: 'search', component: DashboardComponent },
+  { path: 'support', component: SupportComponent },
+  { path: 'dashboard', component: SearchComponent },
+  { path: 'viewCourse', component: ViewCourseComponent },
+  { path: 'runningCourse', component: PlayCourseComponent },
+  { path: 'video-player/:courseId', component: VideoPlayerPageComponent },
+  { path: 'detail/completed', component: CompletedDetailComponent },
+  { path: 'detail/enrolled', component: EnrolledDetailComponent },
+  { path: 'detail/hours', component: HoursDetailComponent },
   { path: '404', component: NotFoundComponent },
-  { path: '**', redirectTo: '/404' }
+  { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    enableTracing: false,
-    preloadingStrategy: PreloadAllModules,
     scrollPositionRestoration: 'enabled'
   })],
   exports: [RouterModule]

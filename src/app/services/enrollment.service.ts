@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject, throwError, timer } from 'rxjs';
 import { tap, map, catchError, switchMap, retry } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
 import { Enrollment, EnrollmentProgress, QuizScore } from '../models/enrollment';
-import { Course } from '../models/course';
+import { CourseMaster } from '../models/course';
 import { ApiService } from './api.service';
 import { NotificationService } from './notification.service';
 import { AnalyticsService } from './analytics.service';
@@ -100,7 +100,8 @@ export class EnrollmentService {
       params = params.set('limit', options.limit.toString());
     }
 
-    return this.apiService.get<Enrollment[]>(`users/${userId}/enrollments`, params).pipe(
+    params = params.set('userId', userId);
+    return this.apiService.get<Enrollment[]>('enrollments', params).pipe(
       tap(enrollments => {
         this.enrollmentsSubject.next(enrollments);
       }),
@@ -119,8 +120,8 @@ export class EnrollmentService {
     );
   }
 
-  getEnrollmentWithCourse(enrollmentId: string): Observable<{ enrollment: Enrollment; course: Course }> {
-    return this.apiService.get<{ enrollment: Enrollment; course: Course }>(`enrollments/${enrollmentId}/with-course`);
+  getEnrollmentWithCourse(enrollmentId: string): Observable<{ enrollment: Enrollment; course: CourseMaster }> {
+    return this.apiService.get<{ enrollment: Enrollment; course: CourseMaster }>(`enrollments/${enrollmentId}/with-course`);
   }
 
   // PROGRESS TRACKING
@@ -368,7 +369,7 @@ export class EnrollmentService {
   }
 
   // PROGRESS CALCULATIONS
-  calculateOverallProgress(enrollment: Enrollment, course?: Course): number {
+  calculateOverallProgress(enrollment: Enrollment, course?: CourseMaster): number {
     if (!enrollment.progress) return 0;
     
     const totalLessons = this.getTotalLessonsCount(enrollment, course);
@@ -387,7 +388,7 @@ export class EnrollmentService {
     return totalModuleLessons > 0 ? Math.round((moduleProgress / totalModuleLessons) * 100) : 0;
   }
 
-  calculateTimeToCompletion(enrollment: Enrollment, course?: Course): { hours: number; days: number } {
+  calculateTimeToCompletion(enrollment: Enrollment, course?: CourseMaster): { hours: number; days: number } {
     const totalDuration = course?.duration || 0; // in minutes
     const currentProgress = enrollment.progress.overallProgress;
     const remainingDuration = (totalDuration * (100 - currentProgress)) / 100;
@@ -539,10 +540,10 @@ export class EnrollmentService {
     }
   }
 
-  private getTotalLessonsCount(enrollment: Enrollment, course?: Course): number {
-    // This would calculate based on course structure
-    // For now, return estimated count
-    return course?.modules.reduce((total, module) => total + module.lessons.length, 0) || 20;
+  private getTotalLessonsCount(enrollment: Enrollment, course?: CourseMaster): number {
+    // Since backend doesn't provide modules structure, return estimated count
+    // This could be enhanced to call a backend API for actual lesson count
+    return 20;
   }
 
   private getModuleLessonsCount(moduleId: string): number {
@@ -577,21 +578,21 @@ export class EnrollmentService {
 
   // PUBLIC API METHODS
   getEnrollmentStats(userId: string): Observable<any> {
-    return this.apiService.get(`users/${userId}/enrollment-stats`).pipe(
+    return this.apiService.get(`enrollments/stats?userId=${userId}`).pipe(
       tap(stats => this.enrollmentStatsSubject.next(stats))
     );
   }
 
   searchUserEnrollments(userId: string, query: string): Observable<Enrollment[]> {
-    return this.apiService.get<Enrollment[]>(`users/${userId}/enrollments/search?q=${encodeURIComponent(query)}`);
+    return this.apiService.get<Enrollment[]>(`enrollments/search?userId=${userId}&q=${encodeURIComponent(query)}`);
   }
 
   getUpcomingDeadlines(userId: string): Observable<any[]> {
-    return this.apiService.get<any[]>(`users/${userId}/upcoming-deadlines`);
+    return this.apiService.get<any[]>(`enrollments/upcoming-deadlines?userId=${userId}`);
   }
 
   getRecentActivity(userId: string, limit: number = 10): Observable<any[]> {
-    return this.apiService.get<any[]>(`users/${userId}/recent-activity?limit=${limit}`);
+    return this.apiService.get<any[]>(`enrollments/recent-activity?userId=${userId}&limit=${limit}`);
   }
 
   exportProgress(enrollmentId: string, format: 'pdf' | 'csv' | 'json' = 'pdf'): Observable<Blob> {
