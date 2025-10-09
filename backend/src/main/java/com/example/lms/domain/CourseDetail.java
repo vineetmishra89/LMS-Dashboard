@@ -1,14 +1,14 @@
 package com.example.lms.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "course_detail")
+@Table(name = "LMS_TRNG_DTLS")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,38 +17,40 @@ import java.util.Date;
 public class CourseDetail {
 
   @Id
-  @Column(name = "training_detail_id")
-  private String trainingDetailId;
+  @Column(name = "module_id")
+  private String moduleId;
 
-  @Column(name = "thumbnail_url")
-  private String thumbnail;
+  @Id
+  @Column(name = "trng_id")
+  private String trainingId;
 
-  @Column(name = "topic")
-  private String topic;
+  @Column(name = "module_summary")
+  private String summary;
 
-  @Column(name = "created_at")
-  private Date createdAt;
-
-  @Column(name = "updated_at")
-  private Date updatedAt;
+  @Column(name = "module_dtls")
+  private Date details;
 
   @Column(name = "module_duration")
   private Integer duration;
 
-  @Column(name = "instructor_name")
-  private String instructorName;
+  @Column(name = "trainer_id")
+  private String trainerId;
 
   @Column(name = "module_path")
   private String trainingLink;
 
-  @Column(name = "trainers_current_feedback")
-  private String trainersCurrentFeedback;
-
-  @Column(name = "current_user_feedback")
-  private String currentUserFeedback;
-
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "course_id")
-  @JsonBackReference("course-details")
-  private CourseMaster course;
+  @JoinColumn(name = "trng_id")
+  @JsonBackReference("LMS_TRNG_DTLS")
+  private CourseSummary course;
+
+  @ManyToOne
+  @JoinColumn(name = "trainer_id")
+  @JsonBackReference
+  private LMSTrainerDetails trainerDetails;
+
+  @OneToMany(mappedBy = "courseDetail")
+  private List<EnrollmentDetails> enrollmentDetailsList;
+
+  private long moduleProgressPercentage;
 }

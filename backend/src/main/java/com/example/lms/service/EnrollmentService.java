@@ -1,8 +1,7 @@
 package com.example.lms.service;
 
-import com.example.lms.domain.CourseDetail;
-import com.example.lms.domain.CourseMaster;
-import com.example.lms.domain.Enrollment;
+import com.example.lms.domain.CourseSummary;
+import com.example.lms.domain.EnrollmentMapping;
 import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentRepository;
 import org.springframework.stereotype.Service;
@@ -23,12 +22,12 @@ public class EnrollmentService {
     this.courseRepository = courseRepository;
   }
 
-  public List<Enrollment> byUser(String userId) {
+  public List<EnrollmentMapping> byUser(String userId) {
     return enrollmentRepository.findByUserId(userId);
   }
 
-  public Enrollment enroll(String userId, String courseId) {
-    Enrollment e = new Enrollment();
+  public EnrollmentMapping enroll(String userId, String courseId) {
+    EnrollmentMapping e = new EnrollmentMapping();
     e.setId(UUID.randomUUID().toString());
     e.setUserId(userId);
     e.setCourseId(courseId);
@@ -38,13 +37,13 @@ public class EnrollmentService {
     return enrollmentRepository.save(e);
   }
 
-  public Enrollment getById(String id) {
+  public EnrollmentMapping getById(String id) {
     return enrollmentRepository.findById(id).orElseThrow();
   }
 
   public Map<String, Object> getWithCourse(String id) {
-    Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow();
-    CourseMaster course = courseRepository.findById(enrollment.getCourseId()).orElse(null);
+    EnrollmentMapping enrollment = enrollmentRepository.findById(id).orElseThrow();
+    CourseSummary course = courseRepository.findById(enrollment.getCourseId()).orElse(null);
 
     Map<String, Object> result = new HashMap<>();
     result.put("enrollment", enrollment);
@@ -52,8 +51,8 @@ public class EnrollmentService {
     return result;
   }
 
-  public Enrollment updateProgress(String id, Map<String, Object> progressData) {
-    Enrollment e = enrollmentRepository.findById(id).orElseThrow();
+  public EnrollmentMapping updateProgress(String id, Map<String, Object> progressData) {
+    EnrollmentMapping e = enrollmentRepository.findById(id).orElseThrow();
 
     if (progressData.containsKey("overallProgress")) {
       Integer progress = ((Number) progressData.get("overallProgress")).intValue();
@@ -65,14 +64,14 @@ public class EnrollmentService {
   }
 
   public Map<String, Object> getStats(String userId) {
-    List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
+    List<EnrollmentMapping> enrollments = enrollmentRepository.findByUserId(userId);
 
     long totalEnrollments = enrollments.size();
     long activeEnrollments = enrollments.stream().filter(e -> "active".equals(e.getStatus())).count();
     long completedEnrollments = enrollments.stream().filter(e -> "completed".equals(e.getStatus())).count();
     double avgProgress = enrollments.stream()
         .filter(e -> e.getProgressPercent() != null)
-        .mapToInt(Enrollment::getProgressPercent)
+        .mapToInt(EnrollmentMapping::getProgressPercent)
         .average()
         .orElse(0.0);
 
@@ -85,30 +84,30 @@ public class EnrollmentService {
     return stats;
   }
 
-  public Enrollment completeCourse(String id) {
-    Enrollment e = enrollmentRepository.findById(id).orElseThrow();
+  public EnrollmentMapping completeCourse(String id) {
+    EnrollmentMapping e = enrollmentRepository.findById(id).orElseThrow();
     e.setStatus("completed");
     e.setProgressPercent(100);
     e.setLastAccessedAt(OffsetDateTime.now());
     return enrollmentRepository.save(e);
   }
 
-  public Enrollment pauseEnrollment(String id, String reason) {
-    Enrollment e = enrollmentRepository.findById(id).orElseThrow();
+  public EnrollmentMapping pauseEnrollment(String id, String reason) {
+    EnrollmentMapping e = enrollmentRepository.findById(id).orElseThrow();
     e.setStatus("paused");
     e.setLastAccessedAt(OffsetDateTime.now());
     return enrollmentRepository.save(e);
   }
 
-  public Enrollment resumeEnrollment(String id) {
-    Enrollment e = enrollmentRepository.findById(id).orElseThrow();
+  public EnrollmentMapping resumeEnrollment(String id) {
+    EnrollmentMapping e = enrollmentRepository.findById(id).orElseThrow();
     e.setStatus("active");
     e.setLastAccessedAt(OffsetDateTime.now());
     return enrollmentRepository.save(e);
   }
 
-  public Enrollment patch(String id, Integer progressPercent, String status) {
-    Enrollment e = enrollmentRepository.findById(id).orElseThrow();
+  public EnrollmentMapping patch(String id, Integer progressPercent, String status) {
+    EnrollmentMapping e = enrollmentRepository.findById(id).orElseThrow();
     if (progressPercent != null) e.setProgressPercent(progressPercent);
     if (status != null && !status.isBlank()) e.setStatus(status);
     e.setLastAccessedAt(OffsetDateTime.now());

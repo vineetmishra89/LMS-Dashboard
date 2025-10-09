@@ -1,0 +1,31 @@
+package com.example.lms.domain;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+
+import java.util.List;
+
+@Entity
+@Table(name = "LMS_TRAINER_DTLS")
+public class LMSTrainerDetails {
+
+  @Id
+  @Column(name = "trainer_id")
+  private Long trainerid;
+
+  @Column(name = "trainer_emp_id")
+  private Long trainerEmpId;
+
+  @Column(name = "trainer_name")
+  private Long trainerName;
+
+  @Column(name = "email_id")
+  private Long emailid;
+
+  @Column(name = "trainer_type")
+  private Long trainerType;
+
+  @OneToMany(mappedBy = "trainerDetails", cascade = CascadeType.ALL)
+  @JsonManagedReference
+  private List<CourseDetail> modules;
+}

@@ -1,11 +1,10 @@
 package com.example.lms.repo;
 
-import com.example.lms.domain.Enrollment;
+import com.example.lms.domain.EnrollmentMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface EnrollmentRepository extends JpaRepository<Enrollment, String> {
-  List<Enrollment> findByUserId(String userId);
+public interface EnrollmentRepository extends JpaRepository<EnrollmentMapping, String> {
+  List<EnrollmentMapping> findByUserId(String userId);
 }

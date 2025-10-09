@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "course_master")
+@Table(name = "LMS_TRNG_SUMMARY")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,46 +17,40 @@ import java.util.List;
 @NamedEntityGraph(
   name = "CourseMaster.withDetails",
   attributeNodes = @NamedAttributeNode("details"))
-public class CourseMaster {
+public class CourseSummary {
 
   @Id
-  @Column(name = "id")
+  @Column(name = "trng_id")
   private String trainingId;
 
-  @Column(name = "training_name")
-  private String trainingName;
+  @Column(name = "trng_topic")
+  private String topics;
+
+  @Column(name = "trng_details")
+  private String details;
+
+  @Column(name = "pre_requisites")
+  private String prerequisite;
+
+  @Column(name = "level_id")
+  private String level;
+
+  @Column(name = "trng_duration")
+  private Integer duration;
+
+  @Column(name = "trng_type")
+  private String type;
+
+  @Column(name = "rating")
+  private String rating;
 
   @Column(name = "category")
   private String category;
 
-  //@ElementCollection
-  //@CollectionTable(name = "course_topics", joinColumns = @JoinColumn(name = "course_id"))
-  @Column(name = "training_topic")
-  private String topics;
-
-  @Column(name = "description")
-  private String description;
-
-  @Column(name = "content")
-  private String content;
-
-  @Column(name = "instructor_name")
-  private String instructorName;
-
-  @Column(name = "duration")
-  private Integer duration;
-
-  @Column(name = "review_comments")
-  private String reviewComments;
-
-  @Column(name = "prerequisite")
-  private String prerequisite;
-
-  @Column(name = "level")
-  private String level;
-
   @Column(name = "tools_needed")
   private String toolsNeeded;
+
+  private long courseProgressPercentage;
 
   @OneToMany(
     mappedBy = "course",
@@ -64,16 +58,16 @@ public class CourseMaster {
     orphanRemoval = true,
     fetch = FetchType.LAZY
   )
-  @JsonManagedReference("course-details")
-  private List<CourseDetail> details = new ArrayList<>();
+  @JsonManagedReference("LMS_TRNG_DTLS")
+  private List<CourseDetail> lmsTrainingDetails = new ArrayList<>();
 
   // helpers to keep both sides in sync
   public void addDetail(CourseDetail d) {
-    details.add(d);
+    lmsTrainingDetails.add(d);
     d.setCourse(this);
   }
   public void removeDetail(CourseDetail d) {
-    details.remove(d);
+    lmsTrainingDetails.remove(d);
     d.setCourse(null);
   }
 }
