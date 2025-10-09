@@ -1,24 +1,28 @@
-export interface Course {
-  id: string;
-  title: string;
-  description: string;
-  instructor: Instructor;
-  category: CourseCategory;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  duration: number; // in minutes
-  rating: number;
-  reviewCount: number;
-  enrollmentCount: number;
-  price: number;
-  currency: string;
-  thumbnail: string;
-  videoUrl?: string;
-  modules: CourseModule[];
-  tags: string[];
-  isPublished: boolean;
-  isTrending: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+export interface CourseDetail {
+  trainingDetailId: string;
+  trainingId: string;
+  trainersCurrentFeedback?: number;
+  currentUserFeedback?: number;
+  instructorName?: string;
+  topic?: string;
+  duration?: number;
+  trainingLink?: string;
+}
+
+export interface CourseMaster {
+  trainingId: string;
+  trainingName: string;                 // Training Name
+  description?: string;
+  topics?: string;
+  level?: string;
+  content?: string;
+  instructorName?: string;
+  duration?: number;       // or minutes if that’s what you store
+  category?: string;
+  details: CourseDetail[];
+  reviewComments?: string;
+  prerequisite?: string;
+  toolsNeeded?: string;
 }
 
 export interface CourseModule {
@@ -28,7 +32,6 @@ export interface CourseModule {
   orderIndex: number;
   duration: number;
   lessons: Lesson[];
-  quiz?: Quiz;
   isCompleted?: boolean;
 }
 

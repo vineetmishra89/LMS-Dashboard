@@ -1,3 +1,5 @@
+
+
 .app-container {
   min-height: 100vh;
   display: flex;
@@ -89,7 +91,7 @@
     transition: margin-left 0.3s ease;
 
     &.with-sidebar {
-      margin-left: 80px;
+      margin-left: 0;
     }
 
     .page-loading {

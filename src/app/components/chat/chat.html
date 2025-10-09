@@ -168,7 +168,7 @@
   </div>
   <div class="streak-content">
     <div class="streak-main">
-      <span class="streak-icon" [ngClass]="{ 'fire': (currentStreak$ | async) > 0 }">🔥</span>
+      <span class="streak-icon" [ngClass]="{ 'fire': ((currentStreak$ | async) ?? 0).toString() > '0' }">🔥</span>
       <div class="streak-details">
         <span class="streak-number">{{ (currentStreak$ | async) || 0 }}</span>
         <div class="streak-text">
@@ -195,11 +195,11 @@
     </div>
     
     <!-- Streak Goals -->
-    <div class="streak-goals" *ngIf="(currentStreak$ | async) > 0">
+    <div class="streak-goals" *ngIf="((currentStreak$ | async) ?? 0).toString() > '0'">
       <div class="goal-progress">
-        <div class="goal-text">Next milestone: {{ getNextMilestone((currentStreak$ | async) || 0) }} days</div>
+        <div class="goal-text">Next milestone: {{ getNextMilestone((currentStreak$ | async) ?? 0) }} days</div>
         <div class="goal-bar">
-          <div class="goal-fill" [style.width.%]="getMilestoneProgress((currentStreak$ | async) || 0)"></div>
+          <div class="goal-fill" [style.width.%]="getMilestoneProgress((currentStreak$ | async) ?? 0)"></div>
         </div>
       </div>
     </div>

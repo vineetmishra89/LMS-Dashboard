@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Course, Stats, Certificate } from '../models/course';
+//import { CourseMaster, Stats, Certificate } from '../models/course';
 
 @Injectable({
   providedIn: 'root'
@@ -9,16 +9,16 @@ export class DashboardService {
 
   constructor() { }
 
-  getStats(): Observable<Stats> {
+  /*getStats(): Observable<Stats> {
     return of({
       enrolledCourses: 12,
       certificates: 8,
       hoursLearned: 156,
       usersOnline: 2341
     });
-  }
+  }*/
 
-  getCurrentCourse(): Observable<Course> {
+  /*getCurrentCourse(): Observable<CourseMaster> {
     return of({
       id: '1',
       title: 'Advanced Machine Learning',
@@ -31,7 +31,7 @@ export class DashboardService {
     });
   }
 
-  getMyCourses(): Observable<Course[]> {
+  getMyCourses(): Observable<CourseMaster[]> {
     return of([
       {
         id: '2',
@@ -56,7 +56,7 @@ export class DashboardService {
     ]);
   }
 
-  getTrendingCourses(): Observable<Course[]> {
+  getTrendingCourses(): Observable<CourseMaster[]> {
     return of([
       {
         id: '4',
@@ -98,5 +98,5 @@ export class DashboardService {
         icon: '🔵'
       }
     ]);
-  }
+  }*/
 }

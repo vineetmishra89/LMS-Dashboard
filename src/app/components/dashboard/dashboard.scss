@@ -1,0 +1,468 @@
+/* Dashboard page layout — matches the provided mock */
+.dashboard {
+  padding: 1.5rem;
+}
+
+/* Top stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* 3-column content */
+.content-grid {
+  display: grid;
+  grid-template-columns: clamp(280px, 26vw, 360px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.content-grid > .catalog {  /* selector matches <section class="catalog card"> */
+  min-width: 0;             /* CRITICAL: prevents overlap under the filters */
+}
+
+.catalog-col { min-width: 0; }
+
+
+/* Filters card sits above only inside its own column */
+.filters-panel {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 1.25rem;
+}
+
+/* Cards and panels */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,.08);
+}
+
+.filters h3,
+.my-learning h3 {
+  margin: 0 0 .75rem 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  position: sticky;
+  top: 1rem;
+}
+
+.filter {
+  display: grid;
+  gap: .35rem;
+  margin-bottom: .9rem;
+}
+
+.filter label {
+  font-size: .85rem;
+  color: #374151;
+  display: block;
+  margin-bottom: .35rem;
+}
+
+.filter select {
+  width: 100%;
+  padding: .5rem .75rem;
+  border: 1px solid #d1d5db;
+  border-radius: .5rem;
+  background: #fff;
+}
+
+/* Catalog */
+.catalog h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 .75rem 0;
+}
+
+.course-list {
+  display: grid;
+grid-auto-rows: auto; 
+  gap: 1rem;
+}
+
+
+/* Make each course card fill its grid cell height */
+.course-list > * {
+  width: 100%;            /* each card takes full width of container */
+   justify-self: start;
+}
+
+/* Prevent layout “jump” from scrollbars on Windows */
+html { scrollbar-gutter: stable both-edges; }
+
+/* Optional: global sizing for consistency if not already set */
+*, *::before, *::after { box-sizing: border-box; }
+
+
+
+.actions .btn-primary,
+.actions .btn-continue {
+  border: 0;
+  border-radius: .6rem;
+  padding: .55rem .9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.actions .btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.actions .btn-continue {
+  background: #22c55e;
+  color: #fff;
+}
+
+/* My learning chip */
+.continue-chip {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  border-radius: .6rem;
+  padding: .65rem .8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Loading */
+.loading-container {
+  min-height: 40vh;
+  display: grid;
+  place-items: center;
+  gap: .5rem;
+}
+
+.loading-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2563eb;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Stack on tablets/phones */
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .filters { position: static; } /* disable sticky on small screens */
+}
+
+@media (max-width: 992px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .my-learning, .filters { margin-bottom: 1rem; }
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  margin: .5rem 0 1rem 0;
+  color: #111827;
+}
+
+
+/* Make stat cards match screenshot spacing */
+.stats-grid app-stats-card {
+  display:block;
+}
+
+/* Make search filters and course catalog panels true white cards */
+.filters.card, .catalog.card, .my-learning.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+
+/* Inside the catalog card, keep list spacing clean */
+.catalog.card .course-list {
+  background: transparent;   /* no inner tint */
+  border: 0;                 /* no inner border */
+  padding: 0 .25rem .25rem;  /* subtle spacing only */
+}
+
+/* Inputs inside the filters card */
+.filters select {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+    display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: nowrap;      /* native <select> doesn’t wrap text */
+  overflow: hidden;
+  text-overflow: ellipsis; 
+}
+
+:host .catalog.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  padding: 0px;
+  position: relative;
+  z-index: 1;          /* below filters-panel */
+  overflow: hidden;    /* clip sticky header & scrollbar inside rounded card */
+  background: #fff;    /* if not already set */
+}
+
+
+/* If any wrapper around the list adds tint, neutralize it */
+:host .catalog.card .course-list,
+:host .catalog.card .course-list > *[class*="panel"],
+:host .catalog.card .course-list > *[class*="inner"] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* src/app/components/dashboard/dashboard.scss */
+
+.table-scroll { overflow-x: auto; max-width: 100%;}
+
+.catalog-table,
+.catalog-table thead,
+.catalog-table tbody,
+.catalog-table tr,
+.catalog-table th,
+.catalog-table td {
+  /* Kill any global flex/grid overrides that break tables */
+  display: revert;                 /* restore native display values */
+}
+
+.catalog-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;          /* lower than .filters-panel's 2 */
+}
+
+/* Card look */
+.catalog-table {
+  width: 100%;
+  table-layout: auto;          /* let columns size naturally */
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.catalog-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f7f8fa;
+  color: #1e293b;
+  font-weight: 700;
+  padding: 12px 14px;
+  text-align: center;          /* keep header centered */
+  white-space: normal;         /* allow wrapping */
+  line-height: 1.2;
+  border-bottom: 1px solid #e6e8ec;
+}
+
+/* Zebra + hover */
+.catalog-table tbody tr:nth-child(even) { background: #fcfcfd; }
+.catalog-table tbody tr:hover { background: #f6faff; }
+
+/* General cell spacing */
+.catalog-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef0f3;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+/* Make text columns left-aligned for readability; keep numeric centered */
+.catalog-table td.col.name,
+.catalog-table td.col.desc,
+.catalog-table td.col.outline,
+.catalog-table td.col.review,
+.catalog-table td.col.trainer,
+.catalog-table td.col.prereq,
+.catalog-table td.col.tools { text-align: left; }
+
+.catalog-table td.col.duration,
+.catalog-table td.col.trainer-fb,
+.catalog-table td.col.user-fb,
+.catalog-table td.col.level,
+.catalog-table td.col.link,
+.catalog-table td.col.action { text-align: center; }
+
+/* Soft width caps for verbose text columns so they wrap instead of forcing scroll */
+.catalog-table th.col-desc,
+.catalog-table td.col.desc,
+.catalog-table th.col-outline,
+.catalog-table td.col.outline,
+.catalog-table th.col-review,
+.catalog-table td.col.review,
+.catalog-table th.col-tools,
+.catalog-table td.col.tools {
+  max-width: clamp(16ch, 28vw, 48ch);
+}
+
+/* Responsive: hide low-priority columns on smaller screens to remove horizontal scroll */
+@media (max-width: 1200px) {
+  .catalog-table th.col-review,
+  .catalog-table td.col.review,
+  .catalog-table th.col-tools,
+  .catalog-table td.col.tools,
+  .catalog-table th.col-link,
+  .catalog-table td.col.link { display: none; }
+}
+
+@media (max-width: 992px) {
+  .catalog-table th.col-prereq,
+  .catalog-table td.col.prereq { display: none; }
+}
+
+app-course-card { display: contents; }
+
+
+/* Table-styled panel to mirror the catalog table look */
+.panel-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+/* Header bar identical vibe to catalog header */
+.panel-table thead th {
+  background: #f7f8fa;
+  color: #1e293b;
+  font-weight: 700;
+  padding: 12px 14px;
+  text-align: center;
+  border-bottom: 1px solid #e6e8ec;
+}
+
+/* Rows & cells */
+.panel-table td {
+  padding: 12px 5px;
+  border-bottom: 1px solid #eef0f3;
+  vertical-align: middle;
+}
+
+.panel-table tbody tr:last-child td { border-bottom: 0; }
+
+/* Column roles */
+:host .panel-table .label {
+  width: 38% !important;
+  min-width: 140px !important;
+  color: #334155;
+  font-weight: 600;
+}
+
+.panel-table .control {
+  width: 62%;
+}
+
+
+
+ /* Use the OS/browser native select with its native arrow */
+.u-select {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;               /* reset any prior background-image tricks */
+  color: #0f172a;
+  font: inherit;
+
+  /* CRITICAL: show the native arrow */
+  appearance: auto;
+  -webkit-appearance: menulist;
+  -moz-appearance: auto;
+
+  /* hard reset any earlier arrow hacks */
+  background-image: none !important;
+  background-position: initial !important;
+  background-size: auto !important;
+  background-repeat: repeat !important;
+}
+
+/* Optional nicer focus */
+.u-select:focus {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+  outline: none;
+}
+
+/* If you previously hid the Windows IE/Edge arrow—undo it */
+.u-select::-ms-expand { display: inline; }
+
+/* Actions row buttons (shared style with catalog action buttons) */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  color: #111827;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover { background: #f9fafb; }
+.btn.primary {
+  border-color: transparent;
+  background: #3f51b5;
+  color: #fff;
+}
+.btn.primary:hover { background: #33489d; }
+
+.panel-table thead th { position: sticky; top: 0; z-index: 1; }
+
+
+
+.table-card { border-radius: 12px; background:#fff; border:1px solid #eef0f3; box-shadow:0 1px 2px rgba(16,24,40,.04); overflow:hidden; }
+.table-scroll{ overflow-x:auto; max-width:100%; }
+.catalog-table, .details-table{ width:100%; border-collapse:separate; border-spacing:0; }
+.catalog-table thead th, .details-table thead th{ position:sticky; top:0; z-index:1; background:#f7f8fa; font-weight:700; padding:10px 12px; border-bottom:1px solid #e6e8ec; text-align:left; }
+.catalog-table td, .details-table td{ padding:10px 12px; border-bottom:1px solid #eef0f3; vertical-align:top; }
+.wrap{ white-space:normal; word-break:break-word; overflow-wrap:anywhere; }
+.btn{ display:inline-flex; align-items:center; justify-content:center; min-width:96px; padding:6px 14px; border-radius:8px; border:1px solid #d0d5dd; background:#fff; font-weight:700; cursor:pointer; }
+.btn:hover{ background:#f3f4f6; } .btn.primary{ border-color:transparent; background:#3f51b5; color:#fff; }
+.btn.small{ min-width:0; padding:4px 10px; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:900; }
+.modal{ position:fixed; inset:10% 8% auto 8%; background:#fff; border-radius:14px; box-shadow:0 20px 40px rgba(2,6,23,.25); z-index:901; display:flex; flex-direction:column; max-height:80vh; }
+.modal-head,.modal-foot{ padding:12px 16px; border-bottom:1px solid #eef0f3; }
+.modal-foot{ border-top:1px solid #eef0f3; border-bottom:0; }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; background:#f7f8fa; }
+.modal-body{ padding:12px 16px; overflow:auto; }
+.icon-btn{ border:0; background:transparent; font-size:20px; cursor:pointer; }
+.muted{ color:#64748b; }

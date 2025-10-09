@@ -265,7 +265,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           const progressPercent = activeEnrollment.progress.overallProgress;
           
           return {
-            message: `Your next lesson is in **"${course?.title}"**:\n\n📖 **Current:** ${activeEnrollment.progress.currentLesson || 'Getting Started'}\n📚 **Module:** ${activeEnrollment.progress.currentModule || 'Introduction'}\n📊 **Progress:** ${progressPercent}% complete\n⏱️ **Time Spent:** ${Math.round(activeEnrollment.timeSpent / 60)} hours\n\nReady to continue learning? Let's keep that momentum going! 💪`,
+            message: `Your next lesson is in **"${course?.description}"**:\n\n📖 **Current:** ${activeEnrollment.progress.currentLesson || 'Getting Started'}\n📚 **Module:** ${activeEnrollment.progress.currentModule || 'Introduction'}\n📊 **Progress:** ${progressPercent}% complete\n⏱️ **Time Spent:** ${Math.round(activeEnrollment.timeSpent / 60)} hours\n\nReady to continue learning? Let's keep that momentum going! 💪`,
             type: 'text',
             data: { enrollment: activeEnrollment, course },
             suggestions: ['Continue this lesson', 'Show course details', 'Set study reminder']
@@ -338,11 +338,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           for (let i = 0; i < enrolledCourses.length; i++) {
             const course = enrolledCourses[i];
             const enrollment = await this.enrollmentService.getUserEnrollments(this.userId).toPromise();
-            const courseEnrollment = enrollment?.find(e => e.courseId === course.id);
+            const courseEnrollment = enrollment?.find(e => e.courseId === course.trainingId);
             const progress = courseEnrollment?.progress.overallProgress || 0;
             
-            coursesList += `${i + 1}. **${course.title}**\n`;
-            coursesList += `   • Instructor: ${course.instructor.firstName} ${course.instructor.lastName}\n`;
+            //coursesList += `${i + 1}. **${course.title}**\n`;
+            coursesList += `   • Instructor: ${course.instructorName}\n`;
             coursesList += `   • Progress: ${progress}% complete\n`;
             coursesList += `   • Status: ${courseEnrollment?.status || 'unknown'}\n\n`;
           }

@@ -1,0 +1,18 @@
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* Use the gap property instead of margin on items for spacing */
+    gap: 20px; /* This adds 20px of space between rows and columns */
+}
+
+.flex-item {
+    /* Since the gap is handled by the container, you can use 50% */
+    flex-basis: calc(50% - 10px); /* 10px is half of the 20px gap */
+    flex-grow: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+* {
+    color: rgb(51, 65, 85);
+    letter-spacing: 0.02em;
+}

@@ -23,7 +23,7 @@ export class ConfigService {
   public config$ = this.configSubject.asObservable();
 
   constructor() {
-    this.loadRemoteConfig();
+   // this.loadRemoteConfig();
   }
 
   private loadRemoteConfig(): void {
