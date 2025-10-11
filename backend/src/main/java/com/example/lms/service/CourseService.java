@@ -69,7 +69,7 @@ public class CourseService {
       .flatMap(courseRepository::findById);
   }
 
-  public CourseDetail search(String courseId) {
+  public CourseSummary search(String courseId) {
     CourseDetail course = null;
 
     try{

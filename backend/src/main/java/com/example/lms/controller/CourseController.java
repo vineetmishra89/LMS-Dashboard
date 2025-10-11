@@ -15,13 +15,6 @@ public class CourseController {
   private final CourseService courseService;
   public CourseController(CourseService courseService) { this.courseService = courseService; }
 
-  @GetMapping
-  public List<CourseSummary> list(@RequestParam(required = false) String category,
-                                  @RequestParam(required = false) String topic,
-                                  @RequestParam(required = false) String instructor) {
-    return courseService.search(category, topic, instructor);
-  }
-
   @GetMapping("/enrolled")
   public List<CourseSummary> enrolled(@RequestParam String userId) {
     return courseService.getEnrolledCourses(userId);
@@ -33,7 +26,7 @@ public class CourseController {
   }
 
   @GetMapping("/getCourseById/{courseId}")
-  public CourseDetail getCourseById(@PathVariable(required = true) String courseId) {
+  public CourseSummary getCourseById(@PathVariable(required = true) String courseId,@RequestParam String userId) {
     return courseService.search(courseId);
   }
 }
