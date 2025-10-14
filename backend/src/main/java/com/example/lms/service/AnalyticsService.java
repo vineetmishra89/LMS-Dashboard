@@ -1,5 +1,6 @@
 package com.example.lms.service;
 
+import com.example.lms.domain.LearningHours;
 import com.example.lms.dto.AnalyticsSummaryDto;
 import com.example.lms.repo.CertificateRepository;
 import com.example.lms.repo.EnrollmentRepository;
@@ -23,7 +24,7 @@ public class AnalyticsService {
   public AnalyticsSummaryDto getSummary(String userId) {
     long enrolled = enrollmentRepository.findByUserId(userId).size();
     long completed = (int) enrollmentRepository.findByUserId(userId).stream().filter(e -> "completed".equalsIgnoreCase(e.getStatus())).count();
-    double hours = learningHoursRepository.findByUserId(userId).stream().mapToDouble(h -> h.getTotalHours()).sum();
+    double hours = learningHoursRepository.findByUserId(userId).stream().mapToDouble(LearningHours::getTotalHours).sum();
     return new AnalyticsSummaryDto(completed, enrolled, hours);
   }
 
