@@ -17,13 +17,13 @@ public class LMSTrainerDetails {
   private Long trainerEmpId;
 
   @Column(name = "trainer_name")
-  private Long trainerName;
+  private String trainerName;
 
   @Column(name = "email_id")
-  private Long emailid;
+  private String emailid;
 
   @Column(name = "trainer_type")
-  private Long trainerType;
+  private String trainerType;
 
   @OneToMany(mappedBy = "trainerDetails", cascade = CascadeType.ALL)
   @JsonManagedReference

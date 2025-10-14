@@ -26,7 +26,7 @@ public class CourseController {
   }
 
   @GetMapping("/getCourseById/{courseId}")
-  public CourseSummary getCourseById(@PathVariable(required = true) String courseId,@RequestParam String userId) {
+  public CourseSummary getCourseById(@PathVariable(required = true) Long courseId,@RequestParam String userId) {
     return courseService.search(courseId);
   }
 }

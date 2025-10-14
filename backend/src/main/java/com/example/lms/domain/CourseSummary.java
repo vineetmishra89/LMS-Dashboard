@@ -15,13 +15,13 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NamedEntityGraph(
-  name = "CourseMaster.withDetails",
+  name = "CourseSummary.withDetails",
   attributeNodes = @NamedAttributeNode("details"))
 public class CourseSummary {
 
   @Id
   @Column(name = "trng_id")
-  private String trainingId;
+  private Long trainingId;
 
   @Column(name = "trng_topic")
   private String topics;
@@ -50,16 +50,26 @@ public class CourseSummary {
   @Column(name = "tools_needed")
   private String toolsNeeded;
 
+  @Column(name = "course_progress")
   private long courseProgressPercentage;
 
   @OneToMany(
     mappedBy = "course",
     cascade = CascadeType.ALL,
     orphanRemoval = true,
-    fetch = FetchType.LAZY
+    fetch = FetchType.EAGER
   )
   @JsonManagedReference("LMS_TRNG_DTLS")
   private List<CourseDetail> lmsTrainingDetails = new ArrayList<>();
+
+  @OneToMany(
+    mappedBy = "courseSummary",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true,
+    fetch = FetchType.EAGER
+  )
+  @JsonManagedReference("LMS_USER_TRNG_ENROLLMENT_MAPPING")
+  private List<EnrollmentMapping> enrollmentMappings;
 
   // helpers to keep both sides in sync
   public void addDetail(CourseDetail d) {

@@ -55,25 +55,25 @@ public class CourseService {
 
   public List<CourseSummary> getEnrolledCourses(String userId) {
     List<EnrollmentMapping> enrollments = enrollmentRepository.findByUserId(userId);
-    Set<String> courseIds = enrollments.stream().map(EnrollmentMapping::getCourseId).collect(Collectors.toSet());
+    Set<Long> courseIds = enrollments.stream().map(enrollmentMapping -> enrollmentMapping.getCourseSummary().getTrainingId()).collect(Collectors.toSet());
     if (courseIds.isEmpty()) return List.of();
     return courseRepository.findAllById(courseIds);
   }
 
   public Optional<CourseSummary> getContinueCourse(String userId) {
     return enrollmentRepository.findByUserId(userId).stream()
-      .filter(e -> "active".equalsIgnoreCase(e.getStatus()) && e.getProgressPercent() != null && e.getProgressPercent() < 100)
+      .filter(e -> "ACTIVE".equalsIgnoreCase(e.getStatus()) && e.getProgressPercent() != null && e.getProgressPercent() < 100)
       .sorted(Comparator.comparing(EnrollmentMapping::getLastAccessedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-      .map(EnrollmentMapping::getCourseId)
+      .map(enrollmentMapping -> enrollmentMapping.getCourseSummary().getTrainingId())
       .findFirst()
       .flatMap(courseRepository::findById);
   }
 
-  public CourseSummary search(String courseId) {
-    CourseDetail course = null;
+  public CourseSummary search(Long courseId) {
+    CourseSummary course = null;
 
     try{
-      course = courseDetailRepository.findById(courseId).orElse(null);
+      course = courseRepository.findById(courseId).orElse(null);
     }catch(Exception ex){
       log.error("Exception occurred : ",ex);
     }

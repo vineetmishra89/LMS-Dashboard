@@ -18,23 +18,16 @@ public class CourseDetail {
 
   @Id
   @Column(name = "module_id")
-  private String moduleId;
-
-  @Id
-  @Column(name = "trng_id")
-  private String trainingId;
+  private Long moduleId;
 
   @Column(name = "module_summary")
   private String summary;
 
   @Column(name = "module_dtls")
-  private Date details;
+  private String details;
 
   @Column(name = "module_duration")
   private Integer duration;
-
-  @Column(name = "trainer_id")
-  private String trainerId;
 
   @Column(name = "module_path")
   private String trainingLink;
@@ -49,7 +42,7 @@ public class CourseDetail {
   @JsonBackReference
   private LMSTrainerDetails trainerDetails;
 
-  @OneToMany(mappedBy = "courseDetail")
+  @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private List<EnrollmentDetails> enrollmentDetailsList;
 
   private long moduleProgressPercentage;

@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface EnrollmentRepository extends JpaRepository<EnrollmentMapping, String> {
+public interface EnrollmentRepository extends JpaRepository<EnrollmentMapping, Long> {
   List<EnrollmentMapping> findByUserId(String userId);
 }
