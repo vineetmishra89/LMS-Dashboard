@@ -51,7 +51,7 @@ public class CourseSummary {
   private String toolsNeeded;
 
   @Column(name = "course_progress")
-  private long courseProgressPercentage;
+  private Long courseProgressPercentage;
 
   @OneToMany(
     mappedBy = "course",

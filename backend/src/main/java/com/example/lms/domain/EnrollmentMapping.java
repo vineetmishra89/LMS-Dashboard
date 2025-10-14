@@ -1,5 +1,6 @@
 package com.example.lms.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,12 +44,12 @@ public class EnrollmentMapping {
   @Column(name = "last_accessed_ts")
   private OffsetDateTime lastAccessedAt;
 
-  @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
   private List<EnrollmentDetails> enrollmentDetailsList;
 
   @ManyToOne(fetch=FetchType.EAGER)
   @JoinColumn(name="trng_id")
-  @JsonManagedReference
+  @JsonBackReference
   private CourseSummary courseSummary;
 }

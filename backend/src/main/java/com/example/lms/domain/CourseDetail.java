@@ -1,6 +1,7 @@
 package com.example.lms.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,7 +44,8 @@ public class CourseDetail {
   private LMSTrainerDetails trainerDetails;
 
   @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JsonManagedReference
   private List<EnrollmentDetails> enrollmentDetailsList;
 
-  private long moduleProgressPercentage;
+  private Long moduleProgressPercentage;
 }
