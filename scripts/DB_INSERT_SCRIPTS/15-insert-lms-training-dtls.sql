@@ -1,4 +1,4 @@
-INSERT INTO LMS_TRAINING_DTLS (TRNG_ID, MODULE_NAME, MODULE_DTLS, MODULE_DURATION, TRAINER_ID, MODULE_PATH, SEQ_ID) VALUES
+INSERT INTO LMS_TRNG_DTLS (TRNG_ID, MODULE_NAME, MODULE_DTLS, MODULE_DURATION, TRAINER_ID, MODULE_PATH, SEQ_ID) VALUES
 (1, 'Introduction to Communication', 'Understanding the basics of business communication', 60, 1, '/courses/comm/intro.mp4', 1),
 (1, 'Verbal Communication Skills', 'Mastering verbal communication in business', 90, 1, '/courses/comm/verbal.mp4', 2),
 (1, 'Non-Verbal Cues', 'Understanding body language and non-verbal signals', 45, 2, '/courses/comm/nonverbal.mp4', 3),
