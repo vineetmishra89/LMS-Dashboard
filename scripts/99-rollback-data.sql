@@ -1,4 +1,7 @@
 
+
+BEGIN;
+
 DELETE FROM lms_schema.LMS_USER_TRNG_FEEDBACK;
 DELETE FROM lms_schema.LMS_TRNG_FORUM_SUMMARY;
 DELETE FROM lms_schema.LMS_USER_TRNG_ENROLLMENT_DTLS;
@@ -20,3 +23,5 @@ ALTER SEQUENCE lms_schema.lms_module_id_seq RESTART WITH 1;
 ALTER SEQUENCE lms_schema.lms_trng_enrl_id_seq RESTART WITH 1;
 ALTER SEQUENCE lms_schema.lms_trng_forum_id_seq RESTART WITH 1;
 ALTER SEQUENCE lms_schema.lms_feedback_id_seq RESTART WITH 1;
+
+COMMIT;

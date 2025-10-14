@@ -1,4 +1,5 @@
 
+BEGIN;
 
 DROP TABLE IF EXISTS lms_schema.LMS_USER_TRNG_FEEDBACK CASCADE;
 DROP TABLE IF EXISTS lms_schema.LMS_TRNG_FORUM_SUMMARY CASCADE;
@@ -21,3 +22,5 @@ DROP SEQUENCE IF EXISTS lms_schema.lms_module_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS lms_schema.lms_trng_enrl_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS lms_schema.lms_trng_forum_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS lms_schema.lms_feedback_id_seq CASCADE;
+
+COMMIT;
