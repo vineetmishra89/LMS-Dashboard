@@ -1,7 +1,7 @@
 package com.example.lms.controller;
 
 import com.example.lms.domain.CourseDetail;
-import com.example.lms.domain.CourseMaster;
+import com.example.lms.domain.CourseSummary;
 import com.example.lms.service.CourseService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,25 +15,18 @@ public class CourseController {
   private final CourseService courseService;
   public CourseController(CourseService courseService) { this.courseService = courseService; }
 
-  @GetMapping
-  public List<CourseMaster> list(@RequestParam(required = false) String category,
-                                 @RequestParam(required = false) String topic,
-                                 @RequestParam(required = false) String instructor) {
-    return courseService.search(category, topic, instructor);
-  }
-
   @GetMapping("/enrolled")
-  public List<CourseMaster> enrolled(@RequestParam String userId) {
+  public List<CourseSummary> enrolled(@RequestParam String userId) {
     return courseService.getEnrolledCourses(userId);
   }
 
   @GetMapping("/continue")
-  public Optional<CourseMaster> continueCourse(@RequestParam String userId) {
+  public Optional<CourseSummary> continueCourse(@RequestParam String userId) {
     return courseService.getContinueCourse(userId);
   }
 
   @GetMapping("/getCourseById/{courseId}")
-  public CourseDetail getCourseById(@PathVariable(required = true) String courseId) {
+  public CourseSummary getCourseById(@PathVariable(required = true) Long courseId,@RequestParam String userId) {
     return courseService.search(courseId);
   }
 }
