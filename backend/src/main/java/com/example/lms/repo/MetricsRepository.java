@@ -11,15 +11,15 @@ import java.util.List;
 public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long> {
 
   @Query(value = "SELECT e.email_id as userId, " +
-    "COUNT(CASE WHEN e.status = 'COMPLETED' THEN 1 END) as completedCourses, " +
+    "COUNT(CASE WHEN upper(e.status) = 'COMPLETED' THEN 1 END) as completedCourses, " +
     "AVG(e.progress_percent) as averageProgress, " +
     "COUNT(*) as totalEnrollments " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
-    "WHERE e.enrolled_ts >= :startDate " +
+    "WHERE e.completed_ts >= :startDate " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
-    "AND (:technology IS NULL OR c.tools_needed LIKE %:technology%) " +
+    "AND (:technology IS NULL OR c.technology=:technology) " +
     "GROUP BY e.email_id " +
     "ORDER BY completedCourses DESC, averageProgress DESC " +
     "LIMIT :topN", nativeQuery = true)
@@ -39,11 +39,11 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "0 as viewCount " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
-    "WHERE e.status = 'COMPLETED' " +
-    "AND e.enrolled_ts >= :startDate " +
+    "WHERE upper(e.status) = 'COMPLETED' " +
+    "AND e.completed_ts >= :startDate " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
-    "AND (:technology IS NULL OR c.tools_needed LIKE %:technology%) " +
+    "AND (:technology IS NULL OR  c.technology=:technology) " +
     "GROUP BY c.trng_id, c.trng_topic, c.category, c.level_id, c.rating " +
     "ORDER BY CAST(c.rating AS DECIMAL) DESC NULLS LAST " +
     "LIMIT :topN", nativeQuery = true)
@@ -63,11 +63,11 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "0 as viewCount " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
-    "WHERE e.status = 'COMPLETED' " +
-    "AND e.enrolled_ts >= :startDate " +
+    "WHERE upper(e.status) = 'COMPLETED' " +
+    "AND e.completed_ts >= :startDate " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
-    "AND (:technology IS NULL OR c.tools_needed LIKE %:technology%) " +
+    "AND (:technology IS NULL OR  c.technology=:technology) " +
     "GROUP BY c.trng_id, c.trng_topic, c.category, c.level_id, c.rating " +
     "ORDER BY enrollmentCount DESC " +
     "LIMIT :topN", nativeQuery = true)
@@ -87,11 +87,11 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "COUNT(e.last_accessed_ts) as viewCount " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
-    "WHERE e.status = 'COMPLETED' " +
+    "WHERE upper(e.status) = 'COMPLETED' " +
     "AND e.last_accessed_ts >= :startDate " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
-    "AND (:technology IS NULL OR c.tools_needed LIKE %:technology%) " +
+    "AND (:technology IS NULL OR c.technology=:technology) " +
     "GROUP BY c.trng_id, c.trng_topic, c.category, c.level_id, c.rating " +
     "ORDER BY viewCount DESC " +
     "LIMIT :topN", nativeQuery = true)
@@ -107,15 +107,15 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "c.level_id as level, " +
     "c.rating, " +
     "COUNT(*) as enrollmentCount, " +
-    "COUNT(CASE WHEN e.status = 'COMPLETED' THEN 1 END) as completedCount, " +
+    "COUNT(CASE WHEN upper(e.status) = 'COMPLETED' THEN 1 END) as completedCount, " +
     "0 as viewCount " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
-    "WHERE e.status = 'COMPLETED' " +
-    "AND e.enrolled_ts >= :startDate " +
+    "WHERE upper(e.status) = 'COMPLETED' " +
+    "AND e.completed_ts >= :startDate " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
-    "AND (:technology IS NULL OR c.tools_needed LIKE %:technology%) " +
+    "AND (:technology IS NULL OR c.technology=:technology) " +
     "GROUP BY c.trng_id, c.trng_topic, c.category, c.level_id, c.rating " +
     "ORDER BY completedCount DESC " +
     "LIMIT :topN", nativeQuery = true)
@@ -137,11 +137,11 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "e.last_accessed_ts as lastAccessedTs " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
-    "WHERE e.status = 'COMPLETED' " +
-    "AND e.enrolled_ts >= :startDate " +
+    "WHERE upper(e.status) = 'COMPLETED' " +
+    "AND e.completed_ts >= :startDate " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
-    "AND (:technology IS NULL OR c.tools_needed LIKE %:technology%) " +
+    "AND (:technology IS NULL OR  c.technology=:technology) " +
     "ORDER BY e.enrolled_ts DESC", nativeQuery = true)
   List<Object[]> findUserTrainingDump(@Param("startDate") OffsetDateTime startDate,
                                        @Param("category") String category,

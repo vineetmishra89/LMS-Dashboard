@@ -5,7 +5,6 @@ import com.example.lms.repo.MetricsRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -59,9 +58,9 @@ public class MetricsService {
     List<Object[]> results = metricsRepository.findTopTrainees(startDate, category, level, technology, topN);
     return results.stream().map(row -> new TopTraineeDto(
       (String) row[0],
-      ((BigInteger) row[1]).longValue(),
+      ((Long) row[1]).longValue(),
       row[2] != null ? ((BigDecimal) row[2]).doubleValue() : 0.0,
-      ((BigInteger) row[3]).longValue()
+      ((Long) row[3]).longValue()
     )).collect(Collectors.toList());
   }
 
@@ -69,12 +68,12 @@ public class MetricsService {
                                                  String level, String technology, Integer topN) {
     List<Object[]> results = metricsRepository.findTopRatedCourses(startDate, category, level, technology, topN);
     return results.stream().map(row -> new TopCourseDto(
-      ((BigInteger) row[0]).longValue(),
+      ((Long) row[0]).longValue(),
       (String) row[1],
       (String) row[2],
       (String) row[3],
       (String) row[4],
-      ((BigInteger) row[5]).longValue(),
+      ((Long) row[5]).longValue(),
       0L,
       0L
     )).collect(Collectors.toList());
@@ -84,12 +83,12 @@ public class MetricsService {
                                                     String level, String technology, Integer topN) {
     List<Object[]> results = metricsRepository.findTopEnrolledCourses(startDate, category, level, technology, topN);
     return results.stream().map(row -> new TopCourseDto(
-      ((BigInteger) row[0]).longValue(),
+      ((Long) row[0]).longValue(),
       (String) row[1],
       (String) row[2],
       (String) row[3],
       (String) row[4],
-      ((BigInteger) row[5]).longValue(),
+      ((Long) row[5]).longValue(),
       0L,
       0L
     )).collect(Collectors.toList());
@@ -99,14 +98,14 @@ public class MetricsService {
                                                   String level, String technology, Integer topN) {
     List<Object[]> results = metricsRepository.findTopViewedCourses(startDate, category, level, technology, topN);
     return results.stream().map(row -> new TopCourseDto(
-      ((BigInteger) row[0]).longValue(),
+      ((Long) row[0]).longValue(),
       (String) row[1],
       (String) row[2],
       (String) row[3],
       (String) row[4],
-      ((BigInteger) row[5]).longValue(),
+      ((Long) row[5]).longValue(),
       0L,
-      ((BigInteger) row[7]).longValue()
+      ((Long) row[7]).longValue()
     )).collect(Collectors.toList());
   }
 
@@ -114,13 +113,13 @@ public class MetricsService {
                                                      String level, String technology, Integer topN) {
     List<Object[]> results = metricsRepository.findTopCompletedCourses(startDate, category, level, technology, topN);
     return results.stream().map(row -> new TopCourseDto(
-      ((BigInteger) row[0]).longValue(),
+      ((Long) row[0]).longValue(),
       (String) row[1],
       (String) row[2],
       (String) row[3],
       (String) row[4],
-      ((BigInteger) row[5]).longValue(),
-      ((BigInteger) row[6]).longValue(),
+      ((Long) row[5]).longValue(),
+      ((Long) row[6]).longValue(),
       0L
     )).collect(Collectors.toList());
   }
@@ -130,12 +129,12 @@ public class MetricsService {
     List<Object[]> results = metricsRepository.findUserTrainingDump(startDate, category, level, technology);
     return results.stream().map(row -> new UserTrainingDumpDto(
       (String) row[0],
-      ((BigInteger) row[1]).longValue(),
+      ((Long) row[1]).longValue(),
       (String) row[2],
       (String) row[3],
       (String) row[4],
       (String) row[5],
-      row[6] != null ? ((BigInteger) row[6]).longValue() : 0L,
+      row[6] != null ? ((Long) row[6]).longValue() : 0L,
       row[7] != null ? ((Timestamp) row[7]).toInstant().atOffset(OffsetDateTime.now().getOffset()) : null,
       row[8] != null ? ((Timestamp) row[8]).toInstant().atOffset(OffsetDateTime.now().getOffset()) : null,
       row[9] != null ? ((Timestamp) row[9]).toInstant().atOffset(OffsetDateTime.now().getOffset()) : null
