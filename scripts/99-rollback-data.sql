@@ -1,0 +1,27 @@
+
+
+BEGIN;
+
+DELETE FROM lms_schema.LMS_USER_TRNG_FEEDBACK;
+DELETE FROM lms_schema.LMS_TRNG_FORUM_SUMMARY;
+DELETE FROM lms_schema.LMS_USER_TRNG_ENROLLMENT_DTLS;
+
+DELETE FROM lms_schema.LMS_TRNG_SEARCH_HIST;
+DELETE FROM lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING;
+
+DELETE FROM lms_schema.LMS_TRNG_DTLS;
+
+DELETE FROM lms_schema.LMS_TRNG_SUMMARY;
+DELETE FROM lms_schema.LMS_TRAINER_DTLS;
+DELETE FROM lms_schema.LMS_USER_ROLES;
+
+DELETE FROM lms_schema.LMS_ROLE_DETAILS;
+
+ALTER SEQUENCE lms_schema.lms_trainer_id_seq RESTART WITH 1;
+ALTER SEQUENCE lms_schema.lms_trng_id_seq RESTART WITH 1;
+ALTER SEQUENCE lms_schema.lms_module_id_seq RESTART WITH 1;
+ALTER SEQUENCE lms_schema.lms_trng_enrl_id_seq RESTART WITH 1;
+ALTER SEQUENCE lms_schema.lms_trng_forum_id_seq RESTART WITH 1;
+ALTER SEQUENCE lms_schema.lms_feedback_id_seq RESTART WITH 1;
+
+COMMIT;
