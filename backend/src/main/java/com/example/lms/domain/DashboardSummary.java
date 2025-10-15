@@ -12,9 +12,9 @@ public class DashboardSummary {
   private String catgory;
   private String details;
   private String level;
-  private long duration;
+  private int duration;
   private String instructorName;
   private String description;
   private String trainingName;
-  private long progress;
+  private Long progress;
 }

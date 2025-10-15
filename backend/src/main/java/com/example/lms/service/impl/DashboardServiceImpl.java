@@ -37,7 +37,7 @@ public class DashboardServiceImpl implements DashboardService {
       summary.setDetails(enrollmentMapping.getCourseSummary().getDetails());
       summary.setTrainingName(enrollmentMapping.getCourseSummary().getTopics());
       summary.setDuration(enrollmentMapping.getCourseSummary().getDuration());
-      summary.setProgress(0);
+      summary.setProgress(0L);
     });
     return summaryList;
   }
@@ -69,7 +69,7 @@ public class DashboardServiceImpl implements DashboardService {
       summary.setDetails(enrollmentMapping.getCourseSummary().getDetails());
       summary.setTrainingName(enrollmentMapping.getCourseSummary().getTopics());
       summary.setDuration(enrollmentMapping.getCourseSummary().getDuration());
-      summary.setProgress(100);
+      summary.setProgress(100L);
     });
     return summaryList;
   }
