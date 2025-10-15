@@ -1,14 +1,15 @@
 package com.example.lms.service.impl;
 
 import com.example.lms.constant.EnrollmentStatus;
-import com.example.lms.domain.CourseSummary;
-import com.example.lms.domain.DashboardStatsSummary;
-import com.example.lms.domain.EnrollmentMapping;
+import com.example.lms.domain.*;
 import com.example.lms.repo.EnrollmentRepository;
 import com.example.lms.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -26,18 +27,54 @@ public class DashboardServiceImpl implements DashboardService {
   }
 
   @Override
-  public List<EnrollmentMapping> getEnrolledCourses(String userId) {
-    return courseRepository.findByUserIdAndStatus(userId, EnrollmentStatus.ENROLLED.getStatus());
+  public List<DashboardSummary> getEnrolledCourses(String userId) {
+    List<EnrollmentMapping> enrollmentMappingList = courseRepository.findByUserIdAndStatus(userId, EnrollmentStatus.ENROLLED.getStatus());
+    List<DashboardSummary> summaryList = new ArrayList<>();
+    enrollmentMappingList.forEach(enrollmentMapping -> {
+      DashboardSummary summary = new DashboardSummary();
+      summary.setCatgory(enrollmentMapping.getCourseSummary().getCategory());
+      summary.setDescription(enrollmentMapping.getCourseSummary().getLevel());
+      summary.setDetails(enrollmentMapping.getCourseSummary().getDetails());
+      summary.setTrainingName(enrollmentMapping.getCourseSummary().getTopics());
+      summary.setDuration(enrollmentMapping.getCourseSummary().getDuration());
+      summary.setProgress(0L);
+      summaryList.add(summary);
+    });
+    return summaryList;
   }
 
   @Override
-  public List<EnrollmentMapping> getPendingCourses(String userId) {
-    return courseRepository.findByUserIdAndStatus(userId, EnrollmentStatus.PENDING.getStatus());
+  public List<DashboardSummary> getPendingCourses(String userId) {
+    List<EnrollmentMapping> enrollmentMappingList = courseRepository.findByUserIdAndStatus(userId, EnrollmentStatus.PENDING.getStatus());
+    List<DashboardSummary> summaryList = new ArrayList<>();
+    enrollmentMappingList.forEach(enrollmentMapping -> {
+      DashboardSummary summary = new DashboardSummary();
+      summary.setCatgory(enrollmentMapping.getCourseSummary().getCategory());
+      summary.setDescription(enrollmentMapping.getCourseSummary().getLevel());
+      summary.setDetails(enrollmentMapping.getCourseSummary().getDetails());
+      summary.setTrainingName(enrollmentMapping.getCourseSummary().getTopics());
+      summary.setDuration(enrollmentMapping.getCourseSummary().getDuration());
+      summary.setProgress(enrollmentMapping.getCourseSummary().getCourseProgressPercentage());
+      summaryList.add(summary);
+    });
+    return summaryList;
   }
 
   @Override
-  public List<EnrollmentMapping> getCompletedCourses(String userId) {
-    return courseRepository.findByUserIdAndStatus(userId, EnrollmentStatus.COMPLETED.getStatus());
+  public List<DashboardSummary> getCompletedCourses(String userId) {
+    List<EnrollmentMapping> enrollmentMappingList = courseRepository.findByUserIdAndStatus(userId, EnrollmentStatus.COMPLETED.getStatus());
+    List<DashboardSummary> summaryList = new ArrayList<>();
+    enrollmentMappingList.forEach(enrollmentMapping -> {
+      DashboardSummary summary = new DashboardSummary();
+      summary.setCatgory(enrollmentMapping.getCourseSummary().getCategory());
+      summary.setDescription(enrollmentMapping.getCourseSummary().getLevel());
+      summary.setDetails(enrollmentMapping.getCourseSummary().getDetails());
+      summary.setTrainingName(enrollmentMapping.getCourseSummary().getTopics());
+      summary.setDuration(enrollmentMapping.getCourseSummary().getDuration());
+      summary.setProgress(100L);
+      summaryList.add(summary);
+    });
+    return summaryList;
   }
 
   @Override
