@@ -3,9 +3,12 @@ package com.example.lms.service;
 import com.example.lms.domain.CourseDetail;
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.EnrollmentMapping;
+import com.example.lms.dto.CourseCardDetailDto;
+import com.example.lms.repo.CourseCardRepository;
 import com.example.lms.repo.CourseDetailRepository;
 import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,12 +22,12 @@ public class CourseService {
   private static final Logger log = LoggerFactory.getLogger(CourseService.class);
   private final CourseRepository courseRepository;
   private final EnrollmentRepository enrollmentRepository;
-  private final CourseDetailRepository courseDetailRepository;
+  private final CourseCardRepository courseCardRepository;
 
-  public CourseService(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository,CourseDetailRepository courseDetailRepository) {
+  public CourseService(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository,CourseCardRepository courseCardRepository) {
     this.courseRepository = courseRepository;
     this.enrollmentRepository = enrollmentRepository;
-    this.courseDetailRepository = courseDetailRepository;
+    this.courseCardRepository = courseCardRepository;
   }
 
   public List<CourseSummary> search(String category, String topic, String instructor) {
@@ -78,5 +81,35 @@ public class CourseService {
       log.error("Exception occurred : ",ex);
     }
     return course;
+  }
+
+  public List<CourseCardDetailDto> getCourseCardList(String viewType, String category) {
+    List<Object[]> courseCardDetailList = null;
+    try{
+      if(StringUtils.isNotBlank(viewType) && viewType.equalsIgnoreCase("Enrolled")){
+        switch(viewType) {
+          case "Enrolled":
+            courseCardDetailList = courseCardRepository.findCourseCardDetailsByEnrollment();
+            break;
+          /*case "View":
+            courseCardDetailList = courseCardRepository.findCourceCardDetailsByView();
+            break;
+          case "Rate":
+            courseCardDetailList = courseCardRepository.findCourceCardDetailsByTopRate();
+            break;
+          case "Category":
+            courseCardDetailList = courseCardRepository.findCourceCardDetailsByCourseCategory(category);
+            break;*/
+          default:
+            break;
+        }
+        return courseCardDetailList != null ? courseCardDetailList.stream()
+          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (Long) row[3], (String) row[4], (Long) row[5]))
+          .collect(Collectors.toList()) : null;
+      }
+    }catch(Exception ex){
+      log.error("Exception occurred : ",ex);
+    }
+    return null;
   }
 }
