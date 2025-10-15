@@ -13,11 +13,25 @@ import java.util.List;
 
 public interface CourseCardRepository extends JpaRepository<CourseDetail, String> {
 
-  @Query(value = "select ts.TRNG_ID, ts.TRNG_TOPIC Course_Name ,STRING_AGG(td.TRAINER_NAME::text, ',') Trainer_Names, SUM(tdt.Module_duration) Duration,ts.LEVEL_CODE Level, count(tdt.Module_id) Modules \n" +
-    "    from lms_schema.LMS_TRNG_SUMMARY ts, lms_schema.LMS_TRAINER_DTLS td, lms_schema.LMS_TRNG_DTLS tdt, lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING tem\n" +
-    "    where ts.TRNG_ID = tdt.TRNG_ID and tdt.TRAINER_ID = td.TRAINER_ID and ts.TRNG_ID = tem.TRNG_ID\n" +
-    "    AND tem.ENROLLED_TS BETWEEN (NOW()-CAST(:courseInterval AS INTERVAL)) AND NOW() and tem.status ='Enrolled'\n" +
-    "    group by ts.TRNG_ID ORDER BY COUNT(tem.TRNG_ID) DESC", nativeQuery = true)
+  @Query(value = "SELECT\n" +
+    "    ts.TRNG_ID,\n" +
+    "    ts.TRNG_TOPIC AS Course_Name,\n" +
+    "    STRING_AGG(td.TRAINER_NAME::text, ',') AS Trainer_Names,\n" +
+    "    SUM(tdt.Module_duration) AS Duration,\n" +
+    "    ts.LEVEL_CODE AS Level,\n" +
+    "    COUNT(tdt.Module_id) AS Modules\n" +
+    "FROM\n" +
+    "    lms_schema.LMS_TRNG_SUMMARY ts\n" +
+    "    JOIN lms_schema.LMS_TRNG_DTLS tdt ON ts.TRNG_ID = tdt.TRNG_ID\n" +
+    "    JOIN lms_schema.LMS_TRAINER_DTLS td ON tdt.TRAINER_ID = td.TRAINER_ID\n" +
+    "    JOIN lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING tem ON ts.TRNG_ID = tem.TRNG_ID\n" +
+    "WHERE\n" +
+    "    tem.ENROLLED_TS BETWEEN (NOW() - CAST(:courseInterval AS INTERVAL)) AND NOW()\n" +
+    "    AND tem.status = 'Enrolled'\n" +
+    "GROUP BY\n" +
+    "    ts.TRNG_ID, ts.TRNG_TOPIC, ts.LEVEL_CODE\n" +
+    "ORDER BY\n" +
+    "    COUNT(tem.TRNG_ID) DESC\n", nativeQuery = true)
   List<Object[]> findCourseCardDetailsByEnrollment(String courseInterval);
 
   @Query(value = "WITH trng_details AS (\n" +
