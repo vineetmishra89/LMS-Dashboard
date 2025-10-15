@@ -45,5 +45,5 @@ public class CourseDetail {
   @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private List<EnrollmentDetails> enrollmentDetailsList;
 
-  private long moduleProgressPercentage;
+  private Long moduleProgressPercentage;
 }

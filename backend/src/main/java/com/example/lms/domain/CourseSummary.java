@@ -32,7 +32,7 @@ public class CourseSummary {
   @Column(name = "pre_requisites")
   private String prerequisite;
 
-  @Column(name = "level_id")
+  @Column(name = "level_code")
   private String level;
 
   @Column(name = "trng_duration")
@@ -51,7 +51,7 @@ public class CourseSummary {
   private String toolsNeeded;
 
   @Column(name = "course_progress")
-  private long courseProgressPercentage;
+  private Long courseProgressPercentage;
 
   @OneToMany(
     mappedBy = "course",

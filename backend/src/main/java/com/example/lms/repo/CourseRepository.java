@@ -22,4 +22,9 @@ public interface CourseRepository extends JpaRepository<CourseSummary, Long>, Jp
   // Alternative fetch-join (handy for ad-hoc calls)
   @Query("select distinct cm from CourseSummary cm left join fetch cm.details")
   List<CourseSummary> findAllWithDetailsFetchJoin();
+
+
+  @Query("select  cm from CourseSummary cm left join fetch cm.lmsTrainingDetails ltd join fetch ltd.trainerDetails td where cm.category = :category and cm.topics = " +
+    ":topic and td.trainerName =:instructor")
+  CourseSummary getCourseDetail(String category, String topic, String instructor);
 }
