@@ -8,12 +8,15 @@ import com.example.lms.repo.CourseCardRepository;
 import com.example.lms.repo.CourseDetailRepository;
 import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentRepository;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,9 @@ public class CourseService {
   private final CourseRepository courseRepository;
   private final EnrollmentRepository enrollmentRepository;
   private final CourseCardRepository courseCardRepository;
+  @Getter
+  @Value("${course.interval}")
+  private String courseInterval = null;
 
   public CourseService(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository,CourseCardRepository courseCardRepository) {
     this.courseRepository = courseRepository;
@@ -86,20 +92,20 @@ public class CourseService {
   public List<CourseCardDetailDto> getCourseCardList(String viewType, String category) {
     List<Object[]> courseCardDetailList = null;
     try{
-      if(StringUtils.isNotBlank(viewType) && viewType.equalsIgnoreCase("Enrolled")){
+      if(StringUtils.isNotBlank(viewType)){
         switch(viewType) {
-          case "Enrolled":
-            courseCardDetailList = courseCardRepository.findCourseCardDetailsByEnrollment();
+          case "View":
+            courseCardDetailList = courseCardRepository.findCourceCardDetailsByView(getCourseInterval());
             break;
-          /*case "View":
-            courseCardDetailList = courseCardRepository.findCourceCardDetailsByView();
+          case "Enrolled":
+            courseCardDetailList = courseCardRepository.findCourseCardDetailsByEnrollment(getCourseInterval());
             break;
           case "Rate":
-            courseCardDetailList = courseCardRepository.findCourceCardDetailsByTopRate();
+            courseCardDetailList = courseCardRepository.findCourceCardDetailsByTopRate(getCourseInterval());
             break;
           case "Category":
-            courseCardDetailList = courseCardRepository.findCourceCardDetailsByCourseCategory(category);
-            break;*/
+            courseCardDetailList = courseCardRepository.findCourceCardDetailsByCourseCategory(category,getCourseInterval());
+            break;
           default:
             break;
         }
