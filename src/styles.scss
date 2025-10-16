@@ -67,3 +67,108 @@ body {
   }
 }
 
+.same-button-width {
+  width: 140px; display: grid
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-body {
+  
+  margin: 0px 10px 10px;
+  padding: 20px 25px;
+  height: 275px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  width: 240px;
+}
+
+.card-body-2 {
+  font-weight: 400;
+            font-weight: 400;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 5px;
+            padding: 0px 10px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 20px;
+}
+
+.card-content {
+  font-size: 13px; display: flex; justify-content: space-between; margin-top: 5px
+}
+
+.admin-tab-view {
+  .p-tabview {
+    .p-tabview-panels {
+      min-height: calc(100vh - 160px);
+      background: #ebebeb;
+    border: 1px solid #d1d5db;
+    border-top-width: 0px;
+    }
+  }
+}
+
+.assign-training-multiselect {
+  width: 400px !important;
+}
+
+.metrics-table-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  .metrics-table {
+    width: calc(50% - 20px);
+    margin: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 5px;
+    background: #fff;
+
+    .metrics-title {
+      font-size: 14px;
+      margin: 15px 10px;
+      font-weight: bold;
+  
+    }
+    .no-records {
+      font-size: 12px;
+      text-align: center;
+      margin: 50px auto;
+    }
+
+    p-table {
+      .p-datatable {
+        font-size: 12px;
+
+        .p-datatable-table {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .p-paginator {
+          padding: 0px !important;
+        }
+        .p-paginator .p-paginator-pages .p-paginator-page {
+          height:2rem !important;
+          min-width: 2rem !important;
+          font-size: 12px !important;
+          
+        }
+        .p-paginator-page, .p-paginator-next, .p-paginator-last, .p-paginator-first, .p-paginator-prev, .p-paginator-current {
+          height: 2rem !important;
+        }
+        
+      }
+    }
+  }
+}

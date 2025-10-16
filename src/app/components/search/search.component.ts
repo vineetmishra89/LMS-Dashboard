@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { Router } from '@angular/router';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { CourseService } from '../../services/course.service';
 
 @Component({
   selector: 'app-search',
@@ -20,12 +21,27 @@ export class SearchComponent implements OnInit {
    pending: any[] = [];
    enrolled: any[] = [];
     router = inject(Router);
+    courseService = inject(CourseService);
   
     responsiveOptions: any[] | undefined;
 
     selectedCourseType: string = 'Completed Course';
+    summary: any;
+    userId = 'trainee2@example.com';
+    enrolledCourse: any = [];
+    pendingCourse: any = [];
+    completedCourse: any = [];
+    likedCourse: any = [];
 
     ngOnInit(): void {
+      this.getSummary();
+      this.getCompletedCourse();
+      this.getEnrolledCourse();
+      this.getLikedCourses();
+      this.getPendingCourses();
+      
+      
+
       this.enrolled = [
         {
           id: '1000',
@@ -90,7 +106,7 @@ export class SearchComponent implements OnInit {
           instructorName: 'Vineet Mishra',
           description: 'klsdjfkldsjfd',
           trainingName: 'React JS',
-          name: 'Bamboo Watch',
+         
           progress: 100
       },
       {
@@ -244,8 +260,51 @@ export class SearchComponent implements OnInit {
     
     }
 
+    getSummary() {
+      this.courseService.getSummary(this.userId).subscribe(res => {
+        console.log('summar', res);
+        this.summary = res;
+      }, err => {
+        console.log(err);
+      })
+    }
+      getEnrolledCourse() {
+        this.courseService.getEnrolledCourse(this.userId).subscribe({
+          next: (res) => {
+            this.enrolledCourse = res;
+          }
+        })
+      }
+      getCompletedCourse() {
+        this.courseService.getCompletedCourse(this.userId).subscribe({
+          next: (res) => {
+            this.completedCourse = res;
+          }
+        })
+      }
+      getPendingCourses() {
+        this.courseService.getPendingCourses(this.userId).subscribe({
+          next: (res) => {
+            this.pendingCourse = res;
+          }
+        })
+      }
+      getLikedCourses() {
+        this.courseService.getPendingCourses(this.userId).subscribe({
+          next: (res) => {
+            this.likedCourse = res;
+          }
+        })
+      }
+    
     selectCard(type: string) {
       this.selectedCourseType = type;
+    }
+
+    start(selectedCourse: any) {
+      
+        this.router.navigate(['runningCourse']);
+      
     }
 
   
