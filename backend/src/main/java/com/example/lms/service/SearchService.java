@@ -2,6 +2,7 @@ package com.example.lms.service;
 
 import com.example.lms.domain.CourseDetail;
 import com.example.lms.domain.CourseSummary;
+import com.example.lms.dto.SearchDto;
 import com.example.lms.repo.CourseDetailRepository;
 import com.example.lms.repo.CourseRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -21,18 +22,27 @@ public class SearchService {
     public SearchService(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
-    public List<CourseDetail> search(String category, String topic, String instructor, String level ) {
+    public SearchDto search(String category, String topic, String instructor, String level ) {
       CourseSummary course = null;
-      List<CourseDetail> courseDetailList = null;
+      SearchDto searchDto = new SearchDto();
 
         try{
-            course = courseRepository.getCourseDetail( category, topic, instructor);
-            if(course!=null)
-           return course.getLmsTrainingDetails();
+            course = courseRepository.getCourseDetail( category, topic, instructor,level);
+            if(course!=null){
+              searchDto.setTrainingName(course.getTopics());
+              searchDto.setCategory(course.getCategory());
+              searchDto.setDuration(course.getDuration());
+              searchDto.setTrainingDesc(course.getDetails());
+              searchDto.setLevel(course.getLevel());
+              searchDto.setTrainerName(instructor);
+              searchDto.setRating(course.getRating());
+              searchDto.setCourseDetailList(course.getLmsTrainingDetails());
+            }
+
         }catch(Exception ex){
             log.error("Exception occurred : ",ex);
         }
-        return new ArrayList<>();
+        return searchDto;
 
     }
     }
