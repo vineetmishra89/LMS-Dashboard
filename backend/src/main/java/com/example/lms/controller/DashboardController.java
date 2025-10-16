@@ -2,6 +2,8 @@ package com.example.lms.controller;
 
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.DashboardStatsSummary;
+import com.example.lms.domain.DashboardSummary;
+import com.example.lms.domain.EnrollmentMapping;
 import com.example.lms.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,22 +27,22 @@ public class DashboardController {
   }
 
   @GetMapping("/enrolledCourses")
-  public ResponseEntity<List<CourseSummary>> getEnrolledCourses(@RequestParam String userId){
-    List<CourseSummary> courseDetails = dashboardService.getEnrolledCourses(userId);
+  public ResponseEntity<List<DashboardSummary>> getEnrolledCourses(@RequestParam String userId){
+    List<DashboardSummary> courseDetails = dashboardService.getEnrolledCourses(userId);
 
     return ResponseEntity.ok(courseDetails);
   }
 
   @GetMapping("/pendingCourses")
-  public ResponseEntity<List<CourseSummary>> getPendingCourses(@RequestParam String userId){
-    List<CourseSummary> courseDetails = dashboardService.getPendingCourses(userId);
+  public ResponseEntity<List<DashboardSummary>> getPendingCourses(@RequestParam String userId){
+    List<DashboardSummary> courseDetails = dashboardService.getPendingCourses(userId);
 
     return ResponseEntity.ok(courseDetails);
   }
 
   @GetMapping("/completedCourses")
-  public ResponseEntity<List<CourseSummary>> getCompletedCourses(@RequestParam String userId){
-    List<CourseSummary> courseDetails = dashboardService.getCompletedCourses(userId);
+  public ResponseEntity<List<DashboardSummary>> getCompletedCourses(@RequestParam String userId){
+    List<DashboardSummary> courseDetails = dashboardService.getCompletedCourses(userId);
 
     return ResponseEntity.ok(courseDetails);
   }
