@@ -21,12 +21,19 @@ public class CourseCardDetailDto {
 
   private long modules;
 
-  public CourseCardDetailDto(long trngId, String courseName, String trainerNames, long duration, String level, long modules) {
+  private String rating;
+
+  private String category;
+
+  public CourseCardDetailDto(long trngId, String courseName,
+                             String trainerNames, long duration, String level, long modules, String rating, String category) {
     this.trngId = trngId;
     this.courseName = courseName;
     this.trainerNames = trainerNames;
     this.duration = duration;
     this.level = level;
     this.modules= modules;
+    this.rating = rating;
+    this.category = category;
   }
 }
