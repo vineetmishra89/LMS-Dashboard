@@ -110,8 +110,8 @@ public class CourseService {
             break;
         }
         return courseCardDetailList != null ? courseCardDetailList.stream()
-          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (Long) row[3], (String) row[4], (Long) row[5]))
-          .collect(Collectors.toList()) : null;
+          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (Long) row[3], (String) row[4], (Long) row[5], (String) row[6], (String) row[7]))
+          .collect(Collectors.toList()): null;
       }
     }catch(Exception ex){
       log.error("Exception occurred : ",ex);
