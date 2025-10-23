@@ -21,7 +21,7 @@ public class EnrollmentMapping {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lms_trng_enrl_id_generator")
-  @SequenceGenerator(name = "lms_trng_enrl_id_generator", sequenceName = "lms_trng_enrl_id_seq", allocationSize = 1)
+  @SequenceGenerator(name = "lms_trng_enrl_id_generator", sequenceName = "lms_schema.lms_trng_enrl_id_seq", allocationSize = 1)
   @Column(name = "trng_enrl_id")
   private Long trainingEnrollmentId;
 
