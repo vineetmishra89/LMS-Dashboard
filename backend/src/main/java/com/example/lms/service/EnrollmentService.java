@@ -39,7 +39,7 @@ public class EnrollmentService {
     EnrollmentMapping e = new EnrollmentMapping();
     e.setUserId(userId);
     e.setCourseSummary(courseSummary);
-    e.setStatus("ACTIVE");
+    e.setStatus("Enrolled");
     e.setEnrolledTs(OffsetDateTime.now());
     
     List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
