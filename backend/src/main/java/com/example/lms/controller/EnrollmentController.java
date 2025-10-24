@@ -17,12 +17,13 @@ public class EnrollmentController {
 
   @PostMapping("enroll")
   public EnrollmentMapping enroll(@RequestBody Map<String, Object> body) {
-    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"));
+    String enrollmentType = (null == body.get("enrollmentType") ? "Voluntary" : (String)body.get("enrollmentType"));
+    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"),enrollmentType);
   }
 
   @PostMapping("unenroll")
   public EnrollmentMapping unenroll(@RequestBody Map<String, Object> body) {
-    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"));
+    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"),null);
   }
 
   @GetMapping("/{enrollmentId}")

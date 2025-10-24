@@ -32,34 +32,45 @@ public class EnrollmentService {
     return enrollmentRepository.findByUserId(userId);
   }
 
-  public EnrollmentMapping enroll(String userId, Long courseId) {
+  public EnrollmentMapping enroll(String userId, Long courseId, String enrollmentType) {
     CourseSummary courseSummary = courseRepository.findById(courseId)
         .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
-    
+
     EnrollmentMapping e = new EnrollmentMapping();
     e.setUserId(userId);
     e.setCourseSummary(courseSummary);
     e.setStatus("Enrolled");
     e.setEnrolledTs(OffsetDateTime.now());
-    
+    e.setEnrollmentType(enrollmentType.toUpperCase());
+    e.setProgressPercent(0L);
+    e.setCreatedTs(OffsetDateTime.now());
+    e.setUpdatedTs(OffsetDateTime.now());
+    e.setCreatedBy(userId);
+    e.setUpdatedBy(userId);
+
     List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
     if (courseSummary.getLmsTrainingDetails() != null) {
       for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
         EnrollmentDetailsId detailsId = new EnrollmentDetailsId();
         detailsId.setModuleId(courseDetail.getModuleId());
-        
+
         EnrollmentDetails details = new EnrollmentDetails();
         details.setEnrollmentDetailsId(detailsId);
         details.setStatus("Enrolled");
         details.setEnrollmentMapping(e);
         details.setCourseDetail(courseDetail);
-        
+        details.setCreatedTs(OffsetDateTime.now());
+        details.setUpdatedTs(OffsetDateTime.now());
+        details.setCreatedBy(userId);
+        details.setUpdatedBy(userId);
+        details.setCurrentLearningTs(0);
+
         enrollmentDetailsList.add(details);
       }
     }
-    
+
     e.setEnrollmentDetailsList(enrollmentDetailsList);
-    
+
     return enrollmentRepository.save(e);
   }
 
