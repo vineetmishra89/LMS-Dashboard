@@ -32,7 +32,7 @@ public class CourseSummary {
   @Column(name = "pre_requisites")
   private String prerequisite;
 
-  @Column(name = "level_id")
+  @Column(name = "level_code")
   private String level;
 
   @Column(name = "trng_duration")
