@@ -10,6 +10,7 @@ import com.example.lms.repo.EnrollmentRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,12 @@ import java.util.UUID;
 public class EnrollmentService {
   private final EnrollmentRepository enrollmentRepository;
   private final EnrollmentDetailsRepository enrollmentDetailsRepository;
+  private final CourseRepository courseRepository;
 
-  public EnrollmentService(EnrollmentRepository enrollmentRepository,EnrollmentDetailsRepository enrollmentDetailsRepository) {
+  public EnrollmentService(EnrollmentRepository enrollmentRepository,EnrollmentDetailsRepository enrollmentDetailsRepository, CourseRepository courseRepository) {
     this.enrollmentRepository = enrollmentRepository;
     this.enrollmentDetailsRepository = enrollmentDetailsRepository;
+    this.courseRepository = courseRepository;
   }
 
   public List<EnrollmentMapping> byUser(String userId) {
@@ -30,13 +33,33 @@ public class EnrollmentService {
   }
 
   public EnrollmentMapping enroll(String userId, Long courseId) {
-    CourseSummary summary = new CourseSummary();
-    summary.setTrainingId(courseId);
+    CourseSummary courseSummary = courseRepository.findById(courseId)
+        .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+    
     EnrollmentMapping e = new EnrollmentMapping();
     e.setUserId(userId);
-    e.setCourseSummary(summary);
+    e.setCourseSummary(courseSummary);
     e.setStatus("ACTIVE");
     e.setEnrolledTs(OffsetDateTime.now());
+    
+    List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
+    if (courseSummary.getLmsTrainingDetails() != null) {
+      for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
+        EnrollmentDetailsId detailsId = new EnrollmentDetailsId();
+        detailsId.setModuleId(courseDetail.getModuleId());
+        
+        EnrollmentDetails details = new EnrollmentDetails();
+        details.setEnrollmentDetailsId(detailsId);
+        details.setStatus("Enrolled");
+        details.setEnrollmentMapping(e);
+        details.setCourseDetail(courseDetail);
+        
+        enrollmentDetailsList.add(details);
+      }
+    }
+    
+    e.setEnrollmentDetailsList(enrollmentDetailsList);
+    
     return enrollmentRepository.save(e);
   }
 
