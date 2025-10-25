@@ -2,7 +2,7 @@ package com.example.lms.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class ValidationException extends CustomException {
+public class ValidationException extends LMSException {
   public ValidationException(String message) {
     super(message, HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
   }

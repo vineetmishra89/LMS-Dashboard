@@ -22,8 +22,8 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
   private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-  @ExceptionHandler(CustomException.class)
-  public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex, HttpServletRequest request) {
+  @ExceptionHandler(LMSException.class)
+  public ResponseEntity<ErrorResponse> handleLMSException(LMSException ex, HttpServletRequest request) {
     logException(ex, request);
     
     ErrorResponse errorResponse = ErrorResponse.builder()
@@ -236,12 +236,12 @@ public class GlobalExceptionHandler {
   private void logException(Exception ex, HttpServletRequest request) {
     String endpoint = request.getMethod() + " " + request.getRequestURI();
     
-    if (ex instanceof CustomException) {
-      CustomException customEx = (CustomException) ex;
-      if (customEx.getStatus().is5xxServerError()) {
-        log.error("[{}] {} - {}", endpoint, customEx.getErrorCode(), customEx.getMessage(), ex);
+    if (ex instanceof LMSException) {
+      LMSException lmsEx = (LMSException) ex;
+      if (lmsEx.getStatus().is5xxServerError()) {
+        log.error("[{}] {} - {}", endpoint, lmsEx.getErrorCode(), lmsEx.getMessage(), ex);
       } else {
-        log.warn("[{}] {} - {}", endpoint, customEx.getErrorCode(), customEx.getMessage());
+        log.warn("[{}] {} - {}", endpoint, lmsEx.getErrorCode(), lmsEx.getMessage());
       }
     } else if (ex instanceof NoSuchElementException || ex instanceof IllegalArgumentException) {
       log.warn("[{}] {} - {}", endpoint, ex.getClass().getSimpleName(), ex.getMessage());
