@@ -41,4 +41,18 @@ public class EnrollmentController {
     return enrollmentService.completeCourse(enrollmentId);
   }
 
+  @PostMapping("/bulk-enroll")
+  public List<EnrollmentMapping> bulkEnroll(@RequestBody Map<String, Object> body) {
+    @SuppressWarnings("unchecked")
+    List<String> emailIdList = (List<String>) body.get("emailIdList");
+    @SuppressWarnings("unchecked")
+    List<Long> courseIdList = ((List<Number>) body.get("courseIdList")).stream()
+        .map(Number::longValue)
+        .collect(java.util.stream.Collectors.toList());
+    String enrollmentType = body.get("enrollmentType") != null ? 
+        (String) body.get("enrollmentType") : "VOLUNTARY";
+    
+    return enrollmentService.bulkEnroll(emailIdList, courseIdList, enrollmentType);
+  }
+
 }
