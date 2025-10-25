@@ -34,6 +34,9 @@ public class EnrollmentMapping {
   @Column(name = "enrolled_ts")
   private OffsetDateTime enrolledTs;
 
+  @Column(name = "enrolled_by_email_id")
+  private String enrolledByEmailId;
+
   @Column(name = "started_ts")
   private OffsetDateTime startTs;
 
