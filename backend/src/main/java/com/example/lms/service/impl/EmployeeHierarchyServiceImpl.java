@@ -1,10 +1,11 @@
-package com.example.lms.service;
+package com.example.lms.service.impl;
 
 import com.example.lms.dto.EmployeeDetailsDto;
 import com.example.lms.dto.EmployeeHierarchyResponseDto;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.exception.ValidationException;
 import com.example.lms.repo.EmployeeHierarchyRepository;
+import com.example.lms.service.EmployeeHierarchyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
