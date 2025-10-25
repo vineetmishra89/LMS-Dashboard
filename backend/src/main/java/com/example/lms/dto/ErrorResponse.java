@@ -14,6 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class ErrorResponse {
   private LocalDateTime timestamp;
+  private String correlationId;
   private int status;
   private String error;
   private String message;
