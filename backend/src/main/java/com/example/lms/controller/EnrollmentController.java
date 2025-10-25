@@ -43,6 +43,7 @@ public class EnrollmentController {
 
   @PostMapping("/bulk-enroll")
   public List<EnrollmentMapping> bulkEnroll(@RequestBody Map<String, Object> body) {
+    String userId = (String) body.get("userId");
     @SuppressWarnings("unchecked")
     List<String> emailIdList = (List<String>) body.get("emailIdList");
     @SuppressWarnings("unchecked")
@@ -52,7 +53,7 @@ public class EnrollmentController {
     String enrollmentType = body.get("enrollmentType") != null ? 
         (String) body.get("enrollmentType") : "VOLUNTARY";
     
-    return enrollmentService.bulkEnroll(emailIdList, courseIdList, enrollmentType);
+    return enrollmentService.bulkEnroll(emailIdList, courseIdList, enrollmentType, userId);
   }
 
 }

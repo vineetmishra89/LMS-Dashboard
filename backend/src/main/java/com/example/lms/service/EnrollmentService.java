@@ -111,7 +111,7 @@ public class EnrollmentService {
   }
 
   @Transactional
-  public List<EnrollmentMapping> bulkEnroll(List<String> emailIdList, List<Long> courseIdList, String enrollmentType) {
+  public List<EnrollmentMapping> bulkEnroll(List<String> emailIdList, List<Long> courseIdList, String enrollmentType, String userId) {
     if (emailIdList == null || emailIdList.isEmpty() || courseIdList == null || courseIdList.isEmpty()) {
       throw new IllegalArgumentException("Email list and course list cannot be null or empty");
     }
@@ -142,8 +142,8 @@ public class EnrollmentService {
         enrollment.setProgressPercent(0L);
         enrollment.setCreatedTs(now);
         enrollment.setUpdatedTs(now);
-        enrollment.setCreatedBy("SYSTEM");
-        enrollment.setUpdatedBy("SYSTEM");
+        enrollment.setCreatedBy(userId);
+        enrollment.setUpdatedBy(userId);
 
         List<EnrollmentDetails> detailsList = new ArrayList<>();
         if (courseSummary.getLmsTrainingDetails() != null) {
@@ -158,8 +158,8 @@ public class EnrollmentService {
             details.setCourseDetail(courseDetail);
             details.setCreatedTs(now);
             details.setUpdatedTs(now);
-            details.setCreatedBy("SYSTEM");
-            details.setUpdatedBy("SYSTEM");
+            details.setCreatedBy(userId);
+            details.setUpdatedBy(userId);
             details.setCurrentLearningTs(0);
 
             detailsList.add(details);
