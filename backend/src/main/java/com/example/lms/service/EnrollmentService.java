@@ -4,6 +4,8 @@ import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.EnrollmentDetails;
 import com.example.lms.domain.EnrollmentDetailsId;
 import com.example.lms.domain.EnrollmentMapping;
+import com.example.lms.exception.ResourceNotFoundException;
+import com.example.lms.exception.ValidationException;
 import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentDetailsRepository;
 import com.example.lms.repo.EnrollmentRepository;
@@ -36,7 +38,7 @@ public class EnrollmentService {
 
   public EnrollmentMapping enroll(String userId, Long courseId, String enrollmentType) {
     CourseSummary courseSummary = courseRepository.findById(courseId)
-        .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+        .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
 
     EnrollmentMapping e = new EnrollmentMapping();
     e.setUserId(userId);
@@ -77,14 +79,16 @@ public class EnrollmentService {
   }
 
   public EnrollmentMapping getById(Long enrollmentId) {
-    return enrollmentRepository.findById(enrollmentId).orElseThrow();
+    return enrollmentRepository.findById(enrollmentId)
+        .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", enrollmentId));
   }
 
   public EnrollmentDetails updateProgress(Long enrollmentId, Long moduleId, Map<String, Object> progressData) {
     EnrollmentDetailsId enrollmentDetailsId = new EnrollmentDetailsId();
     enrollmentDetailsId.setTrainingEmrollmentId(enrollmentId);
     enrollmentDetailsId.setModuleId(moduleId);
-    EnrollmentDetails enrollmentDetails = enrollmentDetailsRepository.findById(enrollmentDetailsId).orElseThrow();
+    EnrollmentDetails enrollmentDetails = enrollmentDetailsRepository.findById(enrollmentDetailsId)
+        .orElseThrow(() -> new ResourceNotFoundException("EnrollmentDetails", "enrollmentId-moduleId", enrollmentId + "-" + moduleId));
 
     if (progressData.containsKey("overallProgress")) {
       Integer progress = ((Number) progressData.get("overallProgress")).intValue();
@@ -112,14 +116,17 @@ public class EnrollmentService {
 
   @Transactional
   public List<EnrollmentMapping> bulkEnroll(List<String> emailIdList, List<Long> courseIdList, String enrollmentType, String userId) {
-    if (emailIdList == null || emailIdList.isEmpty() || courseIdList == null || courseIdList.isEmpty()) {
-      throw new IllegalArgumentException("Email list and course list cannot be null or empty");
+    if (emailIdList == null || emailIdList.isEmpty()) {
+      throw new ValidationException("emailIdList", "Email list cannot be null or empty");
+    }
+    if (courseIdList == null || courseIdList.isEmpty()) {
+      throw new ValidationException("courseIdList", "Course list cannot be null or empty");
     }
 
     List<CourseSummary> courses = courseRepository.findAllById(courseIdList);
     
     if (courses.size() != courseIdList.size()) {
-      throw new RuntimeException("Some courses not found. Expected: " + courseIdList.size() + ", Found: " + courses.size());
+      throw new ResourceNotFoundException("Some courses not found. Expected: " + courseIdList.size() + ", Found: " + courses.size());
     }
     
     Map<Long, CourseSummary> courseMap = courses.stream()
@@ -175,7 +182,8 @@ public class EnrollmentService {
   }
 
   public EnrollmentMapping completeCourse(Long enrollmentId) {
-    EnrollmentMapping e = enrollmentRepository.findById(enrollmentId).orElseThrow();
+    EnrollmentMapping e = enrollmentRepository.findById(enrollmentId)
+        .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", enrollmentId));
     e.setStatus("COMPLETED");
 
     return enrollmentRepository.save(e);
