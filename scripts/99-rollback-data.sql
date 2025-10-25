@@ -17,6 +17,9 @@ DELETE FROM lms_schema.LMS_USER_ROLES;
 
 DELETE FROM lms_schema.LMS_ROLE_DETAILS;
 
+DELETE FROM lms_schema.LMS_EMPLOYEE_DTLS;
+DELETE FROM lms_schema.LMS_PROJECT_DTLS;
+
 ALTER SEQUENCE lms_schema.lms_trainer_id_seq RESTART WITH 1;
 ALTER SEQUENCE lms_schema.lms_trng_id_seq RESTART WITH 1;
 ALTER SEQUENCE lms_schema.lms_module_id_seq RESTART WITH 1;
