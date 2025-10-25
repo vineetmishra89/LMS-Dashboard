@@ -117,11 +117,11 @@ public class EnrollmentService {
     }
 
     List<CourseSummary> courses = courseRepository.findAllById(courseIdList);
-    
+
     if (courses.size() != courseIdList.size()) {
       throw new RuntimeException("Some courses not found. Expected: " + courseIdList.size() + ", Found: " + courses.size());
     }
-    
+
     Map<Long, CourseSummary> courseMap = courses.stream()
         .collect(Collectors.toMap(CourseSummary::getTrainingId, course -> course));
 
@@ -132,7 +132,7 @@ public class EnrollmentService {
     for (String emailId : emailIdList) {
       for (Long courseId : courseIdList) {
         CourseSummary courseSummary = courseMap.get(courseId);
-        
+
         EnrollmentMapping enrollment = new EnrollmentMapping();
         enrollment.setUserId(emailId);
         enrollment.setCourseSummary(courseSummary);
@@ -144,6 +144,7 @@ public class EnrollmentService {
         enrollment.setUpdatedTs(now);
         enrollment.setCreatedBy(userId);
         enrollment.setUpdatedBy(userId);
+        enrollment.setEnrolledByEmailId(userId);
 
         List<EnrollmentDetails> detailsList = new ArrayList<>();
         if (courseSummary.getLmsTrainingDetails() != null) {
@@ -165,7 +166,7 @@ public class EnrollmentService {
             detailsList.add(details);
           }
         }
-        
+
         enrollment.setEnrollmentDetailsList(detailsList);
         allEnrollments.add(enrollment);
       }
