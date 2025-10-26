@@ -66,6 +66,10 @@ public class EmployeeHierarchyServiceImpl implements EmployeeHierarchyService {
 
   private EmployeeDetailsDto mapToEmployeeDetailsDto(Object[] row) {
     try {
+      String empActiveFlag = row[6] instanceof Character 
+        ? String.valueOf((Character) row[6]) 
+        : (String) row[6];
+      
       return new EmployeeDetailsDto(
         (Integer) row[0],
         (String) row[1],
@@ -73,7 +77,7 @@ public class EmployeeHierarchyServiceImpl implements EmployeeHierarchyService {
         (String) row[3],
         (String) row[4],
         (String) row[5],
-        (String) row[6]
+        empActiveFlag
       );
     } catch (Exception e) {
       logger.error("Error mapping row to EmployeeDetailsDto: {}", e.getMessage(), e);
