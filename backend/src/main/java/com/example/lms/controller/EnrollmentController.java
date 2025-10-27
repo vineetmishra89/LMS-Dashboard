@@ -19,7 +19,7 @@ public class EnrollmentController {
   public EnrollmentMapping enroll(@RequestBody Map<String, Object> body) {
     String enrollmentType = (null == body.get("enrollmentType") ? "Voluntary" : (String)body.get("enrollmentType"));
     Integer courseIdInt = (Integer)body.get("courseId");
-    Long courseId = Long.valueOf(courseIdInt;
+    Long courseId = Long.valueOf(courseIdInt);
     return enrollmentService.enroll((String)body.get("userId"), courseId,enrollmentType);
   }
 

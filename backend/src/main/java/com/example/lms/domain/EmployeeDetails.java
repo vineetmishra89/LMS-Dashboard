@@ -23,6 +23,9 @@ public class EmployeeDetails {
   @Column(name = "EMP_NAME", length = 200)
   private String empName;
 
+  @Column(name = "PASSWRD", length = 100)
+  private String passwrd;
+
   @Column(name = "EMP_DESIGNATION", length = 200)
   private String empDesignation;
 
