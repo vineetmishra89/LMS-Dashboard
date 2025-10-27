@@ -24,6 +24,4 @@ public interface CourseRepository extends JpaRepository<CourseSummary, Long>, Jp
   List<CourseSummary> findAllWithDetailsFetchJoin();
 
 
-
-
 }
