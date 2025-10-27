@@ -5,9 +5,14 @@ import com.example.lms.domain.CourseSummary;
 import com.example.lms.dto.SearchDto;
 import com.example.lms.repo.CourseDetailRepository;
 import com.example.lms.repo.CourseRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,32 +22,69 @@ import java.util.List;
 public class SearchService {
     private final CourseRepository courseRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+   @Autowired
+    private Session session;
+
     private static final Logger log = LoggerFactory.getLogger(SearchService.class);
 
     public SearchService(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
-    public SearchDto search(String category, String topic, String instructor, String level ) {
-      CourseSummary course = null;
-      SearchDto searchDto = new SearchDto();
+    public List<SearchDto> search(String category, String topics, String instructor, String level ) {
+      StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd join  ltd.trainerDetails td where 1=1");
+
+      if (category!=null) {
+        hql.append(" AND cm.category = :category");
+      }
+      if (topics!=null) {
+        hql.append(" AND cm.topics = :topics");
+      }
+      if (instructor!=null) {
+        hql.append(" AND td.trainerName =:instructor");
+      }
+      if (level!=null) {
+        hql.append(" AND cm.level =:level");
+      }
+
+      Query query = session.createQuery(hql.toString(), CourseSummary.class);
+      if (category!=null) {
+        query.setParameter("category", category);
+      }
+      if (topics!=null) {
+        query.setParameter("topics", topics);
+      }
+      if (instructor!=null) {
+        query.setParameter("instructor", instructor);
+      }
+      if (level!=null) {
+        query.setParameter("level", level);
+      }
+      List<CourseSummary>results = query.getResultList();
+      List<SearchDto> searchDtoList = new ArrayList<>();
 
         try{
-            course = courseRepository.getCourseDetail( category, topic, instructor,level);
-            if(course!=null){
-              searchDto.setTrainingName(course.getTopics());
-              searchDto.setCategory(course.getCategory());
-              searchDto.setDuration(course.getDuration());
-              searchDto.setTrainingDesc(course.getDetails());
-              searchDto.setLevel(course.getLevel());
-              searchDto.setTrainerName(instructor);
-              searchDto.setRating(course.getRating());
-              searchDto.setCourseDetailList(course.getLmsTrainingDetails());
+            if(results!=null) {
+              for (int i = 0; i < results.size(); i++) {
+                SearchDto searchDto = new SearchDto();
+
+                searchDto.setTrainingName(results.get(i).getTopics());
+                searchDto.setCategory(results.get(i).getCategory());
+                searchDto.setDuration(results.get(i).getDuration());
+                searchDto.setTrainingDesc(results.get(i).getDetails());
+                searchDto.setLevel(results.get(i).getLevel());
+                searchDto.setTrainerName(instructor);
+                searchDto.setRating(results.get(i).getRating());
+                searchDto.setCourseDetailList(results.get(i).getLmsTrainingDetails());
+                searchDtoList.add(searchDto);
+              }
             }
 
         }catch(Exception ex){
             log.error("Exception occurred : ",ex);
         }
-        return searchDto;
+        return searchDtoList;
 
     }
     }

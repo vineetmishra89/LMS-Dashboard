@@ -24,7 +24,4 @@ public interface CourseRepository extends JpaRepository<CourseSummary, Long>, Jp
   List<CourseSummary> findAllWithDetailsFetchJoin();
 
 
-  @Query("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd join  ltd.trainerDetails td where cm.category = :category and cm.topics = " +
-    ":topic and td.trainerName =:instructor and cm.level =:level")
-  CourseSummary getCourseDetail(String category, String topic, String instructor, String level);
 }
