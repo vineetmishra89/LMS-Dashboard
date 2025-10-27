@@ -1,7 +1,13 @@
 package com.example.lms.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import java.sql.Timestamp;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.io.Serializable;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "LMS_EMPLOYEE_DTLS", schema = "lms_schema")
@@ -33,102 +39,11 @@ public class EmployeeDetails {
   private String createdBy;
 
   @Column(name = "CREATED_TS")
-  private Timestamp createdTs;
+  private OffsetDateTime createdTs;
 
   @Column(name = "UPDATED_BY", length = 100)
   private String updatedBy;
 
   @Column(name = "UPDATED_TS")
-  private Timestamp updatedTs;
-
-  public EmployeeDetails() {
-  }
-
-  public String getEmailId() {
-    return emailId;
-  }
-
-  public void setEmailId(String emailId) {
-    this.emailId = emailId;
-  }
-
-  public Integer getEmpId() {
-    return empId;
-  }
-
-  public void setEmpId(Integer empId) {
-    this.empId = empId;
-  }
-
-  public String getEmpName() {
-    return empName;
-  }
-
-  public void setEmpName(String empName) {
-    this.empName = empName;
-  }
-
-  public String getEmpDesignation() {
-    return empDesignation;
-  }
-
-  public void setEmpDesignation(String empDesignation) {
-    this.empDesignation = empDesignation;
-  }
-
-  public String getProjectName() {
-    return projectName;
-  }
-
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
-
-  public String getRoEmailId() {
-    return roEmailId;
-  }
-
-  public void setRoEmailId(String roEmailId) {
-    this.roEmailId = roEmailId;
-  }
-
-  public String getEmpActiveFlag() {
-    return empActiveFlag;
-  }
-
-  public void setEmpActiveFlag(String empActiveFlag) {
-    this.empActiveFlag = empActiveFlag;
-  }
-
-  public String getCreatedBy() {
-    return createdBy;
-  }
-
-  public void setCreatedBy(String createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  public Timestamp getCreatedTs() {
-    return createdTs;
-  }
-
-  public void setCreatedTs(Timestamp createdTs) {
-    this.createdTs = createdTs;
-  }
-
-  public String getUpdatedBy() {
-    return updatedBy;
-  }
-
-  public void setUpdatedBy(String updatedBy) {
-    this.updatedBy = updatedBy;
-  }
-
-  public Timestamp getUpdatedTs() {
-    return updatedTs;
-  }
-
-  public void setUpdatedTs(Timestamp updatedTs) {
-    this.updatedTs = updatedTs;
-  }
+  private OffsetDateTime updatedTs;
 }
