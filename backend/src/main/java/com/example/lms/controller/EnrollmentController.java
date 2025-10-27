@@ -18,7 +18,9 @@ public class EnrollmentController {
   @PostMapping("enroll")
   public EnrollmentMapping enroll(@RequestBody Map<String, Object> body) {
     String enrollmentType = (null == body.get("enrollmentType") ? "Voluntary" : (String)body.get("enrollmentType"));
-    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"),enrollmentType);
+    Integer courseIdInt = (Integer)body.get("courseId");
+    Long courseId = Long.valueOf(courseIdInt;
+    return enrollmentService.enroll((String)body.get("userId"), courseId,enrollmentType);
   }
 
   @PostMapping("unenroll")
@@ -50,9 +52,9 @@ public class EnrollmentController {
     List<Long> courseIdList = ((List<Number>) body.get("courseIdList")).stream()
         .map(Number::longValue)
         .collect(java.util.stream.Collectors.toList());
-    String enrollmentType = body.get("enrollmentType") != null ? 
+    String enrollmentType = body.get("enrollmentType") != null ?
         (String) body.get("enrollmentType") : "VOLUNTARY";
-    
+
     return enrollmentService.bulkEnroll(emailIdList, courseIdList, enrollmentType, userId);
   }
 
