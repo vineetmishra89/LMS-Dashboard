@@ -3,6 +3,7 @@ package com.example.lms.controller;
 import com.example.lms.domain.CourseDetail;
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.dto.SearchDto;
+import com.example.lms.dto.TimePeriod;
 import com.example.lms.service.CourseService;
 import com.example.lms.service.SearchService;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,10 @@ public class SearchController {
     public SearchController(SearchService searchService) { this.searchService = searchService; }
 
     @GetMapping("/getCourseDetail")
-    public SearchDto getCourseDetail(String category, String topic, String instructor, String level) {
+    public List<SearchDto> getCourseDetail( @RequestParam(required = false) String category,
+                                      @RequestParam(required = false) String level,
+                                      @RequestParam(required = false) String instructor,
+                                      @RequestParam(required = false) String topic){
         return searchService.search(category, topic, instructor, level);
     }
 }
