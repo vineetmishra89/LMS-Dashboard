@@ -23,5 +23,14 @@ public interface CourseRepository extends JpaRepository<CourseSummary, Long>, Jp
   @Query("select distinct cm from CourseSummary cm left join fetch cm.details")
   List<CourseSummary> findAllWithDetailsFetchJoin();
 
+  @Query(value = "select distinct trng_topic from lms_schema.lms_trng_summary order by trng_topic", nativeQuery = true)
+  List<Object> getAllTrainings();
+
+  @Query(value = "select distinct category from lms_schema.lms_trng_summary order by category", nativeQuery = true)
+  List<Object> getAllCategories();
+
+  @Query(value = "select distinct level_code from lms_schema.lms_trng_summary order by level_code", nativeQuery = true)
+  List<Object> getAllLevels();
+
 
 }

@@ -2,6 +2,7 @@ package com.example.lms.controller;
 
 
 import com.example.lms.dto.SearchDto;
+import com.example.lms.dto.SearchFilterDto;
 import com.example.lms.service.SearchService;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,4 +23,9 @@ public class SearchController {
                                       @RequestParam(required = false) String topic){
         return searchService.search(category, topic, instructor, level);
     }
+
+  @GetMapping("/getSearchList")
+  public SearchFilterDto getSearchList(){
+    return searchService.getSearchList();
+  }
 }
