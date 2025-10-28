@@ -1,21 +1,28 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Button, ButtonModule } from "primeng/button";
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { CourseService } from '../../services/course.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-view-course',
   standalone: true,
-  imports: [ButtonModule, OverlayPanelModule, InputGroupModule,InputGroupAddonModule  ],
+  imports: [ButtonModule, ProgressSpinnerModule ,  OverlayPanelModule, InputGroupModule,InputGroupAddonModule  ],
   templateUrl: './view-course.component.html',
   styleUrl: './view-course.component.scss'
 })
-export class ViewCourseComponent {
+export class ViewCourseComponent implements OnInit {
 
   router = inject(Router);
   liked: boolean = false;
+  courseService = inject(CourseService);
+  route = inject(ActivatedRoute);
+  courseDetail: any = null;
+  trainingId: string = '0';
+  loading: boolean = false;
 
   hasEnrolled: boolean = false;
   courseRatings: any[] = [{user: 'Ankit Bansal', ratings: 3, when: '3 weeks ago', comments: 'This course is good for intermediate level. Instructor explained topics very well'},
@@ -23,6 +30,11 @@ export class ViewCourseComponent {
     {user: 'Satya Prakash Mishra',  ratings: 3, when: 'Today', comments: 'Great Learning so far. Very Clear and detailed information with all resources available.'},
     {user: 'Rajib Bhattacharya',  ratings: 3, when: '3 months ago', comments: 'Learnt the basics! Thank you so much.'}
   ]
+
+  ngOnInit(): void {
+    this.getCourseDetailsById();
+    
+  }
 
   enroll() {
     this.hasEnrolled = true;
@@ -32,4 +44,19 @@ export class ViewCourseComponent {
     this.router.navigate(['runningCourse']);
   }
 
+  getCourseDetailsById() {
+    this.loading = true;
+    this.trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
+    this.courseService.getCourseDetailsById('trainee2@example.com', this.trainingId).subscribe({
+      next: (res) => {
+        this.courseDetail = res;
+        this.loading = false;
+      }
+    })
+  }
+
+  convertStringToInt(str: string){ 
+    var Num = parseInt(str); 
+    return Num;
+  }
 }

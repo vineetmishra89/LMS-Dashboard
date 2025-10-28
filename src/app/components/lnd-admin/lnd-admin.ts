@@ -16,12 +16,14 @@ import { CardModule } from 'primeng/card';
   styleUrl: './lnd-admin.scss'
 })
 export class LndAdminComponent implements OnInit{
-  users: City[] | undefined;
+  cities: any[] = [];
+  selectedCity: any = null;
+  users: any[] | undefined;
 
-    selectedUsers: City | undefined;
-    trainings: City[] | undefined;
+    selectedUsers: any | undefined;
+    trainings: any[] | undefined;
 
-    selectedTrainings: City | undefined;
+    selectedTrainings: any | undefined;
 
     metricsData: any[] = [];
     metricsService = inject(MetricsService);
@@ -60,8 +62,4 @@ export class LndAdminComponent implements OnInit{
     }
 
     
-}
-interface City {
-  name: string;
-  code: string;
 }

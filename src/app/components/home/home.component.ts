@@ -60,8 +60,10 @@ export class HomeComponent {
       }
   }
 
-  viewCourse() {
-    this.router.navigate(['viewCourse'])
+  viewCourse(product: any) {
+    console.log(product);
+    this.router.navigate(['/viewCourse', product.trngId]);
+   //this.router.navigate(['viewCourse'])
   }
 
   async loadHomePageCourses() {

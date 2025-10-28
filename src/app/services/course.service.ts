@@ -133,5 +133,10 @@ export class CourseService {
     return this.apiService.get<any>(`courses/courseCard/viewType/${viewType}${category_param}`);
   }
 
+  getCourseDetailsById(userId: string, trainingId: string) {
+    return this.apiService.get<any>(`courses/getCourseById/${trainingId}?userId=${userId}`);
+  }
+
+  
 
 }

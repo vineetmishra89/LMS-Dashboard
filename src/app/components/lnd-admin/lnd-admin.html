@@ -59,7 +59,63 @@
 </div>
 
 <ng-template #metrics>
+    <div style="margin: 5px 10px 30px 10px">
+        <p-dropdown 
+          [options]="cities" 
+          [(ngModel)]="selectedCity" 
+          optionLabel="name"
+          placeholder="Select a Category" />
+          <p-dropdown 
+          [options]="cities" 
+          [(ngModel)]="selectedCity" 
+          optionLabel="name"  style="margin-left: 20px" 
+          placeholder="Select a Level" />
+          <p-dropdown 
+          [options]="cities" 
+          [(ngModel)]="selectedCity" 
+          optionLabel="name"  style="margin-left: 20px" 
+          placeholder="Select a Technology" />
+          <p-dropdown 
+          [options]="cities" 
+          [(ngModel)]="selectedCity" 
+          optionLabel="name"  style="margin-left: 20px" 
+          placeholder="Select a Time Period" />
+          <p-dropdown 
+          [options]="cities" 
+          [(ngModel)]="selectedCity" 
+          optionLabel="name"  style="margin-left: 20px" 
+          placeholder="Select a Top Record Number" />
+          <p-button label="Search" style="margin-left: 20px" />
+      </div>
     <div class="metrics-table-container">
+        <div class="metrics-table">
+            <div class="metrics-title">
+                Top Learners
+            </div>
+            @if(metricsData?.topTrainees?.length > 0) {
+                <p-table [value]="metricsData?.topTrainees" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Trainee</th>
+                            <th>Completed Courses</th>
+                            <th>Average Progress</th>
+                            <th>Total Enrollments</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product>
+                        <tr>
+                            <td>{{ product.userId }}</td>
+                            <td>{{ product.completedCourses }}</td>
+                            <td>{{ product.averageProgress }}</td>
+                            <td>{{ product.totalEnrollments }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            } @else {
+                <div class="no-records">No records available</div>
+            }
+            
+        </div>
         <div class="metrics-table">
             <div class="metrics-title">
                 Top Enrolled Courses
@@ -100,40 +156,6 @@
             </div>
             @if(metricsData?.topCompletedCourses?.length > 0) {
                 <p-table [value]="metricsData?.topCompletedCourses" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Topic</th>
-                            <th>Category</th>
-                            <th>Completed Count</th>
-                            <th>Enrollment Count</th>
-                            <th>Level</th>
-                            <th>Rating</th>
-                            <th>View Count</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-product>
-                        <tr>
-                            <td>{{ product.topic }}</td>
-                            <td>{{ product.category }}</td>
-                            <td>{{ product.completedCount }}</td>
-                            <td>{{ product.enrollmentCount }}</td>
-                            <td>{{ product.level }}</td>
-                            <td>{{ product.rating }}</td>
-                            <td>{{ product.viewCount }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            }  @else {
-                <div class="no-records">No records available</div>
-            }
-            
-        </div>
-        <div class="metrics-table">
-            <div class="metrics-title">
-                Top Enrolled Courses
-            </div>
-            @if(metricsData?.topEnrolledCourses?.length > 0) {
-                <p-table [value]="metricsData?.topEnrolledCourses" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>Topic</th>
@@ -230,34 +252,7 @@
             }
             
         </div>
-        <div class="metrics-table">
-            <div class="metrics-title">
-                Top Trainees
-            </div>
-            @if(metricsData?.topTrainees?.length > 0) {
-                <p-table [value]="metricsData?.topTrainees" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Trainee</th>
-                            <th>Completed Courses</th>
-                            <th>Average Progress</th>
-                            <th>Total Enrollments</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-product>
-                        <tr>
-                            <td>{{ product.userId }}</td>
-                            <td>{{ product.completedCourses }}</td>
-                            <td>{{ product.averageProgress }}</td>
-                            <td>{{ product.totalEnrollments }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            } @else {
-                <div class="no-records">No records available</div>
-            }
-            
-        </div>
+        
         <div class="metrics-table">
             <div class="metrics-title">
                 User Training Dump
@@ -266,15 +261,15 @@
                 <p-table [value]="metricsData?.userTrainingDump" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>userId</th>
-                            <th>trainingTopic</th>
-                            <th>status</th>
-                            <th>category</th>
-                            <th>enrolledTs</th>
-                            <th>lastAccessedTs</th>
-                            <th>progressPercent</th>
-                            <th>startedTs</th>
-                            <th>level</th>
+                            <th>User Id</th>
+                            <th>Training Topic</th>
+                            <th>Status</th>
+                            <th>Category</th>
+                            <th>Enrolled Ts</th>
+                            <th>LastAccessed Ts</th>
+                            <th>Progress %</th>
+                            <th>Started Ts</th>
+                            <th>Level</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-product>

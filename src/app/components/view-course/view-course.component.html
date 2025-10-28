@@ -1,3 +1,9 @@
+@if(loading) {
+  <div class="centered-box">
+    <p-progressSpinner ariaLabel="loading"  fill="#d1d5db8c" />
+  </div>
+}
+
 <div style="margin: -20px -20px; background-color: #2c2c2c; padding: 20px 50px; position: relative">
   <div style="position: absolute; top: 140%; right: 5%">
     @if(hasEnrolled === false) {
@@ -8,11 +14,10 @@
   </div>
   <div class="header" style="padding-bottom: 30px">
     <div style="font-size: 20px; font-weight: bold; color: #fff">
-      The Ultimate React Course 2025: React, Next.js, Redux & More
+      {{courseDetail?.topics}}
     </div>
     <div style="font-size: 16px; margin-top: 20px; color: #fff">
-      Master modern React from beginner to advanced! Next.js, Context API, React Query, Redux,
-      Tailwind, advanced patterns
+      {{courseDetail?.details}}
     </div>
     <div style="font-size: 12px; margin-top: 20px; color: #fff">Trainer Name: 
         <span (mouseover)="op.toggle($event)" style="color: #fff">Vineet Mishra</span>
@@ -62,13 +67,11 @@
     >
       <div style="margin-bottom: 5px; font-size: 14px; font-weight: 400; color: black">4.6</div>
       <div>
-        <i class="pi pi-star-fill" style="color: #c4710d"></i
-        ><i class="pi pi-star-fill" style="color: #c4710d"></i
-        ><i class="pi pi-star-fill" style="color: #c4710d"></i
-        ><i class="pi pi-star-fill" style="color: #c4710d"></i
-        ><i class="pi pi-star-half-fill" style="color: #c4710d"></i>
+        @for(rating of courseDetail?.rating; track rating) {
+          <i class="pi pi-star-fill" style="color: #c4710d"></i>
+        }
       </div>
-      <div style="margin-top: 5px; font-size: 12px">4 ratings</div>
+      <div style="margin-top: 5px; font-size: 12px">{{courseDetail?.rating}} ratings</div>
     </div>
     <div
       style="
@@ -102,7 +105,7 @@
   <div style="margin-top: 15px">
     <div style="font-size: 18px; font-weight: bold">This course includes:</div>
     <div class="flex-container" style="width: 400px; margin-top: 10px">
-      <div class="flex-item">200 duration</div>
+      <div class="flex-item">{{courseDetail?.duration}} duration</div>
       <div class="flex-item">
         <a href="/" style="color: var(--primary-700)">Material Link</a>
       </div>
@@ -110,11 +113,11 @@
   </div>
   <div style="margin-top: 30px">
     <div style="font-size: 18px; font-weight: bold">Pre requisites:</div>
-    <div style="margin-top: 10px">Basic knowledge of JavaScript</div>
+    <div style="margin-top: 10px">{{courseDetail?.prerequisite}}</div>
   </div>
   <div style="margin-top: 30px">
     <div style="font-size: 18px; font-weight: bold">Tools required:</div>
-    <div style="margin-top: 10px"><span>VS Code, Node.js</span> <a href="/" style="margin-left: 20px; color: var(--primary-700)">IT Ticket Support</a></div>
+    <div style="margin-top: 10px"><span>{{courseDetail?.toolsNeeded}}</span> <a href="https://supporthub.irissoftware.com/support/catalog/items" target="_blank" style="margin-left: 20px; color: var(--primary-700)">IT Ticket Support</a></div>
   </div>
 </div>
 <div class="content" style="margin-top: 30px; margin-left: 20px; margin-right: 20px">
@@ -122,68 +125,30 @@
     <div style="font-size: 18px; font-weight: bold">Course Content</div>
     <div style="width: 400px; margin-top: 10px">
       <ul style="list-style: none">
-        <li style="display: flex; align-items: center; margin: 20px 0px">
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-youtube"></i>
-            <span
-              style="
-                margin-left: 10px;
-                margin-right: 10px;
-                display: inline-block;
-                width: 350px;
-                color: var(--text-color);
-              "
-            >
-              Course Roadmap and Projects
-            </span>
-          </div>
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
-            <span style="font-size: 10px; margin-left: 10px; width: 60px">22:00 mins</span>
-          </div>
-        </li>
-        <li style="display: flex; align-items: center; margin: 20px 0px">
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-youtube"></i>
-            <span
-              style="
-                margin-left: 10px;
-                margin-right: 10px;
-                display: inline-block;
-                width: 350px;
-                color: var(--text-color);
-              "
-            >
-              Course Roadmap and Projects
-            </span>
-          </div>
-
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
-            <span style="font-size: 10px; margin-left: 10px; width: 60px">22:00 mins</span>
-          </div>
-        </li>
-        <li style="display: flex; align-items: center; margin: 20px 0px">
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-youtube"></i>
-            <span
-              style="
-                margin-left: 10px;
-                margin-right: 10px;
-                display: inline-block;
-                width: 350px;
-                color: var(--text-color);
-              "
-            >
-              Course Roadmap and Projects
-            </span>
-          </div>
-
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
-            <span style="font-size: 10px; margin-left: 10px; width: 60px">22:00 mins</span>
-          </div>
-        </li>
+        @for(content of courseDetail?.lmsTrainingDetails; track content) {
+          <li style="display: flex; align-items: center; margin: 20px 0px">
+            <div style="display: flex; align-items: center">
+              <i class="pi pi-youtube"></i>
+              <span
+                style="
+                  margin-left: 10px;
+                  margin-right: 10px;
+                  display: inline-block;
+                  width: 350px;
+                  color: var(--text-color);
+                "
+              >
+                {{content?.details}}
+              </span>
+            </div>
+            <div style="display: flex; align-items: center">
+              <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
+              <span style="font-size: 10px; margin-left: 10px; width: 60px">
+                {{content?.duration}} mins
+              </span>
+            </div>
+          </li>
+        }
       </ul>
     </div>
   </div>

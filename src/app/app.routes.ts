@@ -21,7 +21,7 @@ const routes: Routes = [
   { path: 'search', component: DashboardComponent },
   { path: 'support', component: SupportComponent },
   { path: 'dashboard', component: SearchComponent },
-  { path: 'viewCourse', component: ViewCourseComponent },
+  { path: 'viewCourse/:trainingId', component: ViewCourseComponent },
   { path: 'runningCourse', component: PlayCourseComponent },
   { path: 'video-player/:courseId', component: VideoPlayerPageComponent },
   { path: 'detail/completed', component: CompletedDetailComponent },
