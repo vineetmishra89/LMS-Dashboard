@@ -112,7 +112,7 @@ public class CourseService {
             return List.of();
         }
         return courseCardDetailList != null ? courseCardDetailList.stream()
-          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (Long) row[3], (String) row[4], (Long) row[5], (String) row[6], (String) row[7]))
+          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (String) row[3],(Long) row[4], (String) row[5], (Long) row[6], (String) row[7], (String) row[8]))
           .collect(Collectors.toList()): List.of();
       }
       return List.of();

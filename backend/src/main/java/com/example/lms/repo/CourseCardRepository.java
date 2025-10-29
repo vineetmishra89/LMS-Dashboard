@@ -17,6 +17,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "    ts.TRNG_ID,\n" +
     "    ts.TRNG_TOPIC AS Course_Name,\n" +
     "    STRING_AGG(DISTINCT td.TRAINER_NAME::text, ',') AS Trainer_Names,\n" +
+    "    STRING_AGG(DISTINCT td.email_id::text, ',') AS Trainer_Email_ids,\n" +
     "    SUM(tdt.Module_duration) AS Duration,\n" +
     "    ts.LEVEL_CODE AS Level,\n" +
     "    COUNT(tdt.Module_id) AS Modules,\n" +
@@ -37,7 +38,8 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
   List<Object[]> findCourseCardDetailsByEnrollment(String courseInterval);
 
   @Query(value = "WITH trng_details AS (\n" +
-    "        SELECT ts.TRNG_ID, SUM(tdt.Module_duration) AS Duration, COUNT(tdt.module_id) AS Modules, STRING_AGG(DISTINCT td.TRAINER_NAME::text, ',') AS Trainer_Names\n" +
+    "        SELECT ts.TRNG_ID, SUM(tdt.Module_duration) AS Duration, COUNT(tdt.module_id) AS Modules, STRING_AGG(DISTINCT td.TRAINER_NAME::text, ',') AS Trainer_Names,\n" +
+    "        STRING_AGG(DISTINCT td.email_id::text, ',') AS Trainer_Email_ids\n" +
     "        FROM lms_schema.LMS_TRNG_SUMMARY ts\n" +
     "        JOIN lms_schema.LMS_TRNG_DTLS tdt ON ts.TRNG_ID = tdt.TRNG_ID\n" +
     "        JOIN lms_schema.LMS_TRAINER_DTLS td ON tdt.TRAINER_ID = td.TRAINER_ID\n" +
@@ -56,7 +58,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "        GROUP BY ts.TRNG_ID\n" +
     "        ORDER BY COUNT(ts.TRNG_ID) DESC\n" +
     "    )\n" +
-    "    SELECT ts.TRNG_ID, Course_Name, Trainer_Names, duration, Level, modules,\n" +
+    "    SELECT ts.TRNG_ID, Course_Name, Trainer_Names,Trainer_Email_ids, duration, Level, modules,\n" +
     "        Rating, Category FROM trngSummary ts LEFT JOIN trng_details td ON ts.TRNG_ID = td.TRNG_ID",
     nativeQuery = true)
   List<Object[]> findCourceCardDetailsByView(String courseInterval);
@@ -65,6 +67,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "    ts.TRNG_ID,\n" +
     "    ts.TRNG_TOPIC AS Course_Name,\n" +
     "    STRING_AGG(DISTINCT td.TRAINER_NAME, ',') AS Trainer_Names,\n" +
+    "    STRING_AGG(DISTINCT td.email_id::text, ',') AS Trainer_Email_ids,\n" +
     "    SUM(tdt.MODULE_DURATION) AS duration,\n" +
     "    ts.LEVEL_CODE AS Level,\n" +
     "    COUNT(tdt.MODULE_ID) AS Modules,\n" +
@@ -86,6 +89,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "    ts.TRNG_ID,\n" +
     "    ts.TRNG_TOPIC AS Course_Name,\n" +
     "    STRING_AGG(DISTINCT td.TRAINER_NAME, ',') AS Trainer_Names,\n" +
+    "    STRING_AGG(DISTINCT td.email_id::text, ',') AS Trainer_Email_ids,\n" +
     "    SUM(tdt.MODULE_DURATION) AS duration,\n" +
     "    ts.LEVEL_CODE AS Level,\n" +
     "    COUNT(tdt.MODULE_ID) AS Modules,\n" +
