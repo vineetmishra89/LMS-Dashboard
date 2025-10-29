@@ -2,9 +2,11 @@ package com.example.lms.controller;
 
 import com.example.lms.dto.MetricsRequestDto;
 import com.example.lms.dto.MetricsResponseDto;
-import com.example.lms.dto.TimePeriod;
 import com.example.lms.service.MetricsService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/metrics")
@@ -27,14 +29,16 @@ public class MetricsController {
     @RequestParam(required = false) String category,
     @RequestParam(required = false) String level,
     @RequestParam(required = false) String technology,
-    @RequestParam(required = false) TimePeriod timePeriod,
+    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
     @RequestParam(required = false, defaultValue = "10") Integer topN) {
     
     MetricsRequestDto request = new MetricsRequestDto();
     request.setCategory(category);
     request.setLevel(level);
     request.setTechnology(technology);
-    request.setTimePeriod(timePeriod);
+    request.setStartDate(startDate);
+    request.setEndDate(endDate);
     request.setTopN(topN);
     
     return metricsService.getMetrics(request);
