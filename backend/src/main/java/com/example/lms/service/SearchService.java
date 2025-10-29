@@ -4,6 +4,7 @@ import com.example.lms.domain.CourseDetail;
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.dto.SearchDto;
 import com.example.lms.dto.SearchFilterDto;
+import com.example.lms.dto.TrainingNameDto;
 import com.example.lms.repo.CourseDetailRepository;
 import com.example.lms.repo.TrainerRepository;
 import com.example.lms.repo.CourseRepository;
@@ -104,7 +105,7 @@ public class SearchService {
     response.setTrainingNameList(getTrainingList());
     //log.info("Got training list -- " + response.getTrainingNameList.size());
 
-    response.setCategoryList(getAllCategories());
+    //response.setCategoryList(getAllCategories());
 
     response.setLevelList(getAllLevels());
 
@@ -115,13 +116,15 @@ public class SearchService {
 
   }
 
-  private List<String> getTrainingList() {
+  private List<TrainingNameDto> getTrainingList() {
     try {
-      List<Object> results = courseRepository.getAllTrainings();
+      List<Object[]> results = courseRepository.getAllTrainings();
       if (null != results) {
         log.info("got results");
         return results.stream()
-          .map(obj -> (String) obj)
+          .map(row -> new TrainingNameDto(
+            (String)row[0],(String)row[1]
+          ))
           .collect(Collectors.toList());
       } else {
         return Collections.emptyList();
