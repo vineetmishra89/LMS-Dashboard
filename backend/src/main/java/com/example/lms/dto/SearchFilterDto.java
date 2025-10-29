@@ -18,6 +18,8 @@ public class SearchFilterDto {
 
   private List<String> levelList;
 
+  private List<String> categoryList;
+
   private List<String> trainerNameList;
 
 }

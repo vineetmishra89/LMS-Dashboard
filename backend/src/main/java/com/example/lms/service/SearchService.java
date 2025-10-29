@@ -105,7 +105,7 @@ public class SearchService {
     response.setTrainingNameList(getTrainingList());
     //log.info("Got training list -- " + response.getTrainingNameList.size());
 
-    //response.setCategoryList(getAllCategories());
+    response.setCategoryList(getAllCategories());
 
     response.setLevelList(getAllLevels());
 
