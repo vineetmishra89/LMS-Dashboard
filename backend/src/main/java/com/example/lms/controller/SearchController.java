@@ -24,7 +24,7 @@ public class SearchController {
         return searchService.search(category, topic, instructor, level);
     }
 
-  @GetMapping("/getSearchList")
+  @PostMapping("/getSearchList")
   public SearchFilterDto getSearchList(){
     return searchService.getSearchList();
   }
