@@ -17,12 +17,15 @@ public class EnrollmentController {
 
   @PostMapping("enroll")
   public EnrollmentMapping enroll(@RequestBody Map<String, Object> body) {
-    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"));
+    String enrollmentType = (null == body.get("enrollmentType") ? "Voluntary" : (String)body.get("enrollmentType"));
+    Integer courseIdInt = (Integer)body.get("courseId");
+    Long courseId = Long.valueOf(courseIdInt);
+    return enrollmentService.enroll((String)body.get("userId"), courseId,enrollmentType);
   }
 
   @PostMapping("unenroll")
   public EnrollmentMapping unenroll(@RequestBody Map<String, Object> body) {
-    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"));
+    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"),null);
   }
 
   @GetMapping("/{enrollmentId}")
@@ -38,6 +41,21 @@ public class EnrollmentController {
   @PostMapping("/{enrollmentId}/complete")
   public EnrollmentMapping completeCourse(@PathVariable Long enrollmentId) {
     return enrollmentService.completeCourse(enrollmentId);
+  }
+
+  @PostMapping("/bulk-enroll")
+  public List<EnrollmentMapping> bulkEnroll(@RequestBody Map<String, Object> body) {
+    String userId = (String) body.get("userId");
+    @SuppressWarnings("unchecked")
+    List<String> emailIdList = (List<String>) body.get("emailIdList");
+    @SuppressWarnings("unchecked")
+    List<Long> courseIdList = ((List<Number>) body.get("courseIdList")).stream()
+        .map(Number::longValue)
+        .collect(java.util.stream.Collectors.toList());
+    String enrollmentType = body.get("enrollmentType") != null ?
+        (String) body.get("enrollmentType") : "VOLUNTARY";
+
+    return enrollmentService.bulkEnroll(emailIdList, courseIdList, enrollmentType, userId);
   }
 
 }

@@ -112,4 +112,31 @@ export class CourseService {
   submitCourseReview(courseId: string, review: any): Observable<any> {
     return this.apiService.post(`courses/${courseId}/reviews`, review);
   }
+
+  getSummary(userId: string): Observable<any> {
+    return this.apiService.get<any>(`dashboard/summary?userId=${userId}`);
+  }
+  getEnrolledCourse(userId: string): Observable<any> {
+    return this.apiService.get<any>(`dashboard/enrolledCourses?userId=${userId}`);
+  }
+  getCompletedCourse(userId: string): Observable<any> {
+    return this.apiService.get<any>(`dashboard/completedCourses?userId=${userId}`);
+  }
+  getPendingCourses(userId: string): Observable<any> {
+    return this.apiService.get<any>(`dashboard/pendingCourses?userId=${userId}`);
+  }
+  getLikedCourses(userId: string): Observable<any> {
+    return this.apiService.get<any>(`dashboard/likedCourses?userId=${userId}`);
+  }
+  getCourseCard(viewType: string, category: string): Observable<any> {
+    const category_param = category ? `?category=${category}` : '';
+    return this.apiService.get<any>(`courses/courseCard/viewType/${viewType}${category_param}`);
+  }
+
+  getCourseDetailsById(userId: string, trainingId: string) {
+    return this.apiService.get<any>(`courses/getCourseById/${trainingId}?userId=${userId}`);
+  }
+
+  
+
 }

@@ -20,6 +20,8 @@ import java.util.List;
 public class EnrollmentMapping {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lms_trng_enrl_id_generator")
+  @SequenceGenerator(name = "lms_trng_enrl_id_generator", sequenceName = "lms_schema.lms_trng_enrl_id_seq", allocationSize = 1)
   @Column(name = "trng_enrl_id")
   private Long trainingEnrollmentId;
 
@@ -32,17 +34,32 @@ public class EnrollmentMapping {
   @Column(name = "enrolled_ts")
   private OffsetDateTime enrolledTs;
 
+  @Column(name = "enrolled_by_email_id")
+  private String enrolledByEmailId;
+
   @Column(name = "started_ts")
   private OffsetDateTime startTs;
 
   @Column(name = "enrollment_type")
-  private String enrollment_type;
+  private String enrollmentType;
 
   @Column(name = "progress_percent")
   private Long progressPercent;
 
   @Column(name = "last_accessed_ts")
   private OffsetDateTime lastAccessedAt;
+
+  @Column(name = "created_ts")
+  private OffsetDateTime createdTs;
+
+  @Column(name = "updated_ts")
+  private OffsetDateTime updatedTs;
+
+  @Column(name = "created_by")
+  private String createdBy;
+
+  @Column(name = "updated_By")
+  private String updatedBy;
 
   @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference

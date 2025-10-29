@@ -1,3 +1,5 @@
+1{{catalogCopy$ | json}}2
+
 <div class="dashboard1" *ngIf="dashboardData$ | async as data; else loadingTemplate">
   <!-- <div class="stats-grid">
     <app-stats-card icon="🏆" iconClass="green" label="Completed Courses" [value]="data.stats.completed"
@@ -11,7 +13,7 @@
  
 
 
-  <div *ngIf="false" class="content-grid" style="display: flex">
+  <div  class="content-grid" style="display: flex">
     <section class="filters-panel">
       <table class="panel-table">
         <thead>
@@ -134,11 +136,15 @@
   </div>
 </div>
 
-<div style="margin: 5px 10px 30px 10px">
+<div style="margin: 5px 10px 30px 10px" *ngIf="dashboardData$ | async as data">
+  <select [(ngModel)]="pendingFilters.category" class="u-select">
+    <option value="">All</option>
+    <option *ngFor="let c of data.categories" [value]="c">{{ c }}</option>
+  </select>
   <p-dropdown 
-    [options]="cities" 
+    [options]="pendingFilters.category" 
     [(ngModel)]="selectedCity" 
-    optionLabel="name"  style="margin-left: 20px" 
+      style="margin-left: 20px" 
     placeholder="Select a Category" />
     <p-dropdown 
     [options]="cities" 

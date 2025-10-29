@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { VideoPlayerComponent } from '../video-player/video-player.component';
 
 @Component({
   selector: 'app-play-course',
@@ -14,7 +15,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 })
 export class PlayCourseComponent {
   value: string = '';
-  videoUrl: string = '/assets/my-intro-video.mp4';
+  videoUrl: string = 'https://irissoft-my.sharepoint.com/e80b8d05-48d9-46d4-afa1-b2cf6c0a103a';
   playlist = [
     {name: 'Day 1 - Introduction', duration: '30 mins'}, 
     {name: 'Day 2 - Setup & Configuration', duration: '40 mins'},

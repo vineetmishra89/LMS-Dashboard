@@ -27,10 +27,7 @@ interface City {
 export class DashboardComponent implements OnInit, OnDestroy {
 
   cities: City[] | undefined;
-
   selectedCity: City | undefined;
-
-
   private destroy$ = new Subject<void>();
   isLoading$ = new BehaviorSubject<boolean>(true);
   hasError$ = new BehaviorSubject<string | null>(null);
@@ -157,7 +154,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         categories: [...new Set(catalog.map((c: any) => c.category))],
         topics: [...new Set(catalog.map((c: any) => c.topics))],
         instructors: [...new Set(catalog.map((c: any) => c.instructorName))],
-        //catalog,
+        catalog,
         enrollments,
         continueCourse
       })),
@@ -203,6 +200,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         })
       ))  // <-- new HTTP per change
     );
+    
 
     this.catalogCopy$ = this.catalog$.pipe(
       take(1),                                      // only first emission
