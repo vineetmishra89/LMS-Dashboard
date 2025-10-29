@@ -16,7 +16,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "COUNT(*) as totalEnrollments " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
-    "WHERE e.completed_ts >= :startDate " +
+    "WHERE (:startDate IS NULL OR e.completed_ts >= :startDate) " +
+    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
@@ -24,6 +25,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "ORDER BY completedCourses DESC, averageProgress DESC " +
     "LIMIT :topN", nativeQuery = true)
   List<Object[]> findTopTrainees(@Param("startDate") OffsetDateTime startDate,
+                                  @Param("endDate") OffsetDateTime endDate,
                                   @Param("category") String category,
                                   @Param("level") String level,
                                   @Param("technology") String technology,
@@ -40,7 +42,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND e.completed_ts >= :startDate " +
+    "AND (:startDate IS NULL OR e.completed_ts >= :startDate) " +
+    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +
@@ -48,6 +51,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "ORDER BY CAST(c.rating AS DECIMAL) DESC NULLS LAST " +
     "LIMIT :topN", nativeQuery = true)
   List<Object[]> findTopRatedCourses(@Param("startDate") OffsetDateTime startDate,
+                                      @Param("endDate") OffsetDateTime endDate,
                                       @Param("category") String category,
                                       @Param("level") String level,
                                       @Param("technology") String technology,
@@ -64,7 +68,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND e.completed_ts >= :startDate " +
+    "AND (:startDate IS NULL OR e.completed_ts >= :startDate) " +
+    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +
@@ -72,6 +77,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "ORDER BY enrollmentCount DESC " +
     "LIMIT :topN", nativeQuery = true)
   List<Object[]> findTopEnrolledCourses(@Param("startDate") OffsetDateTime startDate,
+                                         @Param("endDate") OffsetDateTime endDate,
                                          @Param("category") String category,
                                          @Param("level") String level,
                                          @Param("technology") String technology,
@@ -88,7 +94,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND e.last_accessed_ts >= :startDate " +
+    "AND (:startDate IS NULL OR e.last_accessed_ts >= :startDate) " +
+    "AND (:endDate IS NULL OR e.last_accessed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
@@ -96,6 +103,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "ORDER BY viewCount DESC " +
     "LIMIT :topN", nativeQuery = true)
   List<Object[]> findTopViewedCourses(@Param("startDate") OffsetDateTime startDate,
+                                       @Param("endDate") OffsetDateTime endDate,
                                        @Param("category") String category,
                                        @Param("level") String level,
                                        @Param("technology") String technology,
@@ -112,7 +120,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND e.completed_ts >= :startDate " +
+    "AND (:startDate IS NULL OR e.completed_ts >= :startDate) " +
+    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
@@ -120,6 +129,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "ORDER BY completedCount DESC " +
     "LIMIT :topN", nativeQuery = true)
   List<Object[]> findTopCompletedCourses(@Param("startDate") OffsetDateTime startDate,
+                                          @Param("endDate") OffsetDateTime endDate,
                                           @Param("category") String category,
                                           @Param("level") String level,
                                           @Param("technology") String technology,
@@ -138,12 +148,14 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND e.completed_ts >= :startDate " +
+    "AND (:startDate IS NULL OR e.completed_ts >= :startDate) " +
+    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +
     "ORDER BY e.enrolled_ts DESC", nativeQuery = true)
   List<Object[]> findUserTrainingDump(@Param("startDate") OffsetDateTime startDate,
+                                       @Param("endDate") OffsetDateTime endDate,
                                        @Param("category") String category,
                                        @Param("level") String level,
                                        @Param("technology") String technology);
