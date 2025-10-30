@@ -44,16 +44,12 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 // Feature Components
-import { ProfileComponent } from './components/profile/profile.component';
+
 import { CoursesComponent } from './components/courses/courses.component';
-import { CertificatesComponent } from './components/certificates/certificates.component';
-import { AnalyticsComponent } from './components/analytics/analytics.component';
-import { NotificationsComponent } from './components/notifications/notifications.component';
 
 // Shared Components
 import { LoadingSpinnerComponent } from './components/shared/loading-spinner/loading-spinner.component';
 import { ErrorDisplayComponent } from './components/shared/error-display/error-display.component';
-import { ToastNotificationComponent } from './components/shared/toast-notification/toast-notification.component';
 import { ConfirmDialogComponent } from './components/shared/confirm-dialog/confirm-dialog.component';
 import { UnauthorizedComponent } from './components/shared/unauthorized/unauthorized.component';
 import { NotFoundComponent } from './components/shared/not-found/not-found.component';
@@ -66,9 +62,6 @@ import { CourseService } from './services/course.service';
 import { EnrollmentService } from './services/enrollment.service';
 import { AnalyticsService } from './services/analytics.service';
 import { CertificateService } from './services/certificate.service';
-import { NotificationService } from './services/notification.service';
-import { DataSyncService } from './services/data-sync.service';
-import { WebSocketService } from './services/websocket.service';
 import { VideoProgressService } from './services/video-progress.service';
 
 // Guards
@@ -109,7 +102,7 @@ import { CarouselModule } from 'primeng/carousel';
   declarations: [
     // Core Components
     AppComponent,
-    DashboardComponent,
+   // DashboardComponent,
     HeaderComponent,
     SidebarComponent,
     WelcomeBannerComponent,
@@ -118,7 +111,7 @@ import { CarouselModule } from 'primeng/carousel';
     ChatComponent,
     
     // Auth Components
-    LoginComponent,
+    
     RegisterComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
@@ -126,7 +119,6 @@ import { CarouselModule } from 'primeng/carousel';
     // Shared Components
     LoadingSpinnerComponent,
     ErrorDisplayComponent,
-    ToastNotificationComponent,
     ConfirmDialogComponent,
     UnauthorizedComponent,
     NotFoundComponent,
@@ -140,17 +132,15 @@ import { CarouselModule } from 'primeng/carousel';
     SearchHighlightPipe,
     
     // Feature Components
-    ProfileComponent,
+    
     CoursesComponent,
-    CertificatesComponent,
-    AnalyticsComponent,
-    NotificationsComponent,
 
     CompletedDetailComponent,
     EnrolledDetailComponent,
     HoursDetailComponent,
     VideoPlayerComponent,
-    VideoPlayerPageComponent
+    VideoPlayerPageComponent,
+    
   ],
   imports: [
     // Angular Core
@@ -209,9 +199,8 @@ import { CarouselModule } from 'primeng/carousel';
     EnrollmentService,
     AnalyticsService,
     CertificateService,
-    NotificationService,
-    DataSyncService,
-    WebSocketService,
+    //DataSyncService,
+    //WebSocketService,
     VideoProgressService,
     
     LoadingInterceptor,

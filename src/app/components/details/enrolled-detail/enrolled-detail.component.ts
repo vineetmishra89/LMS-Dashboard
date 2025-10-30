@@ -15,7 +15,7 @@ import { EnrollmentService } from '../../../services/enrollment.service';
 export class EnrolledDetailComponent implements OnInit {
   enrolledCourses$!: Observable<CourseMaster[]>;
   enrollments$!: Observable<Enrollment[]>;
-  userId: string = 'vm02102';
+  userId: string = 'test_trainee1@irissoftware.com';
 
   constructor(
     private courseService: CourseService,

@@ -1,17 +1,13 @@
 package com.example.lms.service;
 
-import com.example.lms.domain.CourseDetail;
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.dto.SearchDto;
 import com.example.lms.dto.SearchFilterDto;
 import com.example.lms.dto.TrainingNameDto;
-import com.example.lms.repo.CourseDetailRepository;
 import com.example.lms.repo.TrainerRepository;
 import com.example.lms.repo.CourseRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

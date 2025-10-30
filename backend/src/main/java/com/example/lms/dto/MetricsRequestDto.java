@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,6 +15,7 @@ public class MetricsRequestDto {
   private String category;
   private String level;
   private String technology;
-  private TimePeriod timePeriod;
+  private LocalDate startDate;
+  private LocalDate endDate;
   private Integer topN;
 }

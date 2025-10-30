@@ -60,7 +60,7 @@ export class CoursesComponent implements OnInit, OnDestroy {
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      takeUntil(this.destroy$)
+      //takeUntil(this.destroy$)
     ).subscribe(query => {
       this.performSearch(query);
     });

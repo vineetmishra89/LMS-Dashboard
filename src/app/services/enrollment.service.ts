@@ -6,7 +6,6 @@ import { HttpParams } from '@angular/common/http';
 import { Enrollment, EnrollmentProgress, QuizScore } from '../models/enrollment';
 import { CourseMaster } from '../models/course';
 import { ApiService } from './api.service';
-import { NotificationService } from './notification.service';
 import { AnalyticsService } from './analytics.service';
 
 export interface EnrollmentRequest {
@@ -50,7 +49,6 @@ export class EnrollmentService {
 
   constructor(
     private apiService: ApiService,
-    private notificationService: NotificationService,
     private analyticsService: AnalyticsService
   ) {}
 
@@ -210,11 +208,7 @@ export class EnrollmentService {
           { enrollmentId, moduleId }
         ).subscribe();
         
-        // Show achievement notification
-        this.notificationService.showAchievementNotification({
-          title: 'Module Completed! 🎉',
-          message: `Great job completing this module! You're making excellent progress.`
-        });
+      
       }),
       catchError(error => {
         console.error('Failed to mark module as complete:', error);
@@ -243,11 +237,7 @@ export class EnrollmentService {
         
         // Show score notification
         const percentage = Math.round((quizScore.score / quizScore.maxScore) * 100);
-        this.notificationService.showNotification({
-          title: percentage >= 80 ? 'Great Quiz Score! 🎯' : 'Quiz Complete ✅',
-          message: `You scored ${percentage}% on this quiz.`,
-          type: percentage >= 80 ? 'success' : 'info'
-        });
+       
       })
     );
   }
@@ -278,10 +268,7 @@ export class EnrollmentService {
         ).subscribe();
         
         // Show completion celebration
-        this.notificationService.showAchievementNotification({
-          title: '🎉 Course Completed! 🎉',
-          message: 'Congratulations! You\'ve successfully completed this course. Your certificate is being generated.'
-        });
+       
       }),
       catchError(error => {
         console.error('Failed to complete course:', error);
@@ -305,11 +292,7 @@ export class EnrollmentService {
         this.updateLocalEnrollment(enrollment);
         
         // Send welcome back notification
-        this.notificationService.showNotification({
-          title: 'Welcome Back! 👋',
-          message: 'Ready to continue your learning journey?',
-          type: 'info'
-        });
+     
       })
     );
   }
@@ -601,5 +584,14 @@ export class EnrollmentService {
 
   shareProgress(enrollmentId: string, platform: 'linkedin' | 'twitter' | 'facebook'): Observable<any> {
     return this.apiService.post(`enrollments/${enrollmentId}/share`, { platform });
+  }
+
+  
+  enroll(data: any) {
+    return this.apiService.post<any>(`enrollments/enroll`, data);
+  }
+
+  unenroll(data: any) {
+    return this.apiService.post<any>(`enrollments/unenroll`, data);
   }
 }

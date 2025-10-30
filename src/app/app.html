@@ -1,8 +1,8 @@
-<div class="app-container" [class.dark-theme]="isDarkMode" [class.mobile-menu-open]="showMobileMenu">
+<div class="app-container" [class.dark-theme]="isDarkMode">
   <!-- Global Loading Indicator -->
-  <div class="global-loading" *ngIf="isLoading">
+  <!-- <div class="global-loading" *ngIf="isLoading">
     <div class="loading-bar"></div>
-  </div>
+  </div> -->
 
   <!-- Sync Status Indicator -->
   <div class="sync-indicator" *ngIf="showSyncIndicator" [ngClass]="{ 'offline': !syncStatus?.isOnline }">
@@ -57,26 +57,6 @@
   </ng-template>
 
   <!-- Global Components -->
-  <app-toast-notification></app-toast-notification>
-  
-  <!-- Mobile Menu Overlay -->
-  <div class="mobile-overlay" 
-       *ngIf="showMobileMenu" 
-       (click)="toggleMobileMenu()"
-       appClickOutside
-       (clickOutside)="showMobileMenu = false">
-  </div>
+  <!-- <app-toast-notification></app-toast-notification> -->
 
-  <!-- PWA Install Banner -->
-  <div class="pwa-banner" *ngIf="showInstallPrompt">
-    <div class="banner-content">
-      <span class="banner-icon">📱</span>
-      <div class="banner-text">
-        <div class="banner-title">Install LMS App</div>
-        <div class="banner-subtitle">Get the full experience</div>
-      </div>
-      <button class="install-btn" (click)="installPWA()">Install</button>
-      <button class="close-banner" (click)="dismissInstallPrompt()">×</button>
-    </div>
-  </div>
 </div>
