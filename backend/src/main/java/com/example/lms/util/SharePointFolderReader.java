@@ -1,19 +1,15 @@
 package com.example.lms.util;
 
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
-import com.microsoft.graph.authentication.TokenCredentialAuthProvider;
-import com.microsoft.graph.models.DriveItem;
-import com.microsoft.graph.requests.DriveItemCollectionPage;
-import com.microsoft.graph.requests.GraphServiceClient;
-import okhttp3.Request;
+import com.example.lms.service.SharePointService;
+import com.example.lms.service.impl.GraphClientProvider;
+import com.example.lms.service.impl.OneDriveSharePointServiceImpl;
+import com.example.lms.service.impl.SharePointSiteServiceImpl;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,18 +24,26 @@ import java.util.Properties;
  * 5. Lists all files with their extensions in Excel column A from row 2 onwards
  * 
  * Configuration required in application.properties:
+ * - graph.mode: "onedrive" (default) or "site"
  * - graph.tenant-id: Azure AD tenant ID
  * - graph.client-id: Azure AD app client ID
  * - graph.client-secret: Azure AD app client secret
+ * 
+ * For OneDrive mode:
  * - graph.user-principal-name: User's email for OneDrive access
- * - graph.base-path: Base path within OneDrive/SharePoint
+ * - graph.base-path: Base path within OneDrive
+ * 
+ * For SharePoint site mode:
+ * - graph.site-hostname: SharePoint site hostname
+ * - graph.site-path: SharePoint site path
+ * - graph.drive-id: (Optional) Specific drive ID
+ * - graph.base-path: Base path within the drive
  * 
  * Usage: java -cp <classpath> com.example.lms.util.SharePointFolderReader
  */
 public class SharePointFolderReader {
 
     private static final Logger logger = LoggerFactory.getLogger(SharePointFolderReader.class);
-    private static final List<String> GRAPH_SCOPES = List.of("https://graph.microsoft.com/.default");
     
     private static final String EXCEL_FILE_PATH = "C:\\files\\sharepoint_folders.xlsx";
     private static final int WORKSHEET_INDEX = 2;          // 3rd worksheet (0-based index)
@@ -48,11 +52,7 @@ public class SharePointFolderReader {
     private static final int OUTPUT_COLUMN = 0;            // Column A (0-based index)
     private static final int DATA_START_ROW = 1;           // Row 2 (0-based index)
 
-    private static String tenantId;
-    private static String clientId;
-    private static String clientSecret;
-    private static String userPrincipalName;
-    private static String basePath;
+    private static Properties properties;
 
     public static void main(String[] args) {
         try {
@@ -60,9 +60,11 @@ public class SharePointFolderReader {
             
             loadConfiguration();
             
-            validateConfiguration();
+            SharePointService sharePointService = createSharePointService();
             
-            processExcelFile();
+            sharePointService.validateConfiguration();
+            
+            processExcelFile(sharePointService);
             
             logger.info("SharePoint folder reading completed successfully!");
             
@@ -76,7 +78,7 @@ public class SharePointFolderReader {
      * Load configuration from application.properties
      */
     private static void loadConfiguration() throws IOException {
-        Properties properties = new Properties();
+        properties = new Properties();
         
         try (InputStream input = SharePointFolderReader.class.getClassLoader()
                 .getResourceAsStream("application.properties")) {
@@ -86,52 +88,72 @@ public class SharePointFolderReader {
             properties.load(input);
         }
         
-        tenantId = properties.getProperty("graph.tenant-id");
-        clientId = properties.getProperty("graph.client-id");
-        clientSecret = properties.getProperty("graph.client-secret");
-        userPrincipalName = properties.getProperty("graph.user-principal-name");
-        basePath = properties.getProperty("graph.base-path");
-        
         logger.info("Configuration loaded successfully");
     }
 
     /**
-     * Validate that all required configuration properties are set
+     * Creates the appropriate SharePoint service implementation based on graph.mode property.
+     * 
+     * @return SharePointService implementation (OneDrive or SharePoint site)
      */
-    private static void validateConfiguration() {
-        List<String> missingProperties = new ArrayList<>();
+    private static SharePointService createSharePointService() {
+        String mode = properties.getProperty("graph.mode", "onedrive").trim().toLowerCase();
+        logger.info("Creating SharePoint service for mode: {}", mode);
         
-        if (tenantId == null || tenantId.trim().isEmpty() || tenantId.contains("your-")) {
-            missingProperties.add("graph.tenant-id");
-        }
-        if (clientId == null || clientId.trim().isEmpty() || clientId.contains("your-")) {
-            missingProperties.add("graph.client-id");
-        }
-        if (clientSecret == null || clientSecret.trim().isEmpty() || clientSecret.contains("your-")) {
-            missingProperties.add("graph.client-secret");
-        }
-        if (userPrincipalName == null || userPrincipalName.trim().isEmpty()) {
-            missingProperties.add("graph.user-principal-name");
-        }
-        if (basePath == null || basePath.trim().isEmpty()) {
-            missingProperties.add("graph.base-path");
+        GraphClientProvider graphClientProvider = new GraphClientProvider();
+        
+        setField(graphClientProvider, "tenantId", properties.getProperty("graph.tenant-id"));
+        setField(graphClientProvider, "clientId", properties.getProperty("graph.client-id"));
+        setField(graphClientProvider, "clientSecret", properties.getProperty("graph.client-secret"));
+        
+        SharePointService service;
+        
+        if ("site".equals(mode)) {
+            SharePointSiteServiceImpl siteService = new SharePointSiteServiceImpl(graphClientProvider);
+            setField(siteService, "siteHostname", properties.getProperty("graph.site-hostname"));
+            setField(siteService, "sitePath", properties.getProperty("graph.site-path"));
+            setField(siteService, "driveId", properties.getProperty("graph.drive-id"));
+            setField(siteService, "basePath", properties.getProperty("graph.base-path"));
+            service = siteService;
+            logger.info("Created SharePointSiteServiceImpl");
+        } else {
+            OneDriveSharePointServiceImpl oneDriveService = new OneDriveSharePointServiceImpl(graphClientProvider);
+            setField(oneDriveService, "userPrincipalName", properties.getProperty("graph.user-principal-name"));
+            setField(oneDriveService, "basePath", properties.getProperty("graph.base-path"));
+            service = oneDriveService;
+            logger.info("Created OneDriveSharePointServiceImpl");
         }
         
-        if (!missingProperties.isEmpty()) {
-            String message = "Missing required SharePoint configuration properties: " + 
-                    String.join(", ", missingProperties);
-            logger.error(message);
-            throw new IllegalStateException(message);
+        return service;
+    }
+
+    /**
+     * Sets a private field value using reflection.
+     * Used to manually inject configuration values outside of Spring context.
+     */
+    private static void setField(Object target, String fieldName, String value) {
+        try {
+            java.lang.reflect.Field field = target.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(target, value);
+        } catch (NoSuchFieldException e) {
+            try {
+                java.lang.reflect.Field field = target.getClass().getSuperclass().getDeclaredField(fieldName);
+                field.setAccessible(true);
+                field.set(target, value);
+            } catch (Exception ex) {
+                logger.warn("Could not set field {}: {}", fieldName, ex.getMessage());
+            }
+        } catch (Exception e) {
+            logger.warn("Could not set field {}: {}", fieldName, e.getMessage());
         }
-        
-        logger.info("Configuration validated successfully");
     }
 
     /**
      * Process the Excel file: read folder name from A1 of 3rd sheet, 
      * get files from SharePoint, write to column A from row 2
      */
-    private static void processExcelFile() throws IOException {
+    private static void processExcelFile(SharePointService sharePointService) throws IOException {
         File excelFile = new File(EXCEL_FILE_PATH);
         
         if (!excelFile.exists()) {
@@ -173,7 +195,7 @@ public class SharePointFolderReader {
             folderName = folderName.trim();
             logger.info("Reading files from SharePoint folder: {}", folderName);
             
-            List<String> files = listFilesInSharePointFolder(folderName);
+            List<String> files = sharePointService.listFilesInFolder(folderName);
             logger.info("Retrieved {} files from SharePoint folder", files.size());
             
             clearColumnData(sheet, OUTPUT_COLUMN, DATA_START_ROW);
@@ -218,80 +240,6 @@ public class SharePointFolderReader {
                 logger.error("Error closing workbook: {}", e.getMessage());
             }
         }
-    }
-
-    /**
-     * List all files in a SharePoint/OneDrive folder using Microsoft Graph API
-     */
-    private static List<String> listFilesInSharePointFolder(String folderPath) {
-        try {
-            logger.info("Initializing Microsoft Graph client");
-            
-            ClientSecretCredential credential = new ClientSecretCredentialBuilder()
-                    .clientId(clientId)
-                    .clientSecret(clientSecret)
-                    .tenantId(tenantId)
-                    .build();
-
-            TokenCredentialAuthProvider authProvider = new TokenCredentialAuthProvider(
-                    GRAPH_SCOPES, credential);
-
-            GraphServiceClient<Request> graphClient = GraphServiceClient.builder()
-                    .authenticationProvider(authProvider)
-                    .buildClient();
-            
-            logger.info("Microsoft Graph client initialized successfully");
-            
-            String fullPath = constructFullPath(folderPath);
-            logger.info("Full SharePoint path: {}", fullPath);
-            
-            DriveItemCollectionPage items = graphClient
-                    .users(userPrincipalName)
-                    .drive()
-                    .root()
-                    .itemWithPath(fullPath)
-                    .children()
-                    .buildRequest()
-                    .get();
-            
-            List<String> fileNames = new ArrayList<>();
-            
-            if (items != null && items.getCurrentPage() != null) {
-                for (DriveItem item : items.getCurrentPage()) {
-                    if (item.file != null) {
-                        fileNames.add(item.name);
-                        logger.debug("Found file: {}", item.name);
-                    }
-                }
-            }
-            
-            logger.info("Found {} files in SharePoint folder", fileNames.size());
-            return fileNames;
-            
-        } catch (Exception e) {
-            logger.error("Error accessing SharePoint folder '{}': {}", folderPath, e.getMessage(), e);
-            throw new RuntimeException("Failed to access SharePoint folder: " + folderPath + 
-                    ". Error: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Construct the full path by combining base path and folder path
-     */
-    private static String constructFullPath(String folderPath) {
-        if (folderPath == null || folderPath.trim().isEmpty()) {
-            return basePath;
-        }
-        
-        String cleanFolderPath = folderPath.trim().replaceAll("^/+|/+$", "");
-        
-        String cleanBasePath = basePath.trim().replaceAll("/+$", "");
-        
-        if (cleanFolderPath.isEmpty()) {
-            return cleanBasePath;
-        }
-        
-        return cleanBasePath + "/" + cleanFolderPath;
     }
 
     /**
