@@ -2,9 +2,10 @@ package com.example.lms.util;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -181,16 +182,13 @@ public class SharePointUrlAppender {
     }
 
     /**
-     * Create encoded SharePoint URL by appending encoded folder name to base URL
+     * Create encoded SharePoint URL by appending encoded folder name to base URL.
+     * The base URL ends with a trailing slash, so we encode the folder name and concatenate.
+     * This approach works correctly with SharePoint URLs that contain query parameters.
      */
     private static String createEncodedSharePointUrl(String baseUrl, String folderName) {
-        String encodedUrl = UriComponentsBuilder
-                .fromUriString(baseUrl)
-                .pathSegment(folderName)
-                .build()
-                .toUriString();
-        
-        return encodedUrl;
+        String encodedFolderName = UriUtils.encodePathSegment(folderName, StandardCharsets.UTF_8);
+        return baseUrl + encodedFolderName;
     }
 
     /**
