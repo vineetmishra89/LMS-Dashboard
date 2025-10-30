@@ -1,12 +1,14 @@
 package com.example.lms.controller;
 
 
+import com.example.lms.domain.EnrollmentMapping;
 import com.example.lms.dto.SearchDto;
 import com.example.lms.dto.SearchFilterDto;
 import com.example.lms.service.SearchService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/searchCourse")
@@ -16,15 +18,18 @@ public class SearchController {
     private final SearchService searchService;
     public SearchController(SearchService searchService) { this.searchService = searchService; }
 
-    @GetMapping("/getCourseDetail")
-    public List<SearchDto> getCourseDetail( @RequestParam(required = false) String category,
-                                      @RequestParam(required = false) String level,
-                                      @RequestParam(required = false) String instructor,
-                                      @RequestParam(required = false) String topic){
+    @PostMapping("getCourseDetail")
+    public List<SearchDto> getCourseDetail(@RequestBody Map<String, Object> body){
+      String category = (String)body.get("category");
+      String level = (String)body.get("level");
+      String instructor = (String)body.get("instructor");
+      String topic = (String)body.get("topic");
+
         return searchService.search(category, topic, instructor, level);
     }
 
-  @PostMapping("/getSearchList")
+
+  @GetMapping("/getSearchList")
   public SearchFilterDto getSearchList(){
     return searchService.getSearchList();
   }

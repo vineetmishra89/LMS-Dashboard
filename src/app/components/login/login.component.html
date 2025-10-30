@@ -1,89 +1,105 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <div class="auth-header">
-      <div class="logo">
-        <h1>LMS</h1>
-      </div>
-      <h2>Welcome Back</h2>
-      <p>Sign in to continue your learning journey</p>
-    </div>
-    
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input 
-          id="email"
-          type="email" 
-          formControlName="email"
-          class="form-control"
-          placeholder="Enter your email"
-          [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-        <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
-          <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+@if(authService.isLoggedIn() == false) { 
+  <div style="display: flex; align-items: center; justify-content: center; height: 85vh; width: 500px">
+    <div class="login-container">
+      <header>
+        <h1>Welcome</h1>
+      </header>
+      <form class="login-form" (ngSubmit)="onSubmit()">
+        <div class="input-group">
+          <label for="username">Empcode or Email</label>
+          <input type="text" id="username" name="username" formControlName="email" required />
         </div>
-      </div>
-      
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="password-input">
-          <input 
-            id="password"
-            [type]="showPassword ? 'text' : 'password'" 
-            formControlName="password"
-            class="form-control"
-            placeholder="Enter your password"
-            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
-            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
-          </button>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" formControlName="password" required />
         </div>
-        <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
-          <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+        <button type="submit" class="login-button">Log In</button>
+        <div class="footer-links">
+          <a href="#">Forgot Password?</a>
+          <span>|</span>
+          <a href="#">Create Account</a>
         </div>
-      </div>
-      
-      <div class="form-options">
-        <label class="checkbox-label">
-          <input type="checkbox" formControlName="rememberMe">
-          <span class="checkmark"></span>
-          Remember me for 30 days
-        </label>
-        <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
-      </div>
-      
-      <button type="submit" class="btn btn-primary auth-btn" [disabled]="loginForm.invalid || isLoading">
-        <span *ngIf="!isLoading">Sign In</span>
-        <span *ngIf="isLoading" class="loading-content">
-          <app-loading-spinner size="small" color="secondary"></app-loading-spinner>
-          Signing In...
-        </span>
-      </button>
-      
-      <app-error-display 
-        *ngIf="errorMessage" 
-        [message]="errorMessage" 
-        [showRetry]="false"
-        (dismiss)="errorMessage = ''">
-      </app-error-display>
-    </form>
-    
-    <div class="social-login">
-      <div class="divider">
-        <span>or continue with</span>
-      </div>
-      <div class="social-buttons">
-        <button class="btn btn-google" (click)="loginWithGoogle()" [disabled]="isLoading">
-          🔍 <span>Google</span>
-        </button>
-        <button class="btn btn-facebook" (click)="loginWithFacebook()" [disabled]="isLoading">
-          📘 <span>Facebook</span>
-        </button>
-      </div>
-    </div>
-    
-    <div class="auth-footer">
+      </form>
     </div>
   </div>
-</div>
+}
+
+
+<!--<div>
+    Welcome to Learning Management System
+  </div>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+    <div class="form-group">
+      <p-floatLabel>
+        <input pInputText id="email" type="email"formControlName="email"  />
+        <label for="username">Username</label>
+    </p-floatLabel>
+    <p-floatLabel>
+      <input pInputText id="password" type="password" formControlName="password"  />
+      <label for="password">Password</label>
+  </p-floatLabel>
+      <label for="email">Email Address</label>
+      <input id="email" type="email" pInputText formControlName="email" />
+       <input 
+        id="email"
+        type="email" 
+        formControlName="email"
+        class="form-control"
+        placeholder="Enter your email"
+        [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+      <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+        <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+        <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+      </div> 
+    </div>
+    
+    <div class="form-group">
+      <label for="password">Password</label>
+      <div class="password-input">
+        <input 
+          id="password"
+          [type]="showPassword ? 'text' : 'password'" 
+          formControlName="password"
+          class="form-control"
+          placeholder="Enter your password"
+          [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+        <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+          {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+        </button>
+      </div>
+      <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+        <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+        <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+      </div>
+    </div> -->
+
+<!-- <div class="form-options">
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="rememberMe">
+        <span class="checkmark"></span>
+        Remember me for 30 days
+      </label>
+      <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
+    </div> -->
+
+<!-- <button type="submit" class="btn btn-primary auth-btn" [disabled]="loginForm.invalid || isLoading">
+      <span *ngIf="!isLoading">Sign In</span>
+      <span *ngIf="isLoading" class="loading-content">
+        <app-loading-spinner size="small" color="secondary"></app-loading-spinner>
+        Signing In...
+      </span>
+    </button>
+    <button 
+    pButton 
+    pRipple 
+    label="Submit" 
+    class="p-button-primary">
+</button> 
+    
+    <app-error-display 
+      *ngIf="errorMessage" 
+      [message]="errorMessage" 
+      [showRetry]="false"
+      (dismiss)="errorMessage = ''">
+    </app-error-display>
+  </form>-->

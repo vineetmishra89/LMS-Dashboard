@@ -172,3 +172,18 @@ body {
     }
   }
 }
+.skeleton {
+  background-color: #d1d5db !important;
+  margin: 15px 10px;
+  height: 20px !important;
+}
+.p-dialog-mask {
+  height: 100vh !important;
+}
+
+.search-form-group {
+  .p-dropdown {
+    width: 220px !important;
+    margin-right: 20px;
+  }
+}

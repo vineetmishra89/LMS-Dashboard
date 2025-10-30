@@ -11,7 +11,7 @@ export class UserService {
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private apiService: ApiService) {
-    localStorage.setItem('userId', 'vm02102');
+    localStorage.setItem('userId', 'test_trainee1@irissoftware.com');
     this.loadCurrentUser();
   }
 

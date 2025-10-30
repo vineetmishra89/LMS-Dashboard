@@ -64,7 +64,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   
   private setupProgressTracking(): void {
     this.progressTimer$.pipe(
-      takeUntil(this.destroy$)
+      //takeUntil(this.destroy$)
     ).subscribe(() => {
       if (this.isPlaying) {
         this.saveCurrentProgress();

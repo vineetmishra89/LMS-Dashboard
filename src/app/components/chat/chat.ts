@@ -84,7 +84,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.typingSubject.pipe(
       debounceTime(1000),
       distinctUntilChanged(),
-      takeUntil(this.destroy$)
+      //takeUntil(this.destroy$)
     ).subscribe(() => {
       this.isTyping = false;
     });

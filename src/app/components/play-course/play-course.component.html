@@ -1,4 +1,8 @@
 <div style="display: flex">
+  <!-- <video controls width="640" height="360">
+    <source [src]="videoUrl"  type="video/mp4" crossorigin="anonymous">
+    Your browser does not support the video tag.
+</video> -->
     <div class="left" style="width: 70%">
         <div class="video-container">
             <video
@@ -7,6 +11,7 @@
               autoplay
               muted
               loop
+              
             >
               Your browser does not support the video tag.
             </video>
@@ -63,8 +68,10 @@
     </div>
     <div class="right" style="width: 40%">
         <ul style="list-style: none;">
-        @for(item of playlist; track item) {
-         <li style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300)">{{item.name}}</li>   
+        @for(item of playCourseData?.lmsTrainingDetails; track item; let i = $index) {
+         <li style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300)" 
+         class="{{item.moduleProgressPercentage === 100 || i === 0 ? 'color-active': 'color-disabled'}}">
+         Module {{i+1 + ':  '}}   {{item.details}}</li>   
         }
     </ul>
     </div>

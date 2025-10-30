@@ -137,6 +137,42 @@ export class CourseService {
     return this.apiService.get<any>(`courses/getCourseById/${trainingId}?userId=${userId}`);
   }
 
+  getCourseSearchList() {
+    return this.apiService.get<any>(`searchCourse/getSearchList`);
+  }
+
+  getCourseDetail(data: any) {
+    // const cat = data['category'] ? 'category='+ data['category'] : '';
+    // const lev = data['level'] ? 'level='+ data['level']: '';
+    // const inst = data['instructor'] ? 'instructor='+data['instructor']: '';
+    // const top = data['topic'] ? 'topic='+data['topic'] : '';
+    // const param = '?'+ cat + lev + inst + top;
+    // const x = this.buildParamQueryModern('searchCourse/getCourseDetail', data);
+    //return this.apiService.get<any>(x);
+    return this.apiService.post<any>('searchCourse/getCourseDetail', data);
+  }
+
+  buildParamQueryModern(baseUrl: any, params: any) {
+    const searchParams = new URLSearchParams();
+  
+    for (const key in params) {
+      const value = params[key];
+      // Check for valid values before appending
+      if (value !== null && value !== undefined && value !== '') {
+        // URLSearchParams handles the encoding (like encodeURIComponent) automatically
+        searchParams.append(key, value);
+      }
+    }
+  
+    const queryString = searchParams.toString();
+    
+    if (queryString) {
+      return `${baseUrl}?${queryString}`;
+    }
+    
+    return baseUrl;
+  }
+
   
 
 }

@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
   private checkAuth(url: string): Observable<boolean> {
     return this.authService.isAuthenticated$.pipe(
-      take(1),
+     // take(1),
       map(isAuthenticated => {
         if (isAuthenticated) {
           return true;
