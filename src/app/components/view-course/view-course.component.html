@@ -24,14 +24,20 @@
           {{courseDetail?.details}}
         </div>
         <div style="font-size: 12px; margin-top: 20px; color: #fff">Trainer Name: 
-            <span (mouseover)="op.toggle($event)" style="color: #fff">Vineet Mishra</span>
+            <span (mouseover)="op.toggle($event)" style="color: #fff">{{courseDetail.trainerNames}}</span>
             <!-- <p-button (onClick)="op.toggle($event)" icon="pi pi-share-alt" label="Share" /> -->
         <p-overlayPanel #op>
             <div style="width: 300px">
                 <div>
                     <span style="font-size: 12px;">Email address:</span>
                     <p-inputGroup style="margin-top: 5px">
-                        <input pInputText value="vineet.mishra@irissoftware.com" readonly style="width: 100%; border: 0px"/>
+                      <div style="display: flex; flex-direction: column; width: 100%">
+                        @for(item of courseDetail.trainerEmails; track item) {
+                          <input pInputText value="{{item}}" readonly style="width: 100%; border: 0px"/>
+                        }
+                      </div>
+                     
+                        
                         <!-- <p-inputGroupAddon>
                             <i class="pi pi-copy"></i>
                         </p-inputGroupAddon> -->

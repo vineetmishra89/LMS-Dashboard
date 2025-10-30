@@ -1,0 +1,63 @@
+<div>
+    <div>
+      <p-tabView class="admin-tab-view">
+        
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+              <span class="font-bold white-space-nowrap m-0"> Assign Training </span>
+              <span class="pi pi-user-plus" style="margin-left: 8px"></span>
+            </div>
+          </ng-template>
+          <div>
+            <div>
+            
+            </div>
+            <div></div>
+            <div></div>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+                <span class="font-bold white-space-nowrap m-0"> Progress </span>
+                <span class="pi pi-chart-line" style="margin-left: 8px"></span>
+              </div>
+            </ng-template>
+            <div>
+              <ng-container *ngTemplateOutlet="metrics"></ng-container>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+                <span class="font-bold white-space-nowrap m-0"> Metrics </span>
+                <span class="pi pi-chart-line" style="margin-left: 8px"></span>
+              </div>
+            </ng-template>
+            <div>
+              <ng-container *ngTemplateOutlet="metrics"></ng-container>
+            </div>
+          </p-tabPanel>
+        <!-- <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+              <span class="font-bold white-space-nowrap m-0"> Settings </span>
+              <span class="pi pi-cog" style="margin-left: 8px"></span>
+            </div>
+          </ng-template>
+          <p>Lorem ipsum dolor sit amet...</p>
+        </p-tabPanel> -->
+      </p-tabView>
+    </div>
+  </div>
+  
+  <ng-template #metrics>
+    <div style="margin: 5px 10px 30px 10px">
+     
+        Individual | Group wise
+     
+    </div>
+   
+  </ng-template>
+  
