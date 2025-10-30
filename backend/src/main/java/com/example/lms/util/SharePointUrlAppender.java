@@ -2,6 +2,8 @@ package com.example.lms.util;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriUtils;
 
 import java.io.*;
@@ -22,6 +24,8 @@ import java.util.Properties;
  */
 public class SharePointUrlAppender {
 
+    private static final Logger logger = LoggerFactory.getLogger(SharePointUrlAppender.class);
+    
     private static final String EXCEL_FILE_PATH = "C:\\files\\training.xlsx";
     private static final String WORKSHEET_NAME = "Folders";
     private static final int FOLDER_NAME_COLUMN = 12; // Column M (0-based index)
@@ -32,15 +36,14 @@ public class SharePointUrlAppender {
     public static void main(String[] args) {
         try {
             String sharePointBaseUrl = loadSharePointBaseUrl();
-            System.out.println("SharePoint Base URL: " + sharePointBaseUrl);
+            logger.info("SharePoint Base URL: {}", sharePointBaseUrl);
             
             processExcelFile(sharePointBaseUrl);
             
-            System.out.println("Excel file processing completed successfully!");
+            logger.info("Excel file processing completed successfully!");
             
         } catch (Exception e) {
-            System.err.println("Error processing Excel file: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error processing Excel file: {}", e.getMessage(), e);
             System.exit(1);
         }
     }
@@ -94,7 +97,7 @@ public class SharePointUrlAppender {
                 throw new IllegalArgumentException("Worksheet '" + WORKSHEET_NAME + "' not found in Excel file");
             }
             
-            System.out.println("Processing worksheet: " + WORKSHEET_NAME);
+            logger.info("Processing worksheet: {}", WORKSHEET_NAME);
             
             Row headerRow = sheet.getRow(0);
             if (headerRow == null) {
@@ -143,10 +146,10 @@ public class SharePointUrlAppender {
             fileOutputStream = new FileOutputStream(excelFile);
             workbook.write(fileOutputStream);
             
-            System.out.println("Processing complete:");
-            System.out.println("  Total rows processed: " + rowsProcessed);
-            System.out.println("  Rows with folder names: " + rowsWithData);
-            System.out.println("  Rows with blank values (set to NA): " + rowsWithBlankData);
+            logger.info("Processing complete:");
+            logger.info("  Total rows processed: {}", rowsProcessed);
+            logger.info("  Rows with folder names: {}", rowsWithData);
+            logger.info("  Rows with blank values (set to NA): {}", rowsWithBlankData);
             
         } catch (IOException e) {
             if (e.getMessage().contains("being used by another process") || 
@@ -160,7 +163,7 @@ public class SharePointUrlAppender {
                     fileInputStream.close();
                 }
             } catch (IOException e) {
-                System.err.println("Error closing input stream: " + e.getMessage());
+                logger.error("Error closing input stream: {}", e.getMessage());
             }
             
             try {
@@ -168,7 +171,7 @@ public class SharePointUrlAppender {
                     fileOutputStream.close();
                 }
             } catch (IOException e) {
-                System.err.println("Error closing output stream: " + e.getMessage());
+                logger.error("Error closing output stream: {}", e.getMessage());
             }
             
             try {
@@ -176,7 +179,7 @@ public class SharePointUrlAppender {
                     workbook.close();
                 }
             } catch (IOException e) {
-                System.err.println("Error closing workbook: " + e.getMessage());
+                logger.error("Error closing workbook: {}", e.getMessage());
             }
         }
     }
