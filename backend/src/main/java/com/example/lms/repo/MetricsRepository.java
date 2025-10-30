@@ -16,8 +16,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "COUNT(*) as totalEnrollments " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
-    "WHERE (:startDate IS NULL OR e.completed_ts >= :startDate) " +
-    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
+    "WHERE ( e.completed_ts >= :startDate) " +
+    "AND (e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
@@ -42,8 +42,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND (:startDate IS NULL OR e.completed_ts >= :startDate) " +
-    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
+    "AND ( e.completed_ts >= :startDate) " +
+    "AND (e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +
@@ -68,8 +68,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND (:startDate IS NULL OR e.completed_ts >= :startDate) " +
-    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
+    "AND ( e.completed_ts >= :startDate) " +
+    "AND (e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +
@@ -94,8 +94,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND (:startDate IS NULL OR e.last_accessed_ts >= :startDate) " +
-    "AND (:endDate IS NULL OR e.last_accessed_ts <= :endDate) " +
+    "AND ( e.last_accessed_ts >= :startDate) " +
+    "AND (e.last_accessed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
@@ -120,8 +120,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND (:startDate IS NULL OR e.completed_ts >= :startDate) " +
-    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
+    "AND ( e.completed_ts >= :startDate) " +
+    "AND (e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
@@ -148,8 +148,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND (:startDate IS NULL OR e.completed_ts >= :startDate) " +
-    "AND (:endDate IS NULL OR e.completed_ts <= :endDate) " +
+    "AND ( e.completed_ts >= :startDate) " +
+    "AND (e.completed_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_id = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +

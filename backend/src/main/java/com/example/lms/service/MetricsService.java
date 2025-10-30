@@ -22,8 +22,8 @@ public class MetricsService {
   }
 
   public MetricsResponseDto getMetrics(MetricsRequestDto request) {
-    OffsetDateTime startDate = convertToOffsetDateTime(request.getStartDate());
-    OffsetDateTime endDate = convertToOffsetDateTime(request.getEndDate());
+    OffsetDateTime startDate = convertToOffsetDateTime(request.getStartDate() != null ? request.getStartDate() : LocalDate.now().minusMonths(6));
+    OffsetDateTime endDate = convertToOffsetDateTime(request.getEndDate() != null ?request.getEndDate() : LocalDate.now());
     Integer topN = request.getTopN() != null ? request.getTopN() : 10;
 
     MetricsResponseDto response = new MetricsResponseDto();
