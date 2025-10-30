@@ -119,12 +119,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     })
   }
 
+  viewCourse(course: any) {
+    console.log(course);
+    
+    this.router.navigate(['/viewCourse', 1]);
+    //this.router.navigate(['/viewCourse', course.trainingId]);
+   //this.router.navigate(['viewCourse'])
+  }
+
   search() {
     this.loading = true;
     const data = {
       category: this.filterFormGroup?.get('categoryList')?.value,
-      trainingName: this.filterFormGroup?.get('trainingNameList')?.value,
-      trainerName: this.filterFormGroup?.get('trainerNameList')?.value,
+      topic: this.filterFormGroup?.get('trainingNameList')?.value,
+      instructor: this.filterFormGroup?.get('trainerNameList')?.value,
       level: this.filterFormGroup?.get('levelList')?.value
 
     }
