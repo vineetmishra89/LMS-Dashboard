@@ -37,4 +37,20 @@ public class EmployeeHierarchyController {
       throw e;
     }
   }
+
+  @GetMapping("/is-ro")
+  public ResponseEntity<java.util.Map<String, Boolean>> isRo(
+    @RequestParam(required = true) String userId) {
+    
+    logger.info("Received request to check if user is RO: {}", userId);
+    
+    try {
+      boolean isRo = employeeHierarchyService.isRo(userId);
+      logger.info("User {} is RO: {}", userId, isRo);
+      return ResponseEntity.ok(java.util.Map.of("isRo", isRo));
+    } catch (Exception e) {
+      logger.error("Error checking if user is RO: {}", userId, e);
+      throw e;
+    }
+  }
 }

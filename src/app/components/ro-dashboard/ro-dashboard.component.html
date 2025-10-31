@@ -1,0 +1,81 @@
+<p-toast></p-toast>
+
+<div>
+  <div>
+    <p-tabView class="admin-tab-view">
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+            <span class="font-bold white-space-nowrap m-0"> Assign Training </span>
+            <span class="pi pi-user-plus" style="margin-left: 8px"></span>
+          </div>
+        </ng-template>
+        <div>
+          <div style="margin: 20px 0;">
+            <p-multiSelect
+              [options]="users"
+              [(ngModel)]="selectedUsers"
+              optionLabel="label"
+              [selectAll]="null"
+              styleClass="assign-training-multiselect"
+              placeholder="Search by name, email, empcode"
+              style="margin-right: 10px; width: 300px"
+              [filter]="true"
+              filterPlaceHolder="Search employees"
+            />
+            <p-multiSelect
+              [options]="trainings"
+              [(ngModel)]="selectedTrainings"
+              showToggleAll="false"
+              styleClass="assign-training-multiselect"
+              optionLabel="label"
+              style="margin-right: 10px; width: 300px"
+              placeholder="Search by training name, category, level"
+              [filter]="true"
+              filterPlaceHolder="Search trainings"
+            />
+            <button 
+              pButton 
+              pRipple 
+              label="Assign" 
+              class="p-button-primary" 
+              (click)="assignTrainings()"
+              [loading]="loading"
+              [disabled]="loading || selectedUsers.length === 0 || selectedTrainings.length === 0"
+            ></button>
+          </div>
+          
+          <div style="margin-top: 30px;" *ngIf="selectedUsers.length > 0 || selectedTrainings.length > 0">
+            <p-card>
+              <div style="margin-bottom: 15px;">
+                <strong>Selected Users ({{selectedUsers.length}}):</strong>
+                <div style="margin-top: 5px;">
+                  <span 
+                    *ngFor="let user of selectedUsers" 
+                    class="p-tag p-tag-info" 
+                    style="margin-right: 5px; margin-bottom: 5px; display: inline-block;"
+                  >
+                    {{user.label}}
+                  </span>
+                </div>
+              </div>
+              
+              <div>
+                <strong>Selected Trainings ({{selectedTrainings.length}}):</strong>
+                <div style="margin-top: 5px;">
+                  <span 
+                    *ngFor="let training of selectedTrainings" 
+                    class="p-tag p-tag-success" 
+                    style="margin-right: 5px; margin-bottom: 5px; display: inline-block;"
+                  >
+                    {{training.label}}
+                  </span>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</div>

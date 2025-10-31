@@ -46,4 +46,9 @@ public interface EmployeeHierarchyRepository extends JpaRepository<EmployeeDetai
     "project_name, ro_email_id, emp_active_flag " +
     "FROM employee_hierarchy", nativeQuery = true)
   List<Object[]> findAllEmployeesInHierarchy(@Param("roEmailId") String roEmailId);
+
+  @Query(value = "SELECT COUNT(*) FROM lms_schema.LMS_EMPLOYEE_DTLS e " +
+    "WHERE e.ro_email_id = :roEmailId " +
+    "AND e.emp_active_flag = 'Y'", nativeQuery = true)
+  Long countByRoEmailIdAndActiveFlag(@Param("roEmailId") String roEmailId);
 }

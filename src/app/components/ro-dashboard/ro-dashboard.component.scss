@@ -1,0 +1,33 @@
+::ng-deep .admin-tab-view {
+  .p-tabview-nav {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-width: 0 0 2px 0;
+  }
+
+  .p-tabview-panels {
+    background: #ffffff;
+    padding: 1.25rem;
+  }
+}
+
+::ng-deep .assign-training-multiselect {
+  .p-multiselect {
+    min-width: 300px;
+  }
+}
+
+.p-tag {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.p-tag-info {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.p-tag-success {
+  background-color: #10b981;
+  color: #ffffff;
+}

@@ -64,6 +64,26 @@ public class EmployeeHierarchyServiceImpl implements EmployeeHierarchyService {
     }
   }
 
+  @Override
+  public boolean isRo(String userId) {
+    logger.info("Checking if user is RO: {}", userId);
+    
+    if (userId == null || userId.trim().isEmpty()) {
+      logger.warn("UserId is null or empty for RO check");
+      return false;
+    }
+    
+    try {
+      Long count = employeeHierarchyRepository.countByRoEmailIdAndActiveFlag(userId);
+      boolean isRo = count != null && count > 0;
+      logger.info("User {} is RO: {}", userId, isRo);
+      return isRo;
+    } catch (Exception e) {
+      logger.error("Error checking if user is RO: {}", userId, e);
+      return false;
+    }
+  }
+
   private EmployeeDetailsDto mapToEmployeeDetailsDto(Object[] row) {
     try {
       String empActiveFlag = row[6] instanceof Character 

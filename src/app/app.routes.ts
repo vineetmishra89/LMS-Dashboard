@@ -14,12 +14,15 @@ import { SupportComponent } from './components/support/support.component';
 import { ViewCourseComponent } from './components/view-course/view-course.component';
 import { LndAdminComponent } from './components/lnd-admin/lnd-admin';
 import { LoginComponent } from './components/login/login.component';
+import { RoDashboardComponent } from './components/ro-dashboard/ro-dashboard.component';
+import { RoGuard } from './guards/ro.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
   { path: 'lndAdmin', component: LndAdminComponent },
+  { path: 'ro-dashboard', component: RoDashboardComponent, canActivate: [RoGuard] },
   { path: 'search', component: DashboardComponent },
   { path: 'support', component: SupportComponent },
   { path: 'dashboard', component: SearchComponent },
