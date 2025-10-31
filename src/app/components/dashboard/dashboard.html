@@ -2,19 +2,19 @@
   <form [formGroup]="filterFormGroup" class="search-form-group">
     <p-dropdown 
     [options]="filterData?.categoryList" [filter]="true"
-    formControlName="categoryList"
+    formControlName="categoryList" [showClear]="true"
     placeholder="Select a Category" (onChange)="onCategoryChange($event)"/>
     <p-dropdown 
     [options]="trainingNameList" [filter]="true"
-    formControlName="trainingNameList" 
+    formControlName="trainingNameList" [showClear]="true"
     placeholder="Select a Training Name" />
     <p-dropdown 
     [options]="filterData?.levelList" [filter]="true"
-    formControlName="levelList" 
+    formControlName="levelList" [showClear]="true"
     placeholder="Select a Level" />
     <p-dropdown 
     [options]="filterData?.trainerNameList" [filter]="true"
-    formControlName="trainerNameList"  
+    formControlName="trainerNameList"  [showClear]="true"
     placeholder="Select a Trainer Name" />
     <p-button label="Search" icon="pi pi-search" 
     [loading]="loading" (click)="search()"/>

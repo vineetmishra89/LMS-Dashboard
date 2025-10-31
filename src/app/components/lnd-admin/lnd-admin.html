@@ -21,6 +21,15 @@
         </ng-template>
         <div>
           <div>
+            <p-dropdown
+              [options]="groupType"
+              [(ngModel)]="selectedGroupType"
+              optionLabel="name"
+              (onChange)="onGroupTypeChange($event)"
+              styleClass="assign-training-multiselect"
+              placeholder="Select Group/Individual"
+              style="margin-right: 10px; width: 300px"
+            />
             <p-multiSelect
               [options]="users"
               [(ngModel)]="selectedUsers"
@@ -40,6 +49,7 @@
               placeholder="Search by training name, category, level"
             />
             <button pButton pRipple label="Add" class="p-button-primary" (click)="add()"></button>
+            
           </div>
           <div></div>
           <div></div>
@@ -101,6 +111,12 @@
       />
       <p-button label="Search" icon="pi pi-search" [loading]="loading" (click)="search()" />
       <p-button label="Download" style="margin-left: 20px" icon="pi pi-download" [loading]="downloading" (click)="download()" />
+      @if(filterFormGroup?.get('dateRange')?.value === null) {
+       <div style="display: flex; align-items: center; margin-left: 20px; color: #e24c4c; font-size: 13px">
+        (Default showing last 60 days records)
+       </div>
+        
+      }
     </form>
 
    

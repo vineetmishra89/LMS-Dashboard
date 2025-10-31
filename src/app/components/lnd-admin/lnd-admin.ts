@@ -11,10 +11,11 @@ import { CardModule } from 'primeng/card';
 import { CourseService } from '../../services/course.service';
 import { CalendarModule } from 'primeng/calendar';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { TagModule } from 'primeng/tag';
 @Component({
   selector: 'app-lnd-admin',
   standalone: true,
-  imports: [TabViewModule, DropdownModule, CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
+  imports: [TabViewModule, DropdownModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
   templateUrl: './lnd-admin.html',
   styleUrl: './lnd-admin.scss'
 })
@@ -24,8 +25,10 @@ export class LndAdminComponent implements OnInit {
   users: any[] | undefined;
   loading: boolean = false;
   downloading: boolean = false;
+  groupType: any = [];
 
   selectedUsers: any | undefined;
+  selectedGroupType: any | undefined;
   trainings: any[] | undefined;
 
   selectedTrainings: any | undefined;
@@ -41,12 +44,27 @@ export class LndAdminComponent implements OnInit {
     this.loadForm();
     this.getCourseSearchList();
 
+    this.groupType = [
+      { name: 'Business Unit', code: 'group' },
+      { name: 'Employee', code: 'individual'},
+      { name: 'Department', code: 'department'},
+      { name: 'Team', code: 'team'}
+    ]
     this.users = [
-      { name: 'Raman Verma', code: 'NY' },
-      { name: 'Vineet Mishra', code: 'RM' },
-      { name: 'Satya Prakash', code: 'LDN' },
-      { name: 'Ankit Bansal', code: 'IST' },
-      { name: 'Reshmi Cp', code: 'PRS' }
+      { name: 'abc@iris', code: 'NY', type: 'individual' },
+      { name: 'dec@iris', code: 'RM', type: 'individual' },
+      { name: 'xyz@iris', code: 'LDN', type: 'individual' },
+      { name: 'Ankit Bansal', code: 'IST', type: 'individual' },
+      { name: 'Reshmi Cp', code: 'PRS', type: 'individual' },
+      { name: 'SBU1', code: 'sbu1', type: 'group'},
+      { name: 'SBU2', code: 'sbu2', type: 'group'},
+      { name: 'ES', code: 'es', type: 'group'},
+      { name: 'HRBU', code: 'hr', type: 'department'},
+      { name: 'Finance', code: 'hr1', type: 'department'},
+      { name: 'Talent Management', code: 'hr2', type: 'department'},
+      { name: 'SFRM', code: 'sfrm', type: 'team'},
+      { name: 'Credit Risk', code: 'cr', type: 'team'},
+      { name: 'Model Risk', code: 'msfrm', type: 'team'}
     ];
     this.trainings = [
       { name: 'React Js', code: 'React' },
@@ -80,6 +98,10 @@ export class LndAdminComponent implements OnInit {
 
       }
     })
+  }
+
+  onGroupTypeChange(e: any) {
+    console.log(e);
   }
 
   download() {
