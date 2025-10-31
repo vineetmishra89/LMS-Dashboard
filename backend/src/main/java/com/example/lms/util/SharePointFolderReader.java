@@ -18,10 +18,15 @@ import java.util.Properties;
  * 
  * This program:
  * 1. Reads an Excel file from local system (configurable path)
- * 2. Reads cell A1 from the 3rd worksheet (contains SharePoint folder name)
+ * 2. Reads cell A1 from the 3rd worksheet (contains SharePoint folder path or URL)
  * 3. Connects to SharePoint using Microsoft Graph API
  * 4. Reads the contents of the specified SharePoint folder
  * 5. Lists all files with their extensions in Excel column A from row 2 onwards
+ * 
+ * Cell A1 Input Formats Supported:
+ * - Full SharePoint URL: https://irissoft-my.sharepoint.com/:f:/r/personal/user/Documents/Folder
+ * - OneDrive URL with query: https://.../_layouts/15/onedrive.aspx?id=%2Fpersonal%2F...
+ * - Relative path: "Folder Name" or "Subfolder/Nested Folder"
  * 
  * Configuration required in application.properties:
  * - graph.mode: "onedrive" (default) or "site"

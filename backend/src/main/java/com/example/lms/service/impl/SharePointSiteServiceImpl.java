@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +65,13 @@ public class SharePointSiteServiceImpl implements SharePointService {
     @Override
     public List<String> listFilesInFolder(String folderPath) {
         try {
-            logger.info("Listing files in SharePoint site folder: {}", folderPath);
+            logger.info("Listing files in SharePoint site folder (raw input): {}", folderPath);
             
-            String fullPath = PathUtils.combine(basePath, folderPath);
-            logger.debug("Full path: {}", fullPath);
+            String normalizedPath = normalizeFolderInput(folderPath);
+            logger.info("Normalized folder path: {}", normalizedPath);
+            
+            String fullPath = PathUtils.combine(basePath, normalizedPath);
+            logger.info("Resolved SharePoint site path: {}", fullPath);
             
             GraphServiceClient<Request> client = graphClientProvider.getGraphClient();
             
@@ -109,13 +115,97 @@ public class SharePointSiteServiceImpl implements SharePointService {
                 }
             }
             
-            logger.info("Found {} files in SharePoint site folder: {}", fileNames.size(), folderPath);
+            logger.info("Found {} files in SharePoint site folder: {}", fileNames.size(), normalizedPath);
             return fileNames;
             
         } catch (Exception e) {
             logger.error("Error listing files in SharePoint site folder '{}': {}", folderPath, e.getMessage(), e);
             throw new RuntimeException("Failed to list files in SharePoint site folder: " + folderPath + 
                     ". Error: " + e.getMessage(), e);
+        }
+    }
+    
+    private String normalizeFolderInput(String folderInput) {
+        if (folderInput == null || folderInput.trim().isEmpty()) {
+            return "";
+        }
+        
+        folderInput = folderInput.trim();
+        
+        if (!folderInput.startsWith("http://") && !folderInput.startsWith("https://")) {
+            return folderInput;
+        }
+        
+        try {
+            URI uri = new URI(folderInput);
+            String extractedPath = null;
+            
+            if (uri.getPath().contains("/:f:/")) {
+                String path = uri.getPath();
+                int fIndex = path.indexOf("/:f:/");
+                
+                int rIndex = path.indexOf("/r/", fIndex);
+                if (rIndex != -1) {
+                    extractedPath = path.substring(rIndex + 3);
+                } else {
+                    extractedPath = path.substring(fIndex + 5);
+                }
+                
+                extractedPath = URLDecoder.decode(extractedPath, StandardCharsets.UTF_8);
+                logger.debug("Extracted path from /:f:/r/ format: {}", extractedPath);
+            }
+            else if (uri.getQuery() != null && uri.getQuery().contains("id=")) {
+                String query = uri.getQuery();
+                String[] params = query.split("&");
+                for (String param : params) {
+                    if (param.startsWith("id=")) {
+                        String idValue = param.substring(3);
+                        extractedPath = URLDecoder.decode(idValue, StandardCharsets.UTF_8);
+                        
+                        if (extractedPath.startsWith("/")) {
+                            extractedPath = extractedPath.substring(1);
+                        }
+                        logger.debug("Extracted path from query param: {}", extractedPath);
+                        break;
+                    }
+                }
+            }
+            else {
+                extractedPath = URLDecoder.decode(uri.getPath(), StandardCharsets.UTF_8);
+                if (extractedPath.startsWith("/")) {
+                    extractedPath = extractedPath.substring(1);
+                }
+                logger.debug("Extracted path from URI path: {}", extractedPath);
+            }
+            
+            if (extractedPath == null || extractedPath.isEmpty()) {
+                logger.warn("Could not extract path from URL, using original input");
+                return folderInput;
+            }
+            
+            if (extractedPath.startsWith("sites/")) {
+                int thirdSlash = extractedPath.indexOf('/', 6);
+                if (thirdSlash != -1) {
+                    int fourthSlash = extractedPath.indexOf('/', thirdSlash + 1);
+                    if (fourthSlash != -1) {
+                        extractedPath = extractedPath.substring(fourthSlash + 1);
+                        logger.debug("Stripped sites/ prefix, result: {}", extractedPath);
+                    }
+                }
+            }
+            
+            if (basePath != null && !basePath.isEmpty() && extractedPath.startsWith(basePath)) {
+                String relative = extractedPath.substring(basePath.length());
+                relative = relative.replaceFirst("^/+", "");
+                logger.debug("Stripped basePath, relative path: {}", relative);
+                return relative;
+            }
+            
+            return extractedPath;
+            
+        } catch (Exception e) {
+            logger.warn("Error parsing SharePoint URL, using original input: {}", e.getMessage());
+            return folderInput;
         }
     }
 
