@@ -36,7 +36,7 @@ public class SearchService {
     this.trainerRepository = trainerRepository;
   }
 
-  public List<SearchDto> search(String category, String topics, String instructor, String level) {
+  public List<CourseSummary> search(String category, String topics, String instructor, String level) {
     StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd join  ltd.trainerDetails td where 1=1");
 
     if (category != null) {
@@ -46,7 +46,7 @@ public class SearchService {
       hql.append(" AND cm.topics = :topics");
     }
     if (instructor != null) {
-      hql.append(" AND td.trainerName =:instructor");
+      hql.append(" AND td.emailid =:instructor");
     }
     if (level != null) {
       hql.append(" AND cm.level =:level");
@@ -66,29 +66,7 @@ public class SearchService {
       query.setParameter("level", level);
     }
     List<CourseSummary> results = query.getResultList();
-    List<SearchDto> searchDtoList = new ArrayList<>();
-
-    try {
-      if (results != null) {
-        for (int i = 0; i < results.size(); i++) {
-          SearchDto searchDto = new SearchDto();
-
-          searchDto.setTrainingName(results.get(i).getTopics());
-          searchDto.setCategory(results.get(i).getCategory());
-          searchDto.setDuration(results.get(i).getDuration());
-          searchDto.setTrainingDesc(results.get(i).getDetails());
-          searchDto.setLevel(results.get(i).getLevel());
-          searchDto.setTrainerName(instructor);
-          searchDto.setRating(results.get(i).getRating());
-          searchDto.setCourseDetailList(results.get(i).getLmsTrainingDetails());
-          searchDtoList.add(searchDto);
-        }
-      }
-
-    } catch (Exception ex) {
-      log.error("Exception occurred : ", ex);
-    }
-    return searchDtoList;
+    return results;
 
   }
 
