@@ -163,8 +163,15 @@ public class OneDriveSharePointServiceImpl implements SharePointService {
                 return folderInput;
             }
             
-            if (extractedPath.startsWith("personal/")) {
-                int secondSlash = extractedPath.indexOf('/', 9); // Find slash after "personal/"
+            extractedPath = extractedPath.replace('\\', '/').replaceFirst("^/+", "");
+            
+            String lowerPath = extractedPath.toLowerCase();
+            int documentsIndex = lowerPath.indexOf("documents/");
+            if (documentsIndex > 0) {
+                extractedPath = extractedPath.substring(documentsIndex);
+                logger.debug("Stripped personal/alias prefix, result starts with: {}", extractedPath.substring(0, Math.min(50, extractedPath.length())));
+            } else if (extractedPath.startsWith("personal/")) {
+                int secondSlash = extractedPath.indexOf('/', 9);
                 if (secondSlash != -1) {
                     extractedPath = extractedPath.substring(secondSlash + 1);
                     logger.debug("Stripped personal/ prefix, result: {}", extractedPath);

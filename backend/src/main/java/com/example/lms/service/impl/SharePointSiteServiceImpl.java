@@ -183,7 +183,14 @@ public class SharePointSiteServiceImpl implements SharePointService {
                 return folderInput;
             }
             
-            if (extractedPath.startsWith("sites/")) {
+            extractedPath = extractedPath.replace('\\', '/').replaceFirst("^/+", "");
+            
+            String lowerPath = extractedPath.toLowerCase();
+            int documentsIndex = lowerPath.indexOf("documents/");
+            if (documentsIndex > 0) {
+                extractedPath = extractedPath.substring(documentsIndex);
+                logger.debug("Stripped prefix before Documents/, result starts with: {}", extractedPath.substring(0, Math.min(50, extractedPath.length())));
+            } else if (extractedPath.startsWith("sites/")) {
                 int thirdSlash = extractedPath.indexOf('/', 6);
                 if (thirdSlash != -1) {
                     int fourthSlash = extractedPath.indexOf('/', thirdSlash + 1);
