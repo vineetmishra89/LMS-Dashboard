@@ -97,4 +97,38 @@ public class SharePointController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
     }
+    
+    /**
+     * Tests access to a SharePoint/OneDrive folder with detailed diagnostics.
+     * This endpoint provides comprehensive information about the connection, authentication,
+     * path normalization, and folder access to help troubleshoot issues.
+     * 
+     * @param folderPath Relative path to the folder to test (query parameter)
+     * @return Detailed diagnostic information including configuration, resolved paths, and file count
+     * 
+     * Example: GET /api/sharepoint/test-access?folderPath=Training Materials/2024
+     */
+    @GetMapping("/test-access")
+    public ResponseEntity<?> testFolderAccess(@RequestParam(required = false, defaultValue = "") String folderPath) {
+        try {
+            logger.info("Received request to test folder access for: {}", folderPath);
+            
+            String diagnostics = sharePointService.testFolderAccess(folderPath);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("diagnostics", diagnostics);
+            response.put("folderPath", folderPath);
+            
+            logger.info("Folder access test completed for: {}", folderPath);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error during folder access test for '{}': {}", folderPath, e.getMessage(), e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Test failed");
+            error.put("message", e.getMessage());
+            error.put("folderPath", folderPath);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
 }
