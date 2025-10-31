@@ -37,7 +37,7 @@ public class SearchService {
   }
 
   public List<CourseSummary> search(String category, String topics, String instructor, String level) {
-    StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd join  ltd.trainerDetails td where 1=1");
+    StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd join fetch ltd.trainerDetails td where 1=1");
 
     if (category != null) {
       hql.append(" AND cm.category = :category");
