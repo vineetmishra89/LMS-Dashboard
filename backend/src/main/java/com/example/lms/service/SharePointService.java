@@ -33,4 +33,14 @@ public interface SharePointService {
      * @throws IllegalStateException if any required property is missing
      */
     void validateConfiguration();
+    
+    /**
+     * Tests access to a SharePoint/OneDrive folder by attempting to read its contents.
+     * This method provides detailed diagnostic information about the connection and folder access.
+     * 
+     * @param folderPath Relative path to the folder to test (e.g., "Training Materials/2024")
+     * @return Diagnostic information including connection status, folder path, and file count
+     * @throws RuntimeException if folder access fails
+     */
+    String testFolderAccess(String folderPath);
 }

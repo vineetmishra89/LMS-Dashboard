@@ -270,4 +270,124 @@ public class SharePointSiteServiceImpl implements SharePointService {
         
         logger.info("SharePoint site configuration validated successfully");
     }
+    
+    @Override
+    public String testFolderAccess(String folderPath) {
+        StringBuilder diagnostics = new StringBuilder();
+        diagnostics.append("=== SharePoint Site Folder Access Test ===\n\n");
+        
+        try {
+            diagnostics.append("Configuration:\n");
+            diagnostics.append("  - Site Hostname: ").append(siteHostname).append("\n");
+            diagnostics.append("  - Site Path: ").append(sitePath).append("\n");
+            diagnostics.append("  - Drive ID: ").append(driveId != null ? driveId : "(default)").append("\n");
+            diagnostics.append("  - Base Path: ").append(basePath).append("\n");
+            diagnostics.append("  - Mode: SharePoint Site\n\n");
+            
+            diagnostics.append("Input:\n");
+            diagnostics.append("  - Raw folder path: ").append(folderPath).append("\n\n");
+            
+            String normalizedPath = normalizeFolderInput(folderPath);
+            diagnostics.append("Normalization:\n");
+            diagnostics.append("  - Normalized path: ").append(normalizedPath).append("\n\n");
+            
+            String fullPath = PathUtils.combine(basePath, normalizedPath);
+            diagnostics.append("Resolved Path:\n");
+            diagnostics.append("  - Full SharePoint path: ").append(fullPath).append("\n\n");
+            
+            logger.info("Testing folder access for path: {}", folderPath);
+            GraphServiceClient<Request> client = graphClientProvider.getGraphClient();
+            
+            diagnostics.append("Authentication: SUCCESS\n");
+            diagnostics.append("  - Graph client initialized\n");
+            diagnostics.append("  - Token acquired\n\n");
+            
+            if (cachedSiteId == null) {
+                cachedSiteId = resolveSiteId(client);
+            }
+            
+            diagnostics.append("Site Resolution: SUCCESS\n");
+            diagnostics.append("  - Site ID: ").append(cachedSiteId).append("\n\n");
+            
+            String endpoint = driveId != null && !driveId.trim().isEmpty()
+                ? String.format("GET /sites/%s/drives/%s/root:/%s:/children", cachedSiteId, driveId, fullPath)
+                : String.format("GET /sites/%s/drive/root:/%s:/children", cachedSiteId, fullPath);
+            
+            diagnostics.append("Graph API Call:\n");
+            diagnostics.append("  - Endpoint: ").append(endpoint).append("\n\n");
+            
+            DriveItemCollectionPage items;
+            
+            if (driveId != null && !driveId.trim().isEmpty()) {
+                items = client
+                        .sites(cachedSiteId)
+                        .drives(driveId)
+                        .root()
+                        .itemWithPath(fullPath)
+                        .children()
+                        .buildRequest()
+                        .get();
+            } else {
+                items = client
+                        .sites(cachedSiteId)
+                        .drive()
+                        .root()
+                        .itemWithPath(fullPath)
+                        .children()
+                        .buildRequest()
+                        .get();
+            }
+            
+            diagnostics.append("Folder Access: SUCCESS\n");
+            
+            int fileCount = 0;
+            int folderCount = 0;
+            List<String> sampleFiles = new ArrayList<>();
+            
+            if (items != null && items.getCurrentPage() != null) {
+                for (DriveItem item : items.getCurrentPage()) {
+                    if (item.file != null) {
+                        fileCount++;
+                        if (sampleFiles.size() < 5) {
+                            sampleFiles.add(item.name);
+                        }
+                    } else if (item.folder != null) {
+                        folderCount++;
+                    }
+                }
+            }
+            
+            diagnostics.append("  - Files found: ").append(fileCount).append("\n");
+            diagnostics.append("  - Folders found: ").append(folderCount).append("\n");
+            
+            if (!sampleFiles.isEmpty()) {
+                diagnostics.append("  - Sample files (up to 5):\n");
+                for (String fileName : sampleFiles) {
+                    diagnostics.append("    * ").append(fileName).append("\n");
+                }
+            }
+            
+            diagnostics.append("\n=== TEST PASSED ===\n");
+            logger.info("Folder access test PASSED for path: {}", folderPath);
+            
+            return diagnostics.toString();
+            
+        } catch (Exception e) {
+            diagnostics.append("Folder Access: FAILED\n");
+            diagnostics.append("  - Error Type: ").append(e.getClass().getSimpleName()).append("\n");
+            diagnostics.append("  - Error Message: ").append(e.getMessage()).append("\n");
+            
+            if (e.getCause() != null) {
+                diagnostics.append("  - Cause: ").append(e.getCause().getMessage()).append("\n");
+            }
+            
+            diagnostics.append("\n=== TEST FAILED ===\n");
+            diagnostics.append("\nFull Error Details:\n");
+            diagnostics.append(e.toString()).append("\n");
+            
+            logger.error("Folder access test FAILED for path: {}", folderPath, e);
+            
+            return diagnostics.toString();
+        }
+    }
 }
