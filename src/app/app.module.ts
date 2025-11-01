@@ -97,6 +97,21 @@ import { ChipModule } from 'primeng/chip';
 // Environment
 import { environment } from '../environments/environment';
 import { CarouselModule } from 'primeng/carousel';
+import { ApplicationConfig,importProvidersFrom } from '@angular/core';
+import { 
+  MsalModule, 
+  MsalService, 
+  MsalGuard, 
+  MsalInterceptor, 
+  MsalBroadcastService,
+  MSAL_INSTANCE,
+  MSAL_GUARD_CONFIG,
+  MSAL_INTERCEPTOR_CONFIG
+} from '@azure/msal-angular';
+import { InteractionType } from '@azure/msal-browser';
+import { msalInstance, loginRequest } from './auth.config';
+import { MSAuthService } from './services/msauth.service';
+import { MSALGuardConfigFactory, MSALInstanceFactory, MSALInterceptorConfigFactory } from './app.config';
 
 @NgModule({
   declarations: [
@@ -194,6 +209,7 @@ import { CarouselModule } from 'primeng/carousel';
     // Core Services
     ApiService,
     AuthService,
+    MSAuthService,
     UserService,
     CourseService,
     EnrollmentService,
@@ -230,8 +246,32 @@ import { CarouselModule } from 'primeng/carousel';
       provide: HTTP_INTERCEPTORS,
       useClass: CacheInterceptor,
       multi: true
-    }
+    },
+    importProvidersFrom(MsalModule),
+        {
+          provide: MSAL_INSTANCE,
+          useFactory: MSALInstanceFactory
+        },
+        {
+          provide: MSAL_GUARD_CONFIG,
+          useFactory: MSALGuardConfigFactory
+        },
+        {
+          provide: MSAL_INTERCEPTOR_CONFIG,
+          useFactory: MSALInterceptorConfigFactory
+        },
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: MsalInterceptor,
+          multi: true
+        },
+        MsalService,
+        MsalGuard,
+        MsalBroadcastService
   ],
   bootstrap: [AppComponent]
 })
+
+
+
 export class AppModule { }

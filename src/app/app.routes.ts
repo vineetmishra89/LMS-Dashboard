@@ -15,7 +15,7 @@ import { ViewCourseComponent } from './components/view-course/view-course.compon
 import { LndAdminComponent } from './components/lnd-admin/lnd-admin';
 import { LoginComponent } from './components/login/login.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
