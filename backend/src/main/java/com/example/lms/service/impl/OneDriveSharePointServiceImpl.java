@@ -307,4 +307,10 @@ public class OneDriveSharePointServiceImpl implements SharePointService {
             return diagnostics.toString();
         }
     }
+    
+    @Override
+    public String listSiteDrives() {
+        throw new UnsupportedOperationException("listSiteDrives() is only supported in SharePoint site mode. " +
+                "Current mode is OneDrive for Business. To list drives, switch to graph.mode=site.");
+    }
 }

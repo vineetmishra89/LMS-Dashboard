@@ -390,4 +390,76 @@ public class SharePointSiteServiceImpl implements SharePointService {
             return diagnostics.toString();
         }
     }
+    
+    @Override
+    public String listSiteDrives() {
+        StringBuilder result = new StringBuilder();
+        result.append("=== SharePoint Site Drives (Document Libraries) ===\n\n");
+        
+        try {
+            GraphServiceClient<Request> client = graphClientProvider.getGraphClient();
+            
+            if (cachedSiteId == null) {
+                cachedSiteId = resolveSiteId(client);
+            }
+            
+            result.append("Site Information:\n");
+            result.append("  - Site Hostname: ").append(siteHostname).append("\n");
+            result.append("  - Site Path: ").append(sitePath).append("\n");
+            result.append("  - Site ID: ").append(cachedSiteId).append("\n\n");
+            
+            logger.info("Listing drives for SharePoint site: {}", cachedSiteId);
+            
+            var drives = client
+                    .sites(cachedSiteId)
+                    .drives()
+                    .buildRequest()
+                    .select("id,name,webUrl,driveType")
+                    .get();
+            
+            if (drives == null || drives.getCurrentPage() == null || drives.getCurrentPage().isEmpty()) {
+                result.append("No drives found on this site.\n");
+                logger.warn("No drives found for site: {}", cachedSiteId);
+                return result.toString();
+            }
+            
+            result.append("Document Libraries (Drives):\n");
+            result.append("Total: ").append(drives.getCurrentPage().size()).append("\n\n");
+            
+            int index = 1;
+            for (var drive : drives.getCurrentPage()) {
+                result.append(index++).append(". ").append(drive.name).append("\n");
+                result.append("   - Drive ID: ").append(drive.id).append("\n");
+                result.append("   - Drive Type: ").append(drive.driveType != null ? drive.driveType : "N/A").append("\n");
+                result.append("   - Web URL: ").append(drive.webUrl != null ? drive.webUrl : "N/A").append("\n");
+                
+                if (drive.name != null && drive.name.equals("Documents")) {
+                    result.append("   - Note: This is the DEFAULT document library (\"Shared Documents\")\n");
+                    result.append("   - To use this library, leave graph.drive-id empty in configuration\n");
+                }
+                result.append("\n");
+            }
+            
+            result.append("Configuration Tips:\n");
+            result.append("  - To use the default library (usually \"Documents\"), leave graph.drive-id empty\n");
+            result.append("  - To use a specific library, set graph.drive-id to the Drive ID shown above\n");
+            result.append("  - Do NOT include the library name in graph.base-path\n");
+            result.append("  - Set graph.base-path to a folder path within the library (or leave empty for root)\n");
+            
+            logger.info("Successfully listed {} drives for site: {}", drives.getCurrentPage().size(), cachedSiteId);
+            return result.toString();
+            
+        } catch (Exception e) {
+            result.append("ERROR: Failed to list drives\n");
+            result.append("  - Error Type: ").append(e.getClass().getSimpleName()).append("\n");
+            result.append("  - Error Message: ").append(e.getMessage()).append("\n");
+            
+            if (e.getCause() != null) {
+                result.append("  - Cause: ").append(e.getCause().getMessage()).append("\n");
+            }
+            
+            logger.error("Error listing drives for site: {}", cachedSiteId, e);
+            return result.toString();
+        }
+    }
 }
