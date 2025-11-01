@@ -43,4 +43,14 @@ public interface SharePointService {
      * @throws RuntimeException if folder access fails
      */
     String testFolderAccess(String folderPath);
+    
+    /**
+     * Lists all document libraries (drives) available on the SharePoint site.
+     * Only applicable for SharePoint site mode (not OneDrive mode).
+     * 
+     * @return JSON string containing site ID and list of drives with their IDs, names, and URLs
+     * @throws UnsupportedOperationException if called in OneDrive mode
+     * @throws RuntimeException if site resolution or drive listing fails
+     */
+    String listSiteDrives();
 }

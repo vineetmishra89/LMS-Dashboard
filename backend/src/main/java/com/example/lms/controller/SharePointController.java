@@ -131,4 +131,42 @@ public class SharePointController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+    
+    /**
+     * Lists all document libraries (drives) available on the SharePoint site.
+     * Only works in SharePoint site mode (graph.mode=site).
+     * Helps discover drive IDs for configuration.
+     * 
+     * @return List of drives with their IDs, names, and URLs
+     * 
+     * Example: GET /api/sharepoint/site/drives
+     */
+    @GetMapping("/site/drives")
+    public ResponseEntity<?> listSiteDrives() {
+        try {
+            logger.info("Received request to list SharePoint site drives");
+            
+            String drivesInfo = sharePointService.listSiteDrives();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("drives", drivesInfo);
+            
+            logger.info("Successfully listed SharePoint site drives");
+            return ResponseEntity.ok(response);
+            
+        } catch (UnsupportedOperationException e) {
+            logger.warn("listSiteDrives called in OneDrive mode: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Unsupported Operation");
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            
+        } catch (Exception e) {
+            logger.error("Error listing SharePoint site drives: {}", e.getMessage(), e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to list drives");
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
 }
