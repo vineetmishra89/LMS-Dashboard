@@ -2,15 +2,23 @@ package com.example.lms.service.impl;
 
 import com.example.lms.service.SharePointService;
 import com.example.lms.util.PathUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.graph.models.DriveItem;
 import com.microsoft.graph.requests.DriveItemCollectionPage;
 import com.microsoft.graph.requests.GraphServiceClient;
 import okhttp3.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLDecoder;
@@ -39,6 +47,12 @@ public class OneDriveSharePointServiceImpl implements SharePointService {
     private static final Logger logger = LoggerFactory.getLogger(OneDriveSharePointServiceImpl.class);
 
     private final GraphClientProvider graphClientProvider;
+    
+    @Autowired
+    RestTemplate restTemplate;
+    
+    @Autowired
+    private  ObjectMapper objectMapper;
 
     @Value("${graph.user-principal-name}")
     private String userPrincipalName;
@@ -53,46 +67,50 @@ public class OneDriveSharePointServiceImpl implements SharePointService {
 
     @Override
     public List<String> listFilesInFolder(String folderPath) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setBearerAuth("eyJ0eXAiOiJKV1QiLCJub25jZSI6Il95TzUxSC11WG1pVkZ6S3RVZXhub1labk40ZlMxWWRkb01ZR3g0Z29EeWMiLCJhbGciOiJSUzI1NiIsIng1dCI6InlFVXdtWFdMMTA3Q2MtN1FaMldTYmVPYjNzUSIsImtpZCI6InlFVXdtWFdMMTA3Q2MtN1FaMldTYmVPYjNzUSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83M2JmZmUyYi05MDQxLTQ3NTQtYWFmMC0zZWY2MWNkZTc1NTkvIiwiaWF0IjoxNzYxOTkyNTQ3LCJuYmYiOjE3NjE5OTI1NDcsImV4cCI6MTc2MTk5NzA2OCwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFVUUF1LzhhQUFBQW5nMU51NzNlVFcwUGNpcldDT0NGWkpLdVJ2TXhPQUJTNm02cVcxUStYT2h5cTdnalFKNDB4cmhHK2xycW9nc3NiUlRyUnJVbTlvSXdhcTBqZ3RpUmhnPT0iLCJhbXIiOlsicHdkIiwicnNhIl0sImFwcF9kaXNwbGF5bmFtZSI6ImRlc2lnbiBMZWFybmluZyAiLCJhcHBpZCI6IjYyMTg5Zjk2LTIwZWMtNDJiNy04ZmZmLWJjZWFmZTc3YWZkNSIsImFwcGlkYWNyIjoiMCIsImRldmljZWlkIjoiMGU4NjhhOWQtMzlkOC00MjZhLTkwZDUtODQ3NTI4YjRlMzhjIiwiZmFtaWx5X25hbWUiOiJCYW5zYWwiLCJnaXZlbl9uYW1lIjoiQW5raXQiLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIyNDAxOjQ5MDA6MWM2Mjo4MWQ1OjExYWU6ZjQ1ZjpkMDAzOmY4MjIiLCJuYW1lIjoiQW5raXQgQmFuc2FsIiwib2lkIjoiNTJhMjE0Y2QtNGM1Zi00Y2U3LTg0NTMtYjNiNTkyOWI0ZDI3Iiwib25wcmVtX3NpZCI6IlMtMS01LTIxLTIxNTUwMTc2MDAtMTI3MTc4MDQ1Ni0xMTYxOTkzMDA1LTMzODAxIiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDMyMDAyMDRGMDZGMUUiLCJyaCI6IjEuQVZJQUtfNl9jMEdRVkVlcThENzJITjUxV1FNQUFBQUFBQUFBd0FBQUFBQUFBQUJTQURoU0FBLiIsInNjcCI6IkRpcmVjdG9yeS5SZWFkLkFsbCBGaWxlcy5SZWFkLkFsbCBvcGVuaWQgcHJvZmlsZSBTaXRlcy5GdWxsQ29udHJvbC5BbGwgVXNlci5SZWFkIGVtYWlsIiwic2lkIjoiMDA5YzQ3ZTktYTQwNy05NDdiLWY0ZmItMzRlZDcwYzA3MzgzIiwic2lnbmluX3N0YXRlIjpbImR2Y19tbmdkIiwiZHZjX2NtcCIsImR2Y19kbWpkIiwia21zaSJdLCJzdWIiOiJ0bExWT3R0ajY0M3ZIaXlGbjFXTHRGOGRxUnJGZDJ6MFg3QnRYZlRLcG93IiwidGVuYW50X3JlZ2lvbl9zY29wZSI6Ik5BIiwidGlkIjoiNzNiZmZlMmItOTA0MS00NzU0LWFhZjAtM2VmNjFjZGU3NTU5IiwidW5pcXVlX25hbWUiOiJhbmtpdC5iYW5zYWxAaXJpc3NvZnR3YXJlLmNvbSIsInVwbiI6ImFua2l0LmJhbnNhbEBpcmlzc29mdHdhcmUuY29tIiwidXRpIjoidHNHVWdrbU54RW05MUt2ZTZYUlhBQSIsInZlciI6IjEuMCIsIndpZHMiOlsiYjc5ZmJmNGQtM2VmOS00Njg5LTgxNDMtNzZiMTk0ZTg1NTA5Il0sInhtc19hY2QiOjE3NTA2NzAyMjIsInhtc19hY3RfZmN0IjoiMyA5IiwieG1zX2Z0ZCI6IjM1d2Fkd0Y0bXZaYzRSb0NmY2xpUXhQdXB4LTZOblk2bElMS2VmLXZBVTRCZFhObFlYTjBMV1J6YlhNIiwieG1zX2lkcmVsIjoiMSA0IiwieG1zX3N0Ijp7InN1YiI6IlladXVVX3QyRzNVbDBodkl2eTlGTHphTkdkczNJUlptYTVEY09vN3hMMG8ifSwieG1zX3N1Yl9mY3QiOiIxMiAzIiwieG1zX3RjZHQiOjE1OTExOTU5NzAsInhtc190bnRfZmN0IjoiNiAzIn0.dFwv1WbD5u6X9U1RMtbJ270_vZ49HsdTUW4DXjue8EkxayxgHqLHkLhdoMvOXsdt87iURVre3aRSrMWIrCs_imHfLYlYfPnyl2JbI8b_Z-ph45vuxow8JFdHQbMjjgkzEtVBysa-JhU0hFegCjGndKXQh1WdMNRSE9cbY4cBjtw_BoXiMvvBQRxQBC3poq3puaIo1L8mm3t_gUxVf8YPkouFbaI1JUMQa2Tyb8ENm49lttOwvKfgn3TeOdnJrCnwt60ZaCYCjfPrGFS1K0amwQpm807Bddl_e_sZ5imhtW_--pqOYF9WwRzwfBAV-R62EJ0_pBjB_FI4Ky6B848SmA");
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+
+                // Get children of specific drive item
+                String url = String.format("https://graph.microsoft.com/v1.0/drives/%s/items/%s/children", "b!h-u0gl1vu0mtETS610zX9hufYTIu9hZJjUnn3YdGkBYfslJiWknLTrSquiV92Sgm", "015ZUXCKF5VF3V734C3JG3SQ4RE5RHPGBY");
+                ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+                );
+
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    return parseFilesFromResponse(response.getBody());
+                }
+
+                return new ArrayList<>();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to fetch drive item children from Graph API: " + e.getMessage());
+            }
+    }
+    
+    private List<String> parseFilesFromResponse(String responseBody) {
+        List<String> files = new ArrayList<>();
         try {
-            logger.info("Listing files in OneDrive folder (raw input): {}", folderPath);
-            
-            String normalizedPath = normalizeFolderInput(folderPath);
-            logger.info("Normalized folder path: {}", normalizedPath);
-            
-            String fullPath = PathUtils.combine(basePath, normalizedPath);
-            logger.info("Resolved OneDrive path: {}", fullPath);
-            
-            GraphServiceClient<Request> client = graphClientProvider.getGraphClient();
-            
-            DriveItemCollectionPage items = client
-                    .users(userPrincipalName)
-                    .drive()
-                    .root()
-                    .itemWithPath(fullPath)
-                    .children()
-                    .buildRequest()
-                    .get();
-            
-            List<String> fileNames = new ArrayList<>();
-            
-            if (items != null && items.getCurrentPage() != null) {
-                for (DriveItem item : items.getCurrentPage()) {
-                    if (item.file != null) {
-                        fileNames.add(item.name);
-                        logger.debug("Found file: {}", item.name);
-                    }
+            JsonNode root = objectMapper.readTree(responseBody);
+            JsonNode valueNode = root.get("value");
+
+            if (valueNode != null && valueNode.isArray()) {
+                for (JsonNode fileNode : valueNode) {
+                	files.add(fileNode.get("name").asText());
+
+                 
                 }
             }
-            
-            logger.info("Found {} files in OneDrive folder: {}", fileNames.size(), normalizedPath);
-            return fileNames;
-            
         } catch (Exception e) {
-            logger.error("Error listing files in OneDrive folder '{}': {}", folderPath, e.getMessage(), e);
-            throw new RuntimeException("Failed to list files in OneDrive folder: " + folderPath + 
-                    ". Error: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to parse files response: " + e.getMessage());
         }
+
+        return files;
     }
+
     
     /**
      * Normalizes folder input to handle both SharePoint web URLs and relative paths.
