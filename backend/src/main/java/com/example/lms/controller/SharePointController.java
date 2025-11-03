@@ -180,23 +180,24 @@ public class SharePointController {
     
     /**
      * Lists all folders and files recursively from a SharePoint/OneDrive folder using user's bearer token.
+     * Uses configured drive ID and folder ID from application.properties.
      * This endpoint uses delegated permissions (user context) from the Authorization header.
      * 
-     * @param request Request body containing folderUrl
      * @param httpRequest HTTP servlet request to read Authorization header
      * @return Recursive tree structure of folders and files
      * 
      * Example: POST /api/sharepoint/list-with-user-token
      * Headers: Authorization: Bearer <your-token>
-     * Body: { "folderUrl": "https://..." }
+     * 
+     * Configuration required in application.properties:
+     * - graph.user.drive-id: The SharePoint drive ID
+     * - graph.user.root-folder-id: The root folder item ID
      */
     @PostMapping("/list-with-user-token")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> listWithUserToken(
-            @RequestBody Map<String, String> request,
-            HttpServletRequest httpRequest) {
+    public ResponseEntity<?> listWithUserToken(HttpServletRequest httpRequest) {
         try {
-            logger.info("Received request to list folders/files with user token");
+            logger.info("Received request to list folders/files with user token using configured IDs");
             
             String authorization = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
             if (authorization == null || !authorization.startsWith("Bearer ")) {
@@ -208,24 +209,21 @@ public class SharePointController {
             
             String bearerToken = authorization.substring(7).trim();
             
-            String folderUrl = request.get("folderUrl");
-            if (folderUrl == null || folderUrl.trim().isEmpty()) {
-                Map<String, String> error = new HashMap<>();
-                error.put("error", "Missing folderUrl");
-                error.put("message", "Request body must contain 'folderUrl' field");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-            }
-            
-            logger.info("Processing folder URL: {}", folderUrl);
-            
-            FolderNode result = userTokenSharePointService.listFoldersAndFilesRecursively(bearerToken, folderUrl);
+            FolderNode result = userTokenSharePointService.listFoldersAndFilesRecursivelyFromIds(bearerToken);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("folderStructure", result);
             
-            logger.info("Successfully listed folders and files recursively");
+            logger.info("Successfully listed folders and files recursively from configured IDs");
             return ResponseEntity.ok(response);
+            
+        } catch (IllegalStateException e) {
+            logger.error("Configuration error: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Configuration Error");
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
             
         } catch (IllegalArgumentException e) {
             logger.error("Invalid request: {}", e.getMessage());

@@ -9,6 +9,7 @@ import com.microsoft.graph.requests.GraphServiceClient;
 import okhttp3.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -25,6 +26,12 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     private static final Logger logger = LoggerFactory.getLogger(UserTokenSharePointServiceImpl.class);
     
     private final GraphClientProvider graphClientProvider;
+    
+    @Value("${graph.user.drive-id:}")
+    private String driveId;
+    
+    @Value("${graph.user.root-folder-id:}")
+    private String rootFolderId;
     
     public UserTokenSharePointServiceImpl(GraphClientProvider graphClientProvider) {
         this.graphClientProvider = graphClientProvider;
@@ -192,5 +199,121 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             return path.substring(lastSlash + 1);
         }
         return path;
+    }
+    
+    @Override
+    public FolderNode listFoldersAndFilesRecursivelyFromIds(String bearerToken) {
+        try {
+            validateConfiguration();
+            
+            logger.info("Listing folders and files recursively using drive ID: {} and folder ID: {}", driveId, rootFolderId);
+            
+            GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
+            
+            DriveItem rootItem = client
+                    .drives()
+                    .byId(driveId)
+                    .items()
+                    .byId(rootFolderId)
+                    .buildRequest()
+                    .get();
+            
+            if (rootItem == null) {
+                throw new RuntimeException("Root folder not found with ID: " + rootFolderId);
+            }
+            
+            FolderNode rootFolder = new FolderNode();
+            rootFolder.setName(rootItem.name);
+            rootFolder.setPath(rootItem.name);
+            rootFolder.setWebUrl(rootItem.webUrl);
+            
+            listFolderContentsByIdRecursively(client, driveId, rootFolderId, rootFolder);
+            
+            logger.info("Successfully listed folders and files recursively from IDs");
+            return rootFolder;
+            
+        } catch (Exception e) {
+            logger.error("Error listing folders and files from IDs: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to list folders and files: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Validates that drive ID and folder ID are configured.
+     */
+    private void validateConfiguration() {
+        if (driveId == null || driveId.trim().isEmpty() || driveId.equals("your-drive-id-here")) {
+            throw new IllegalStateException("graph.user.drive-id is not configured in application.properties");
+        }
+        if (rootFolderId == null || rootFolderId.trim().isEmpty() || rootFolderId.equals("your-root-folder-id-here")) {
+            throw new IllegalStateException("graph.user.root-folder-id is not configured in application.properties");
+        }
+    }
+    
+    /**
+     * Recursively lists all folders and files using drive ID and item ID.
+     */
+    private void listFolderContentsByIdRecursively(GraphServiceClient<Request> client, String driveId, String folderId, FolderNode folderNode) {
+        try {
+            logger.debug("Listing contents of folder ID: {}", folderId);
+            
+            DriveItemCollectionPage items = client
+                    .drives()
+                    .byId(driveId)
+                    .items()
+                    .byId(folderId)
+                    .children()
+                    .buildRequest()
+                    .get();
+            
+            if (items == null || items.getCurrentPage() == null) {
+                logger.debug("No items found in folder ID: {}", folderId);
+                return;
+            }
+            
+            processItemsById(client, driveId, folderNode, items);
+            
+            while (items.getNextPage() != null) {
+                items = items.getNextPage().buildRequest().get();
+                if (items != null && items.getCurrentPage() != null) {
+                    processItemsById(client, driveId, folderNode, items);
+                }
+            }
+            
+            logger.debug("Finished listing contents of folder ID: {} (Files: {}, Folders: {})", 
+                    folderId, folderNode.getFiles().size(), folderNode.getFolders().size());
+            
+        } catch (Exception e) {
+            logger.error("Error listing contents of folder ID '{}': {}", folderId, e.getMessage(), e);
+            throw new RuntimeException("Failed to list folder contents: " + folderId, e);
+        }
+    }
+    
+    /**
+     * Processes items from a DriveItemCollectionPage using IDs for recursion.
+     */
+    private void processItemsById(GraphServiceClient<Request> client, String driveId, FolderNode parentNode, DriveItemCollectionPage items) {
+        for (DriveItem item : items.getCurrentPage()) {
+            if (item.folder != null) {
+                FolderNode childFolder = new FolderNode();
+                childFolder.setName(item.name);
+                childFolder.setPath(parentNode.getPath() + "/" + item.name);
+                childFolder.setWebUrl(item.webUrl);
+                
+                parentNode.addFolder(childFolder);
+                
+                listFolderContentsByIdRecursively(client, driveId, item.id, childFolder);
+                
+            } else if (item.file != null) {
+                FileNode fileNode = new FileNode();
+                fileNode.setName(item.name);
+                fileNode.setPath(parentNode.getPath() + "/" + item.name);
+                fileNode.setWebUrl(item.webUrl);
+                fileNode.setSize(item.size);
+                fileNode.setLastModified(item.lastModifiedDateTime);
+                
+                parentNode.addFile(fileNode);
+            }
+        }
     }
 }
