@@ -1,5 +1,8 @@
 package com.example.lms.service.impl;
 
+import com.azure.core.credential.AccessToken;
+import com.azure.core.credential.TokenCredential;
+import com.azure.core.credential.TokenRequestContext;
 import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.microsoft.graph.authentication.TokenCredentialAuthProvider;
@@ -9,7 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -82,6 +89,44 @@ public class GraphClientProvider {
         }
         if (clientSecret == null || clientSecret.trim().isEmpty() || clientSecret.contains("your-")) {
             throw new IllegalStateException("Missing required property: graph.client-secret");
+        }
+    }
+    
+    /**
+     * Creates a Microsoft Graph client using a provided bearer token (delegated user token).
+     * This method does NOT cache the client - a new client is created for each call.
+     * Use this when you have a user's access token from Authorization header.
+     * 
+     * @param bearerToken The access token (without "Bearer " prefix)
+     * @return Configured GraphServiceClient instance for this token
+     * @throws RuntimeException if client initialization fails
+     */
+    public GraphServiceClient<Request> getGraphClientWithBearerToken(String bearerToken) {
+        try {
+            logger.debug("Creating Microsoft Graph client with provided bearer token");
+            
+            Instant expiresAt = Instant.now().plusSeconds(3600);
+            
+            TokenCredential tokenCredential = new TokenCredential() {
+                @Override
+                public Mono<AccessToken> getToken(TokenRequestContext request) {
+                    return Mono.just(new AccessToken(bearerToken, OffsetDateTime.ofInstant(expiresAt, ZoneOffset.UTC)));
+                }
+            };
+            
+            TokenCredentialAuthProvider authProvider = new TokenCredentialAuthProvider(
+                    GRAPH_SCOPES, tokenCredential);
+            
+            GraphServiceClient<Request> client = GraphServiceClient.builder()
+                    .authenticationProvider(authProvider)
+                    .buildClient();
+            
+            logger.debug("Microsoft Graph client created successfully with bearer token");
+            return client;
+            
+        } catch (Exception e) {
+            logger.error("Failed to create Microsoft Graph client with bearer token: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to create Microsoft Graph client with bearer token", e);
         }
     }
 }

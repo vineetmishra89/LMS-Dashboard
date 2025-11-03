@@ -1,8 +1,11 @@
 package com.example.lms.controller;
 
+import com.example.lms.dto.FolderNode;
 import com.example.lms.service.SharePointService;
+import com.example.lms.service.UserTokenSharePointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +25,12 @@ public class SharePointController {
 
     private static final Logger logger = LoggerFactory.getLogger(SharePointController.class);
     private final SharePointService sharePointService;
+    private final UserTokenSharePointService userTokenSharePointService;
 
-    public SharePointController(SharePointService sharePointService) {
+    public SharePointController(SharePointService sharePointService, 
+                                UserTokenSharePointService userTokenSharePointService) {
         this.sharePointService = sharePointService;
+        this.userTokenSharePointService = userTokenSharePointService;
     }
 
     /**
@@ -166,6 +172,77 @@ public class SharePointController {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Failed to list drives");
             error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+    
+    /**
+     * Lists all folders and files recursively from a SharePoint/OneDrive folder using user's bearer token.
+     * This endpoint uses delegated permissions (user context) from the Authorization header.
+     * 
+     * @param authorization Authorization header with Bearer token (e.g., "Bearer eyJ0eXAi...")
+     * @param folderUrl SharePoint/OneDrive folder URL (e.g., onedrive.aspx?id=... format)
+     * @return Recursive tree structure of folders and files
+     * 
+     * Example: POST /api/sharepoint/list-with-user-token
+     * Headers: Authorization: Bearer <your-token>
+     * Body: { "folderUrl": "https://..." }
+     */
+    @PostMapping("/list-with-user-token")
+    public ResponseEntity<?> listWithUserToken(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+            @RequestBody Map<String, String> request) {
+        try {
+            logger.info("Received request to list folders/files with user token");
+            
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Invalid Authorization header");
+                error.put("message", "Authorization header must start with 'Bearer '");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+            
+            String bearerToken = authorization.substring(7).trim();
+            
+            String folderUrl = request.get("folderUrl");
+            if (folderUrl == null || folderUrl.trim().isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Missing folderUrl");
+                error.put("message", "Request body must contain 'folderUrl' field");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
+            logger.info("Processing folder URL: {}", folderUrl);
+            
+            FolderNode result = userTokenSharePointService.listFoldersAndFilesRecursively(bearerToken, folderUrl);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("folderStructure", result);
+            
+            logger.info("Successfully listed folders and files recursively");
+            return ResponseEntity.ok(response);
+            
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid request: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Invalid Request");
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            
+        } catch (Exception e) {
+            logger.error("Error listing folders/files with user token: {}", e.getMessage(), e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to list folders and files");
+            error.put("message", e.getMessage());
+            
+            if (e.getMessage() != null && 
+                (e.getMessage().contains("401") || 
+                 e.getMessage().contains("Unauthorized") ||
+                 e.getMessage().contains("Invalid token"))) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
