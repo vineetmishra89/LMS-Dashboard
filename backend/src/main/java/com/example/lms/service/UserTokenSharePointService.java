@@ -18,4 +18,14 @@ public interface UserTokenSharePointService {
      * @throws RuntimeException if folder access fails or token is invalid
      */
     FolderNode listFoldersAndFilesRecursively(String bearerToken, String folderUrl);
+    
+    /**
+     * Lists all folders and files recursively using configured drive ID and folder ID.
+     * Uses direct Graph API access with drive and item IDs from application.properties.
+     * 
+     * @param bearerToken User's access token (from Authorization header, without "Bearer " prefix)
+     * @return FolderNode tree structure containing all folders and files
+     * @throws RuntimeException if folder access fails or token is invalid
+     */
+    FolderNode listFoldersAndFilesRecursivelyFromIds(String bearerToken);
 }
