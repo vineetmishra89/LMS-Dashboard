@@ -173,6 +173,8 @@ export class CourseService {
     return baseUrl;
   }
 
-  
+  getEmployeeHierarchy(emailId: string): Observable<any>  {
+   return this.apiService.get('employee-hierarchy?userId=' + emailId);
+  }
 
 }
