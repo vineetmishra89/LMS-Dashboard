@@ -4,6 +4,7 @@ import com.example.lms.dto.FolderNode;
 import com.example.lms.service.SharePointService;
 import com.example.lms.service.UserTokenSharePointService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -181,8 +182,8 @@ public class SharePointController {
      * Lists all folders and files recursively from a SharePoint/OneDrive folder using user's bearer token.
      * This endpoint uses delegated permissions (user context) from the Authorization header.
      * 
-     * @param authorization Authorization header with Bearer token (e.g., "Bearer eyJ0eXAi...")
-     * @param folderUrl SharePoint/OneDrive folder URL (e.g., onedrive.aspx?id=... format)
+     * @param request Request body containing folderUrl
+     * @param httpRequest HTTP servlet request to read Authorization header
      * @return Recursive tree structure of folders and files
      * 
      * Example: POST /api/sharepoint/list-with-user-token
@@ -192,11 +193,12 @@ public class SharePointController {
     @PostMapping("/list-with-user-token")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> listWithUserToken(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
-            @RequestBody Map<String, String> request) {
+            @RequestBody Map<String, String> request,
+            HttpServletRequest httpRequest) {
         try {
             logger.info("Received request to list folders/files with user token");
             
+            String authorization = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
             if (authorization == null || !authorization.startsWith("Bearer ")) {
                 Map<String, String> error = new HashMap<>();
                 error.put("error", "Invalid Authorization header");
