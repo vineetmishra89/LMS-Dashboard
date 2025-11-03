@@ -11,13 +11,35 @@
           </ng-template>
           <div>
             <div>
-            
+              <p-multiSelect
+              [options]="users"
+              [(ngModel)]="selectedUsers"
+              optionLabel="empName"
+              [selectAll]="null"
+              styleClass="assign-training-multiselect"
+              placeholder="Search by name, email, empcode"
+              style="margin-right: 10px; width: 300px"
+            />
+            <!-- <p-multiSelect
+              [options]="trainings"
+              [(ngModel)]="selectedTrainings"
+              showToggleAll="false"
+              styleClass="assign-training-multiselect"
+              optionLabel="name"
+              style="margin-right: 10px; width: 300px"
+              placeholder="Search by training name, category, level"
+            /> -->
+            <p-autoComplete 
+    [(ngModel)]="selectedItem" 
+    [suggestions]="suggestions" 
+    (completeMethod)="search($event)" />
+            <button pButton pRipple label="Add" class="p-button-primary" (click)="add()"></button>
             </div>
             <div></div>
             <div></div>
           </div>
         </p-tabPanel>
-        <p-tabPanel>
+        <!-- <p-tabPanel>
             <ng-template pTemplate="header">
               <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
                 <span class="font-bold white-space-nowrap m-0"> Progress </span>
@@ -38,16 +60,7 @@
             <div>
               <ng-container *ngTemplateOutlet="metrics"></ng-container>
             </div>
-          </p-tabPanel>
-        <!-- <p-tabPanel>
-          <ng-template pTemplate="header">
-            <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
-              <span class="font-bold white-space-nowrap m-0"> Settings </span>
-              <span class="pi pi-cog" style="margin-left: 8px"></span>
-            </div>
-          </ng-template>
-          <p>Lorem ipsum dolor sit amet...</p>
-        </p-tabPanel> -->
+          </p-tabPanel> -->
       </p-tabView>
     </div>
   </div>
