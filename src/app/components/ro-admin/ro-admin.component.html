@@ -1,0 +1,76 @@
+<div>
+    <div>
+      <p-tabView class="admin-tab-view">
+        
+        <p-tabPanel>
+          <ng-template pTemplate="header">
+            <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+              <span class="font-bold white-space-nowrap m-0"> Assign Training </span>
+              <span class="pi pi-user-plus" style="margin-left: 8px"></span>
+            </div>
+          </ng-template>
+          <div>
+            <div>
+              <p-multiSelect
+              [options]="users"
+              [(ngModel)]="selectedUsers"
+              optionLabel="empName"
+              [selectAll]="null"
+              styleClass="assign-training-multiselect"
+              placeholder="Search by name, email, empcode"
+              style="margin-right: 10px; width: 300px"
+            />
+            <!-- <p-multiSelect
+              [options]="trainings"
+              [(ngModel)]="selectedTrainings"
+              showToggleAll="false"
+              styleClass="assign-training-multiselect"
+              optionLabel="name"
+              style="margin-right: 10px; width: 300px"
+              placeholder="Search by training name, category, level"
+            /> -->
+            <p-autoComplete 
+    [(ngModel)]="selectedItem" 
+    [suggestions]="suggestions" 
+    (completeMethod)="search($event)" />
+            <button pButton pRipple label="Add" class="p-button-primary" (click)="add()"></button>
+            </div>
+            <div></div>
+            <div></div>
+          </div>
+        </p-tabPanel>
+        <!-- <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+                <span class="font-bold white-space-nowrap m-0"> Progress </span>
+                <span class="pi pi-chart-line" style="margin-left: 8px"></span>
+              </div>
+            </ng-template>
+            <div>
+              <ng-container *ngTemplateOutlet="metrics"></ng-container>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+                <span class="font-bold white-space-nowrap m-0"> Metrics </span>
+                <span class="pi pi-chart-line" style="margin-left: 8px"></span>
+              </div>
+            </ng-template>
+            <div>
+              <ng-container *ngTemplateOutlet="metrics"></ng-container>
+            </div>
+          </p-tabPanel> -->
+      </p-tabView>
+    </div>
+  </div>
+  
+  <ng-template #metrics>
+    <div style="margin: 5px 10px 30px 10px">
+     
+        Individual | Group wise
+     
+    </div>
+   
+  </ng-template>
+  

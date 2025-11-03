@@ -1,10 +1,11 @@
-<div class="app-container" [class.dark-theme]="isDarkMode">
-  <!-- Global Loading Indicator -->
-  <!-- <div class="global-loading" *ngIf="isLoading">
-    <div class="loading-bar"></div>
-  </div> -->
+<app-header></app-header>
+<div style="padding: 15px 20px">
+  <router-outlet></router-outlet>
+</div>
 
-  <!-- Sync Status Indicator -->
+
+<!-- <div class="app-container" [class.dark-theme]="isDarkMode">
+
   <div class="sync-indicator" *ngIf="showSyncIndicator" [ngClass]="{ 'offline': !syncStatus?.isOnline }">
     <div class="sync-content">
       <span class="sync-icon">
@@ -20,9 +21,9 @@
     </div>
   </div>
 
-  <!-- Main App Layout -->
+  
   <div class="main-layout" *ngIf="isAuthenticated; else authLayout">
-    <!-- Header -->
+    
     <app-header 
       [user]="currentUser"
       [showMobileToggle]="true"
@@ -31,32 +32,23 @@
       (logout)="logout()">
     </app-header>
 
-    <!-- Main Content -->
+    
     <div class="main-content">
-      <!-- Sidebar -->
-      <!-- Sidebar removed for Dashboard layout -->
-
-      <!-- Content Area -->
       <div class="content-area" [class.with-sidebar]="!showMobileMenu">
-        <!-- Page Loading -->
         <div class="page-loading" *ngIf="isLoading">
           <app-loading-spinner message="Loading page..."></app-loading-spinner>
         </div>
 
-        <!-- Router Outlet -->
+        
         <router-outlet *ngIf="!isLoading"></router-outlet>
       </div>
     </div>
   </div>
 
-  <!-- Authentication Layout -->
+  
   <ng-template #authLayout>
     <div class="auth-layout">
       <router-outlet></router-outlet>
     </div>
   </ng-template>
-
-  <!-- Global Components -->
-  <!-- <app-toast-notification></app-toast-notification> -->
-
-</div>
+</div> -->

@@ -103,7 +103,17 @@ export class ViewCourseComponent implements OnInit {
     this.trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
     this.courseService.getCourseDetailsById(this.userId, this.trainingId).subscribe({
       next: (res) => {
+        
+        
         this.courseDetail = res;
+        
+        this.dataSharingService.getData().subscribe({
+          next: (res) => {
+            this.courseDetail.trainerNames = res.names,
+            this.courseDetail.trainerEmails = res.emails.split(',')
+          }
+        })
+     //   this.dataSharingService.sendData(null);
         this.hasEnrolled = res.enrollmentMappings.find((x: any) => x.userId === this.userId) || false;
         this.progress = res.lmsTrainingDetails.every((x: any) => x.moduleProgressPercentage === null);
     //    this.loading = false;

@@ -1,6 +1,6 @@
 
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, inject } from '@angular/core';
 import { Observable, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { takeUntil, map, startWith, catchError, switchMap, distinctUntilChanged, debounceTime, take, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -15,7 +15,11 @@ import { CourseDetail, CourseMaster } from '../../models/course';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
+import { ToastModule } from 'primeng/toast';
+
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { RippleModule } from 'primeng/ripple';
 interface City {
   name: string;
   code: string;
@@ -26,7 +30,8 @@ interface City {
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss'],
   standalone: true,
-  imports: [CommonModule, ButtonModule, DropdownModule, ReactiveFormsModule, FormsModule]
+  imports: [CommonModule, ButtonModule, RippleModule, DropdownModule, ReactiveFormsModule, FormsModule, ToastModule ],
+  providers: [MessageService]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
@@ -36,6 +41,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   isLoading$ = new BehaviorSubject<boolean>(true);
   hasError$ = new BehaviorSubject<string | null>(null);
+  messageService = inject(MessageService);
 
   currentUser$: Observable<User | null>;
   dashboardData$!: Observable<any>;
@@ -119,12 +125,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     })
   }
 
+  viewCourse(course: any) {
+    console.log(course);
+    
+    this.router.navigate(['/viewCourse', course.trainingId]);
+    //this.router.navigate(['/viewCourse', course.trainingId]);
+   //this.router.navigate(['viewCourse'])
+  }
+
   search() {
     this.loading = true;
     const data = {
       category: this.filterFormGroup?.get('categoryList')?.value,
-      trainingName: this.filterFormGroup?.get('trainingNameList')?.value,
-      trainerName: this.filterFormGroup?.get('trainerNameList')?.value,
+      topic: this.filterFormGroup?.get('trainingNameList')?.value,
+      instructor: this.filterFormGroup?.get('trainerNameList')?.value,
       level: this.filterFormGroup?.get('levelList')?.value
 
     }
@@ -132,8 +146,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.searchedCourse = res;
         this.loading = false;
-      }, error: (err) => {
+      }, error: (err: Error) => {
         this.loading = false;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err['message'] });
+  
       }
     })
   }

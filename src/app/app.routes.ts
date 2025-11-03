@@ -14,11 +14,13 @@ import { SupportComponent } from './components/support/support.component';
 import { ViewCourseComponent } from './components/view-course/view-course.component';
 import { LndAdminComponent } from './components/lnd-admin/lnd-admin';
 import { LoginComponent } from './components/login/login.component';
+import { RoAdminComponent } from './components/ro-admin/ro-admin.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'roAdmin', component: RoAdminComponent },
   { path: 'lndAdmin', component: LndAdminComponent },
   { path: 'search', component: DashboardComponent },
   { path: 'support', component: SupportComponent },

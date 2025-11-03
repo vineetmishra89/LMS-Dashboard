@@ -51,8 +51,7 @@ export class ApiService {
       headers: this.getHeaders(),
       params
     }).pipe(
-     // timeout(30000),
-      //retry(2),
+      retry(2),
       map(response => {
         this.setLoading(false);
         return response;
@@ -66,7 +65,6 @@ export class ApiService {
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(
-    //  timeout(30000),
       map(response => {
         this.setLoading(false);
         return response;
@@ -80,7 +78,6 @@ export class ApiService {
     return this.http.put<T>(`${this.baseUrl}/${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(
-      timeout(30000),
       map(response => {
         this.setLoading(false);
         return response;
@@ -94,7 +91,6 @@ export class ApiService {
     return this.http.delete<T>(`${this.baseUrl}/${endpoint}`, {
       headers: this.getHeaders()
     }).pipe(
-     // timeout(30000),
       map(response => {
         this.setLoading(false);
         return response;
