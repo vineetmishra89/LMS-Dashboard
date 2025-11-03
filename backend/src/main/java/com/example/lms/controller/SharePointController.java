@@ -3,6 +3,7 @@ package com.example.lms.controller;
 import com.example.lms.dto.FolderNode;
 import com.example.lms.service.SharePointService;
 import com.example.lms.service.UserTokenSharePointService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,7 +193,7 @@ public class SharePointController {
     @PostMapping("/list-with-user-token")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> listWithUserToken(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+            @Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
             @RequestBody Map<String, String> request) {
         try {
             logger.info("Received request to list folders/files with user token");
