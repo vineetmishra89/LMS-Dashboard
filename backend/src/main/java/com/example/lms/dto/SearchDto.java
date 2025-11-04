@@ -1,18 +1,22 @@
 package com.example.lms.dto;
 
 import com.example.lms.domain.CourseDetail;
+import com.example.lms.domain.LMSTrainerDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchDto {
+
+  private Long trainingId;
 
   private String trainingName;
 
@@ -29,4 +33,6 @@ public class SearchDto {
   private String rating;
 
   private List<CourseDetail> courseDetailList;
+
+  private Set<TrainerDto> trainerDetailList;
 }
