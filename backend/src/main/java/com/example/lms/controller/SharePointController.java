@@ -1,6 +1,7 @@
 package com.example.lms.controller;
 
 import com.example.lms.dto.FolderNode;
+import com.example.lms.dto.SharePointSyncResult;
 import com.example.lms.service.SharePointService;
 import com.example.lms.service.UserTokenSharePointService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -236,6 +237,79 @@ public class SharePointController {
             logger.error("Error listing folders/files with user token: {}", e.getMessage(), e);
             Map<String, String> error = new HashMap<>();
             error.put("error", "Failed to list folders and files");
+            error.put("message", e.getMessage());
+            
+            if (e.getMessage() != null && 
+                (e.getMessage().contains("401") || 
+                 e.getMessage().contains("Unauthorized") ||
+                 e.getMessage().contains("Invalid token"))) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+            
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+    
+    /**
+     * Syncs SharePoint folders and files to LMS database.
+     * Matches folders by name or URL, processes .mp4 files, and inserts/updates course modules.
+     * This endpoint uses delegated permissions (user context) from the Authorization header.
+     * 
+     * @param httpRequest HTTP servlet request to read Authorization header
+     * @param dryRun If true, performs validation without database changes (default: false)
+     * @return Sync operation results with counts and errors
+     * 
+     * Example: POST /api/sharepoint/sync-modules-with-user-token?dryRun=true
+     * Headers: Authorization: Bearer <your-token>
+     * 
+     * Configuration required in application.properties:
+     * - graph.user.drive-id: The SharePoint drive ID
+     * - graph.user.root-folder-id: The root folder item ID
+     */
+    @PostMapping("/sync-modules-with-user-token")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> syncModulesWithUserToken(
+            HttpServletRequest httpRequest,
+            @RequestParam(required = false, defaultValue = "false") boolean dryRun) {
+        try {
+            logger.info("Received request to sync modules with user token (dryRun={})", dryRun);
+            
+            String authorization = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Invalid Authorization header");
+                error.put("message", "Authorization header must start with 'Bearer '");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+            
+            String bearerToken = authorization.substring(7).trim();
+            
+            SharePointSyncResult result = userTokenSharePointService.syncModulesFromSharePoint(bearerToken, dryRun);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", result.getErrors().isEmpty());
+            response.put("result", result);
+            
+            if (result.getErrors().isEmpty()) {
+                logger.info("Successfully synced modules: foldersProcessed={}, coursesMatched={}, modulesInserted={}, modulesUpdated={}",
+                        result.getFoldersProcessed(), result.getCoursesMatched(), result.getModulesInserted(), result.getModulesUpdated());
+                return ResponseEntity.ok(response);
+            } else {
+                logger.warn("Sync completed with errors: {}", result.getErrors());
+                return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(response);
+            }
+            
+        } catch (IllegalStateException e) {
+            logger.error("Configuration error: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Configuration Error");
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            
+        } catch (Exception e) {
+            logger.error("Error syncing modules with user token: {}", e.getMessage(), e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to sync modules");
             error.put("message", e.getMessage());
             
             if (e.getMessage() != null && 
