@@ -10,17 +10,6 @@ import com.example.lms.dto.SharePointSyncResult;
 public interface UserTokenSharePointService {
     
     /**
-     * Lists all folders and files recursively from a SharePoint/OneDrive folder URL.
-     * Uses the provided bearer token for authentication (delegated user permissions).
-     * 
-     * @param bearerToken User's access token (from Authorization header, without "Bearer " prefix)
-     * @param folderUrl SharePoint/OneDrive folder URL (e.g., onedrive.aspx?id=... format)
-     * @return FolderNode tree structure containing all folders and files
-     * @throws RuntimeException if folder access fails or token is invalid
-     */
-    FolderNode listFoldersAndFilesRecursively(String bearerToken, String folderUrl);
-    
-    /**
      * Lists all folders and files recursively using configured drive ID and folder ID.
      * Uses direct Graph API access with drive and item IDs from application.properties.
      * 

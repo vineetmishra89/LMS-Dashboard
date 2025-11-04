@@ -52,138 +52,6 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         this.courseDetailRepository = courseDetailRepository;
     }
 
-    @Override
-    public FolderNode listFoldersAndFilesRecursively(String bearerToken, String folderPath) {
-        try {
-            logger.info("Listing folders and files recursively for path: {}", folderPath);
-
-            GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
-
-            String[] parsedPath = parseFolderUrl(folderPath);
-            String siteDomain = parsedPath[0];
-            String sitePath = parsedPath[1];
-            String itemPath = parsedPath[2];
-
-            logger.info("Parsed - Domain: {}, Site: {}, Item: {}", siteDomain, sitePath, itemPath);
-
-            FolderNode rootNode = new FolderNode(getLastSegment(itemPath), folderPath);
-            listFolderContentsRecursively(client, siteDomain, sitePath, itemPath, rootNode);
-
-            return rootNode;
-
-        } catch (Exception e) {
-            logger.error("Error listing folders and files: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to list folders and files", e);
-        }
-    }
-
-    private void listFolderContentsRecursively(GraphServiceClient<Request> client, String siteDomain,
-                                               String sitePath, String itemPath, FolderNode folderNode) {
-        try {
-            logger.debug("Listing contents of: {}", itemPath);
-
-            DriveItemCollectionPage items = client
-                    .sites(siteDomain, sitePath)
-                    .drive()
-                    .root()
-                    .itemWithPath(itemPath)
-                    .children()
-                    .buildRequest()
-                    .get();
-
-            if (items == null || items.getCurrentPage() == null) {
-                logger.debug("No items found in: {}", itemPath);
-                return;
-            }
-
-            processItems(client, siteDomain, sitePath, itemPath, folderNode, items);
-
-            while (items.getNextPage() != null) {
-                items = items.getNextPage().buildRequest().get();
-                if (items != null && items.getCurrentPage() != null) {
-                    processItems(client, siteDomain, sitePath, itemPath, folderNode, items);
-                }
-            }
-
-        } catch (Exception e) {
-            logger.error("Error listing contents of '{}': {}", itemPath, e.getMessage(), e);
-            throw new RuntimeException("Failed to list folder contents: " + itemPath, e);
-        }
-    }
-
-    private void processItems(GraphServiceClient<Request> client, String siteDomain, String sitePath,
-                              String parentPath, FolderNode parentNode, DriveItemCollectionPage items) {
-        for (DriveItem item : items.getCurrentPage()) {
-            if (item.folder != null) {
-                String childPath = parentPath + "/" + item.name;
-                FolderNode childNode = new FolderNode(item.name, item.webUrl);
-                parentNode.addSubfolder(childNode);
-                listFolderContentsRecursively(client, siteDomain, sitePath, childPath, childNode);
-            } else if (item.file != null) {
-                FileNode fileNode = new FileNode(item.name, item.webUrl);
-                parentNode.addFile(fileNode);
-            }
-        }
-    }
-
-    private String[] parseFolderUrl(String folderUrl) {
-        try {
-            String cleanUrl = folderUrl;
-            if (cleanUrl.contains("?")) {
-                cleanUrl = cleanUrl.substring(0, cleanUrl.indexOf("?"));
-            }
-
-            if (!cleanUrl.contains(".sharepoint.com")) {
-                throw new IllegalArgumentException("Invalid SharePoint URL");
-            }
-
-            String afterProtocol = cleanUrl.substring(cleanUrl.indexOf("://") + 3);
-            String domain = afterProtocol.substring(0, afterProtocol.indexOf("/"));
-
-            String remaining = afterProtocol.substring(afterProtocol.indexOf("/"));
-
-            String sitePath = "";
-            String itemPath = "";
-
-            if (remaining.contains("/sites/")) {
-                int sitesIndex = remaining.indexOf("/sites/");
-                int nextSlash = remaining.indexOf("/", sitesIndex + 7);
-                if (nextSlash != -1) {
-                    sitePath = remaining.substring(sitesIndex, nextSlash);
-                    itemPath = remaining.substring(nextSlash + 1);
-                } else {
-                    sitePath = remaining.substring(sitesIndex);
-                }
-            } else if (remaining.contains("/personal/")) {
-                int personalIndex = remaining.indexOf("/personal/");
-                int nextSlash = remaining.indexOf("/", personalIndex + 10);
-                if (nextSlash != -1) {
-                    sitePath = remaining.substring(personalIndex, nextSlash);
-                    itemPath = remaining.substring(nextSlash + 1);
-                } else {
-                    sitePath = remaining.substring(personalIndex);
-                }
-            }
-
-            if (itemPath.startsWith("Documents/") || itemPath.startsWith("Shared%20Documents/")) {
-                itemPath = itemPath.substring(itemPath.indexOf("/") + 1);
-            }
-
-            return new String[]{domain, sitePath, itemPath};
-
-        } catch (Exception e) {
-            logger.error("Error parsing folder URL: {}", folderUrl, e);
-            throw new IllegalArgumentException("Invalid folder URL format", e);
-        }
-    }
-
-    private String getLastSegment(String path) {
-        if (path == null || path.isEmpty()) {
-            return "";
-        }
-        String[] segments = path.split("/");
-        return segments[segments.length - 1];
-    }
 
     @Override
     public FolderNode listFoldersAndFilesRecursivelyFromIds(String bearerToken) {
@@ -206,7 +74,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                 throw new RuntimeException("Root folder not found with ID: " + rootFolderId);
             }
 
-            FolderNode rootNode = new FolderNode(rootItem.name, rootItem.webUrl);
+            FolderNode rootNode = new FolderNode(rootItem.name, rootFolderId, rootItem.webUrl);
             listFolderContentsByIdRecursively(client, driveId, rootFolderId, rootNode);
 
             return rootNode;
@@ -262,11 +130,11 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     private void processItemsById(GraphServiceClient<Request> client, String driveId, FolderNode parentNode, DriveItemCollectionPage items) {
         for (DriveItem item : items.getCurrentPage()) {
             if (item.folder != null) {
-                FolderNode childNode = new FolderNode(item.name, item.webUrl);
-                parentNode.addSubfolder(childNode);
+                FolderNode childNode = new FolderNode(item.name, item.id, item.webUrl);
+                parentNode.addFolder(childNode);
                 listFolderContentsByIdRecursively(client, driveId, item.id, childNode);
             } else if (item.file != null) {
-                FileNode fileNode = new FileNode(item.name, item.webUrl);
+                FileNode fileNode = new FileNode(item.name, item.id, item.webUrl, item.size, item.lastModifiedDateTime);
                 parentNode.addFile(fileNode);
             }
         }
@@ -468,7 +336,8 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             } while (items != null && items.getCurrentPage() != null);
             
         } catch (Exception e) {
-            logger.error("Error traversing subtree for folder '{}': {}", folderKey, e.getMessage(), e);
+            String folderKeyForLog = driveId + ":" + folderId;
+            logger.error("Error traversing subtree for folder '{}': {}", folderKeyForLog, e.getMessage(), e);
             result.addError("Error traversing subtree: " + e.getMessage());
         }
     }
