@@ -19,6 +19,8 @@ import java.util.List;
 public class CourseDetail {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lms_trng_dtls_id_generator")
+  @SequenceGenerator(name = "lms_trng_dtls_id_generator", sequenceName = "lms_schema.lms_module_id_seq", allocationSize = 1)
   @Column(name = "module_id")
   private Long moduleId;
 
