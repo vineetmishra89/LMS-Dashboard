@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class CourseDetail {
   @Column(name = "module_id")
   private Long moduleId;
 
-  @Column(name = "module_summary")
+  @Column(name = "module_name")
   private String summary;
 
   @Column(name = "module_dtls")
@@ -30,8 +31,23 @@ public class CourseDetail {
   @Column(name = "module_duration")
   private Integer duration;
 
+  @Column(name = "seq_id")
+  private Integer seqId;
+
   @Column(name = "module_path")
   private String trainingLink;
+
+  @Column(name = "CREATED_BY", length = 100)
+  private String createdBy;
+
+  @Column(name = "CREATED_TS")
+  private OffsetDateTime createdTs;
+
+  @Column(name = "UPDATED_BY", length = 100)
+  private String updatedBy;
+
+  @Column(name = "UPDATED_TS")
+  private OffsetDateTime updatedTs;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "trng_id")

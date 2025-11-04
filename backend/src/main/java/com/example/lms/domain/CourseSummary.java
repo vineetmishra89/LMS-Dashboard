@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +51,23 @@ public class CourseSummary {
   @Column(name = "tools_needed")
   private String toolsNeeded;
 
+  @Column(name = "folder_path")
+  private String folder_path;
+
   @Column(name = "course_progress")
   private Long courseProgressPercentage;
+
+  @Column(name = "CREATED_BY", length = 100)
+  private String createdBy;
+
+  @Column(name = "CREATED_TS")
+  private OffsetDateTime createdTs;
+
+  @Column(name = "UPDATED_BY", length = 100)
+  private String updatedBy;
+
+  @Column(name = "UPDATED_TS")
+  private OffsetDateTime updatedTs;
 
   @OneToMany(
     mappedBy = "course",
