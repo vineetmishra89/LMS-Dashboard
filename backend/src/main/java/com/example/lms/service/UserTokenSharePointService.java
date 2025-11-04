@@ -1,6 +1,7 @@
 package com.example.lms.service;
 
 import com.example.lms.dto.FolderNode;
+import com.example.lms.dto.SharePointSyncResult;
 
 /**
  * Service for accessing SharePoint/OneDrive using user-provided bearer tokens.
@@ -28,4 +29,15 @@ public interface UserTokenSharePointService {
      * @throws RuntimeException if folder access fails or token is invalid
      */
     FolderNode listFoldersAndFilesRecursivelyFromIds(String bearerToken);
+    
+    /**
+     * Syncs SharePoint folders and files to LMS database.
+     * Matches folders by name or URL, processes .mp4 files, and inserts/updates course modules.
+     * 
+     * @param bearerToken User's access token (from Authorization header, without "Bearer " prefix)
+     * @param dryRun If true, performs validation without database changes
+     * @return Sync operation results with counts and errors
+     * @throws RuntimeException if sync operation fails
+     */
+    SharePointSyncResult syncModulesFromSharePoint(String bearerToken, boolean dryRun);
 }

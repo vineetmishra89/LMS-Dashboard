@@ -32,5 +32,16 @@ public interface CourseRepository extends JpaRepository<CourseSummary, Long>, Jp
   @Query(value = "select distinct level_code from lms_schema.lms_trng_summary order by level_code", nativeQuery = true)
   List<Object> getAllLevels();
 
+  /**
+   * Find CourseSummary by folder_path (case-insensitive).
+   * Used for matching folders by name.
+   */
+  Optional<CourseSummary> findByFolderPathIgnoreCase(String folderPath);
+
+  /**
+   * Find CourseSummary by exact folder_path.
+   * Used for matching folders by URL.
+   */
+  Optional<CourseSummary> findByFolderPath(String folderPath);
 
 }
