@@ -56,6 +56,8 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     @Override
     public FolderNode listFoldersAndFilesRecursively(String bearerToken, String folderUrl) {
         try {
+            validateConfiguration();
+            
             logger.info("Listing folders and files recursively from URL: {}", folderUrl);
             
             String relativePath = parseFolderUrl(folderUrl);
@@ -63,11 +65,14 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             
             GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
             
+            String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, relativePath);
+            logger.info("Resolved folder ID: {}", targetFolderId);
+            
             FolderNode rootFolder = new FolderNode();
             rootFolder.setName(getLastSegment(relativePath));
             rootFolder.setPath(relativePath);
             
-            listFolderContentsRecursively(client, relativePath, rootFolder);
+            listFolderContentsByIdRecursively(client, driveId, targetFolderId, rootFolder);
             
             logger.info("Successfully listed folders and files recursively");
             return rootFolder;
@@ -79,72 +84,80 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     }
     
     /**
-     * Recursively lists all folders and files in a folder.
-     * Uses the same drive access pattern as listFoldersAndFilesRecursivelyFromIds.
+     * Resolves a relative folder path to a folder ID by walking the path segments.
+     * Starts from the given startFolderId and navigates through child folders by name.
+     * Uses the same drive access pattern as PR #53: drives().byId().items().byId().children()
+     * 
+     * @param client Graph client with bearer token
+     * @param driveId The drive ID to search in
+     * @param startFolderId The folder ID to start navigation from (typically rootFolderId)
+     * @param relativePath The relative path to resolve (e.g., "Documents/Recordings/Training")
+     * @return The folder ID of the target folder
+     * @throws RuntimeException if the path cannot be resolved
      */
-    private void listFolderContentsRecursively(GraphServiceClient<Request> client, String folderPath, FolderNode folderNode) {
+    private String resolveFolderIdFromPath(GraphServiceClient<Request> client, String driveId, 
+                                           String startFolderId, String relativePath) {
         try {
-            logger.debug("Listing contents of folder: {}", folderPath);
-            
-            DriveItemCollectionPage items = client
-                    .drives()
-                    .byId(driveId)
-                    .root()
-                    .itemWithPath(folderPath)
-                    .children()
-                    .buildRequest()
-                    .get();
-            
-            if (items == null || items.getCurrentPage() == null) {
-                logger.debug("No items found in folder: {}", folderPath);
-                return;
+            if (relativePath == null || relativePath.trim().isEmpty()) {
+                return startFolderId;
             }
             
-            processItems(client, folderPath, folderNode, items);
+            String[] segments = relativePath.split("/");
+            String currentFolderId = startFolderId;
             
-            while (items.getNextPage() != null) {
-                items = items.getNextPage().buildRequest().get();
-                if (items != null && items.getCurrentPage() != null) {
-                    processItems(client, folderPath, folderNode, items);
+            for (String segment : segments) {
+                if (segment.trim().isEmpty()) {
+                    continue;
                 }
+                
+                logger.debug("Resolving path segment: '{}' in folder ID: {}", segment, currentFolderId);
+                
+                DriveItemCollectionPage items = client
+                        .drives()
+                        .byId(driveId)
+                        .items()
+                        .byId(currentFolderId)
+                        .children()
+                        .buildRequest()
+                        .get();
+                
+                if (items == null || items.getCurrentPage() == null) {
+                    throw new RuntimeException("No items found in folder ID: " + currentFolderId);
+                }
+                
+                String nextFolderId = null;
+                do {
+                    for (DriveItem item : items.getCurrentPage()) {
+                        if (item.folder != null && item.name.equals(segment)) {
+                            nextFolderId = item.id;
+                            logger.debug("Found matching folder: '{}' with ID: {}", segment, nextFolderId);
+                            break;
+                        }
+                    }
+                    
+                    if (nextFolderId != null) {
+                        break;
+                    }
+                    
+                    if (items.getNextPage() != null) {
+                        items = items.getNextPage().buildRequest().get();
+                    } else {
+                        break;
+                    }
+                } while (items != null && items.getCurrentPage() != null);
+                
+                if (nextFolderId == null) {
+                    throw new RuntimeException("Folder not found: '" + segment + "' in path: " + relativePath);
+                }
+                
+                currentFolderId = nextFolderId;
             }
             
-            logger.debug("Finished listing contents of folder: {} (Files: {}, Folders: {})", 
-                    folderPath, folderNode.getFiles().size(), folderNode.getFolders().size());
+            return currentFolderId;
             
         } catch (Exception e) {
-            logger.error("Error listing contents of folder '{}': {}", folderPath, e.getMessage(), e);
-            throw new RuntimeException("Failed to list folder contents: " + folderPath, e);
-        }
-    }
-    
-    /**
-     * Processes items from a DriveItemCollectionPage.
-     */
-    private void processItems(GraphServiceClient<Request> client, String parentPath, FolderNode parentNode, DriveItemCollectionPage items) {
-        for (DriveItem item : items.getCurrentPage()) {
-            String itemPath = parentPath + "/" + item.name;
-            
-            if (item.folder != null) {
-                FolderNode childFolder = new FolderNode();
-                childFolder.setName(item.name);
-                childFolder.setPath(itemPath);
-                childFolder.setWebUrl(item.webUrl);
-                
-                parentNode.addFolder(childFolder);
-                
-                listFolderContentsRecursively(client, itemPath, childFolder);
-                
-            } else if (item.file != null) {
-                FileNode fileNode = new FileNode();
-                fileNode.setName(item.name);
-                fileNode.setPath(itemPath);
-                fileNode.setWebUrl(item.webUrl);
-                fileNode.setSize(item.size);
-                fileNode.setLastModified(item.lastModifiedDateTime);
-                
-                parentNode.addFile(fileNode);
-            }
+            logger.error("Error resolving folder path '{}': {}", relativePath, e.getMessage(), e);
+            throw new RuntimeException("Failed to resolve folder path: " + relativePath, e);
         }
     }
     
