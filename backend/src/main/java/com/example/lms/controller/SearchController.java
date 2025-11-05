@@ -1,6 +1,7 @@
 package com.example.lms.controller;
 
 
+import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.EnrollmentMapping;
 import com.example.lms.dto.SearchDto;
 import com.example.lms.dto.SearchFilterDto;

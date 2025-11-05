@@ -1,8 +1,10 @@
 package com.example.lms.service;
 
 import com.example.lms.domain.CourseSummary;
+import com.example.lms.domain.LMSTrainerDetails;
 import com.example.lms.dto.SearchDto;
 import com.example.lms.dto.SearchFilterDto;
+import com.example.lms.dto.TrainerDto;
 import com.example.lms.dto.TrainingNameDto;
 import com.example.lms.repo.TrainerRepository;
 import com.example.lms.repo.CourseRepository;
@@ -14,9 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +46,7 @@ public class SearchService {
       hql.append(" AND cm.topics = :topics");
     }
     if (instructor != null) {
-      hql.append(" AND td.trainerName =:instructor");
+      hql.append(" AND td.emailid =:instructor");
     }
     if (level != null) {
       hql.append(" AND cm.level =:level");
@@ -67,22 +67,33 @@ public class SearchService {
     }
     List<CourseSummary> results = query.getResultList();
     List<SearchDto> searchDtoList = new ArrayList<>();
+    Set<TrainerDto> distinctTrainerDetailsSet = new HashSet<>();
 
     try {
       if (results != null) {
         for (int i = 0; i < results.size(); i++) {
           SearchDto searchDto = new SearchDto();
 
+          searchDto.setTrainingId(results.get(i).getTrainingId());
           searchDto.setTrainingName(results.get(i).getTopics());
           searchDto.setCategory(results.get(i).getCategory());
           searchDto.setDuration(results.get(i).getDuration());
           searchDto.setTrainingDesc(results.get(i).getDetails());
           searchDto.setLevel(results.get(i).getLevel());
-          searchDto.setTrainerName(instructor);
           searchDto.setRating(results.get(i).getRating());
           searchDto.setCourseDetailList(results.get(i).getLmsTrainingDetails());
+
+          results.get(i).getLmsTrainingDetails().stream()
+            .map(lmsTrainingDetail -> new TrainerDto(
+              lmsTrainingDetail.getTrainerDetails().getTrainerName(),
+              lmsTrainingDetail.getTrainerDetails().getEmailid()
+            ))
+            .filter(distinctTrainerDetailsSet::add) // Ensure distinct TrainerInfo objects
+            .collect(Collectors.toList());
+          searchDto.setTrainerDetailList(distinctTrainerDetailsSet);
           searchDtoList.add(searchDto);
         }
+
       }
 
     } catch (Exception ex) {
