@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 @Service
 public class UserTokenSharePointServiceImpl implements UserTokenSharePointService {
-
+    static int levelCount = 1;
     private static final Logger logger = LoggerFactory.getLogger(UserTokenSharePointServiceImpl.class);
 
     private final GraphClientProvider graphClientProvider;
@@ -274,7 +274,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
 
     private void listFolderContentsByIdRecursively(GraphServiceClient<Request> client, String driveId, String folderId, FolderNode folderNode) {
         try {
-            logger.debug("Listing contents of folder ID: {}", folderId);
+            logger.info("Listing contents of folder ID: {}", folderId);
 
             DriveItemCollectionPage items = client
                     .drives()
@@ -286,7 +286,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     .get();
 
             if (items == null || items.getCurrentPage() == null) {
-                logger.debug("No items found in folder ID: {}", folderId);
+                logger.info("No items found in folder ID: {}", folderId);
                 return;
             }
 
@@ -306,11 +306,14 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     }
 
     private void processItemsById(GraphServiceClient<Request> client, String driveId, FolderNode parentNode, DriveItemCollectionPage items) {
-        for (DriveItem item : items.getCurrentPage()) {
-            if (item.folder != null) {
+
+      for (DriveItem item : items.getCurrentPage()) {
+            if (item.folder != null && levelCount == 1) {
                 FolderNode childNode = new FolderNode(item.name, item.id, item.webUrl);
                 parentNode.addFolder(childNode);
                 listFolderContentsByIdRecursively(client, driveId, item.id, childNode);
+                ++levelCount;
+
             } else if (item.file != null) {
                 FileNode fileNode = new FileNode(item.name, item.id, item.webUrl, item.size, item.lastModifiedDateTime);
                 parentNode.addFile(fileNode);
@@ -485,7 +488,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                 for (DriveItem item : items.getCurrentPage()) {
                     if (item.folder != null) {
                         logger.debug("Traversing subfolder: {} (id={})", item.name, item.id);
-                        traverseSubtreeForFiles(client, driveId, item.id, matchedCourse, username, result, dryRun, visitedFolders);
+                        //traverseSubtreeForFiles(client, driveId, item.id, matchedCourse, username, result, dryRun, visitedFolders);
 
                     } else if (item.remoteItem != null && item.remoteItem.folder != null) {
                         String remoteDriveId = item.remoteItem.parentReference != null && item.remoteItem.parentReference.driveId != null
@@ -494,7 +497,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                         String remoteItemId = item.remoteItem.id;
 
                         logger.debug("Traversing remote subfolder (shortcut): {} (remoteDriveId={}, remoteItemId={})", item.name, remoteDriveId, remoteItemId);
-                        traverseSubtreeForFiles(client, remoteDriveId, remoteItemId, matchedCourse, username, result, dryRun, visitedFolders);
+                        //traverseSubtreeForFiles(client, remoteDriveId, remoteItemId, matchedCourse, username, result, dryRun, visitedFolders);
 
                     } else if (item.file != null && item.name != null && item.name.toLowerCase().endsWith(".mp4")) {
                         if (matchedCourse != null) {

@@ -24,10 +24,10 @@ public class CourseDetail {
   @Column(name = "module_id")
   private Long moduleId;
 
-  @Column(name = "module_name")
+  @Column(name = "module_name", length = 4000)
   private String summary;
 
-  @Column(name = "module_dtls")
+  @Column(name = "module_dtls", length = 4000)
   private String details;
 
   @Column(name = "module_duration")
@@ -36,7 +36,7 @@ public class CourseDetail {
   @Column(name = "seq_id")
   private Integer seqId;
 
-  @Column(name = "module_path")
+  @Column(name = "module_path", length = 4000)
   private String trainingLink;
 
   @Column(name = "CREATED_BY", length = 100)
