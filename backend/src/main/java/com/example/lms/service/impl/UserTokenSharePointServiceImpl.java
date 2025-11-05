@@ -80,14 +80,15 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     
     /**
      * Recursively lists all folders and files in a folder.
+     * Uses the same drive access pattern as listFoldersAndFilesRecursivelyFromIds.
      */
     private void listFolderContentsRecursively(GraphServiceClient<Request> client, String folderPath, FolderNode folderNode) {
         try {
             logger.debug("Listing contents of folder: {}", folderPath);
             
             DriveItemCollectionPage items = client
-                    .me()
-                    .drive()
+                    .drives()
+                    .byId(driveId)
                     .root()
                     .itemWithPath(folderPath)
                     .children()
