@@ -54,7 +54,7 @@ public class CourseSummary {
   private String toolsNeeded;
 
   @Column(name = "folder_path")
-  private String folder_path;
+  private String folderPath;
 
   @Column(name = "course_progress")
   private Long courseProgressPercentage;

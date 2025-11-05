@@ -32,19 +32,19 @@ import java.util.Optional;
  */
 @Service
 public class UserTokenSharePointServiceImpl implements UserTokenSharePointService {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(UserTokenSharePointServiceImpl.class);
-    
+
     private final GraphClientProvider graphClientProvider;
     private final CourseRepository courseRepository;
     private final CourseDetailRepository courseDetailRepository;
-    
+
     @Value("${graph.user.drive-id:}")
     private String driveId;
-    
+
     @Value("${graph.user.root-folder-id:}")
     private String rootFolderId;
-    
+
     public UserTokenSharePointServiceImpl(GraphClientProvider graphClientProvider,
                                           CourseRepository courseRepository,
                                           CourseDetailRepository courseDetailRepository) {
@@ -52,42 +52,42 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         this.courseRepository = courseRepository;
         this.courseDetailRepository = courseDetailRepository;
     }
-    
+
     @Override
     public FolderNode listFoldersAndFilesRecursively(String bearerToken, String folderUrl) {
         try {
             validateConfiguration();
-            
+
             logger.info("Listing folders and files recursively from URL: {}", folderUrl);
-            
+
             String relativePath = parseFolderUrl(folderUrl);
             logger.info("Parsed relative path: {}", relativePath);
-            
+
             GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
-            
+
             String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, relativePath);
             logger.info("Resolved folder ID: {}", targetFolderId);
-            
+
             FolderNode rootFolder = new FolderNode();
             rootFolder.setName(getLastSegment(relativePath));
             rootFolder.setPath(relativePath);
-            
+
             listFolderContentsByIdRecursively(client, driveId, targetFolderId, rootFolder);
-            
+
             logger.info("Successfully listed folders and files recursively");
             return rootFolder;
-            
+
         } catch (Exception e) {
             logger.error("Error listing folders and files recursively: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to list folders and files: " + e.getMessage(), e);
         }
     }
-    
+
     /**
      * Resolves a relative folder path to a folder ID by walking the path segments.
      * Starts from the given startFolderId and navigates through child folders by name.
      * Uses the same drive access pattern as PR #53: drives().byId().items().byId().children()
-     * 
+     *
      * @param client Graph client with bearer token
      * @param driveId The drive ID to search in
      * @param startFolderId The folder ID to start navigation from (typically rootFolderId)
@@ -95,23 +95,23 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
      * @return The folder ID of the target folder
      * @throws RuntimeException if the path cannot be resolved
      */
-    private String resolveFolderIdFromPath(GraphServiceClient<Request> client, String driveId, 
+    private String resolveFolderIdFromPath(GraphServiceClient<Request> client, String driveId,
                                            String startFolderId, String relativePath) {
         try {
             if (relativePath == null || relativePath.trim().isEmpty()) {
                 return startFolderId;
             }
-            
+
             String[] segments = relativePath.split("/");
             String currentFolderId = startFolderId;
-            
+
             for (String segment : segments) {
                 if (segment.trim().isEmpty()) {
                     continue;
                 }
-                
+
                 logger.debug("Resolving path segment: '{}' in folder ID: {}", segment, currentFolderId);
-                
+
                 DriveItemCollectionPage items = client
                         .drives()
                         .byId(driveId)
@@ -120,11 +120,11 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                         .children()
                         .buildRequest()
                         .get();
-                
+
                 if (items == null || items.getCurrentPage() == null) {
                     throw new RuntimeException("No items found in folder ID: " + currentFolderId);
                 }
-                
+
                 String nextFolderId = null;
                 do {
                     for (DriveItem item : items.getCurrentPage()) {
@@ -134,33 +134,33 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                             break;
                         }
                     }
-                    
+
                     if (nextFolderId != null) {
                         break;
                     }
-                    
+
                     if (items.getNextPage() != null) {
                         items = items.getNextPage().buildRequest().get();
                     } else {
                         break;
                     }
                 } while (items != null && items.getCurrentPage() != null);
-                
+
                 if (nextFolderId == null) {
                     throw new RuntimeException("Folder not found: '" + segment + "' in path: " + relativePath);
                 }
-                
+
                 currentFolderId = nextFolderId;
             }
-            
+
             return currentFolderId;
-            
+
         } catch (Exception e) {
             logger.error("Error resolving folder path '{}': {}", relativePath, e.getMessage(), e);
             throw new RuntimeException("Failed to resolve folder path: " + relativePath, e);
         }
     }
-    
+
     /**
      * Parses a SharePoint/OneDrive folder URL to extract the relative path.
      * Handles onedrive.aspx?id=... format and other SharePoint URL formats.
@@ -169,7 +169,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         try {
             URI uri = new URI(folderUrl);
             String extractedPath = null;
-            
+
             if (uri.getQuery() != null && uri.getQuery().contains("id=")) {
                 String query = uri.getQuery();
                 String[] params = query.split("&");
@@ -177,11 +177,11 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     if (param.startsWith("id=")) {
                         String idValue = param.substring(3); // Skip "id="
                         extractedPath = URLDecoder.decode(idValue, StandardCharsets.UTF_8);
-                        
+
                         if (extractedPath.startsWith("/")) {
                             extractedPath = extractedPath.substring(1);
                         }
-                        
+
                         logger.debug("Extracted path from id parameter: {}", extractedPath);
                         break;
                     }
@@ -193,11 +193,11 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                 }
                 logger.debug("Extracted path from URI path: {}", extractedPath);
             }
-            
+
             if (extractedPath == null || extractedPath.isEmpty()) {
                 throw new IllegalArgumentException("Could not extract folder path from URL");
             }
-            
+
             if (extractedPath.startsWith("personal/")) {
                 int secondSlash = extractedPath.indexOf('/', 9); // Find slash after "personal/"
                 if (secondSlash != -1) {
@@ -208,15 +208,15 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     }
                 }
             }
-            
+
             return extractedPath;
-            
+
         } catch (Exception e) {
             logger.error("Error parsing folder URL: {}", e.getMessage(), e);
             throw new IllegalArgumentException("Invalid folder URL: " + folderUrl, e);
         }
     }
-    
+
     /**
      * Gets the last segment of a path (the folder name).
      */
@@ -230,7 +230,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         }
         return path;
     }
-    
+
     @Override
     public FolderNode listFoldersAndFilesRecursivelyFromIds(String bearerToken) {
         try {
@@ -324,21 +324,21 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         SharePointSyncResult result = SharePointSyncResult.builder()
                 .dryRun(dryRun)
                 .build();
-        
+
         try {
             validateConfiguration();
-            
+
             logger.info("Starting SharePoint sync with first-level folder matching (dryRun={})", dryRun);
-            
+
             String username = JwtClaimExtractor.extractUsername(bearerToken);
             if (username == null || username.trim().isEmpty()) {
                 result.addError("Failed to extract username from bearer token");
                 return result;
             }
             logger.info("Extracted username from token: {}", username);
-            
+
             GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
-            
+
             DriveItem rootItem = client
                     .drives()
                     .byId(driveId)
@@ -346,17 +346,17 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     .byId(rootFolderId)
                     .buildRequest()
                     .get();
-            
+
             if (rootItem == null) {
                 result.addError("Root folder not found with ID: " + rootFolderId);
                 return result;
             }
-            
+
             logger.info("Root folder: {} (driveId={}, folderId={})", rootItem.name, driveId, rootFolderId);
-            
+
             java.util.Set<String> visitedFolders = new java.util.HashSet<>();
             visitedFolders.add(driveId + ":" + rootFolderId);
-            
+
             DriveItemCollectionPage rootChildren = client
                     .drives()
                     .byId(driveId)
@@ -365,32 +365,32 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     .children()
                     .buildRequest()
                     .get();
-            
+
             if (rootChildren == null || rootChildren.getCurrentPage() == null) {
                 logger.warn("No children found in root folder");
                 return result;
             }
-            
+
             do {
                 int childCount = rootChildren.getCurrentPage().size();
                 logger.info("Processing {} first-level children", childCount);
-                
+
                 for (DriveItem item : rootChildren.getCurrentPage()) {
                     if (item.folder != null) {
                         processFirstLevelFolder(client, driveId, item.id, item.name, item.webUrl, username, result, dryRun, visitedFolders);
-                        
+
                     } else if (item.remoteItem != null && item.remoteItem.folder != null) {
                         String remoteDriveId = item.remoteItem.parentReference != null && item.remoteItem.parentReference.driveId != null
                                 ? item.remoteItem.parentReference.driveId
                                 : driveId;
                         String remoteItemId = item.remoteItem.id;
                         String remoteWebUrl = item.remoteItem.webUrl != null ? item.remoteItem.webUrl : item.webUrl;
-                        
+
                         logger.info("Found first-level remote folder (shortcut): {}", item.name);
                         processFirstLevelFolder(client, remoteDriveId, remoteItemId, item.name, remoteWebUrl, username, result, dryRun, visitedFolders);
                     }
                 }
-                
+
                 if (rootChildren.getNextPage() != null) {
                     logger.debug("Fetching next page of first-level children");
                     rootChildren = rootChildren.getNextPage().buildRequest().get();
@@ -398,20 +398,20 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     break;
                 }
             } while (rootChildren != null && rootChildren.getCurrentPage() != null);
-            
+
             logger.info("SharePoint sync completed: foldersProcessed={}, coursesMatched={}, coursesUpdated={}, modulesInserted={}, modulesUpdated={}, modulesSkipped={}, errors={}",
                     result.getFoldersProcessed(), result.getCoursesMatched(), result.getCoursesUpdated(),
                     result.getModulesInserted(), result.getModulesUpdated(), result.getModulesSkipped(), result.getErrors().size());
-            
+
             return result;
-            
+
         } catch (Exception e) {
             logger.error("Error during SharePoint sync: {}", e.getMessage(), e);
             result.addError("Sync failed: " + e.getMessage());
             return result;
         }
     }
-    
+
     /**
      * Processes a first-level folder: matches it to a course and traverses its subtree for .mp4 files.
      */
@@ -421,17 +421,17 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         try {
             result.setFoldersProcessed(result.getFoldersProcessed() + 1);
             logger.info("Processing first-level folder: {} (driveId={}, folderId={})", folderName, driveId, folderId);
-            
+
             Optional<CourseSummary> courseOpt = matchCourseByFolderPath(folderName, folderWebUrl);
-            
+
             if (courseOpt.isPresent()) {
                 CourseSummary course = courseOpt.get();
                 result.setCoursesMatched(result.getCoursesMatched() + 1);
                 logger.info("Matched first-level folder '{}' to training: {} (ID: {})", folderName, course.getTopics(), course.getTrainingId());
-                
-                if (course.getFolder_path() == null || !course.getFolder_path().equals(folderWebUrl)) {
+
+                if (course.getFolderPath() == null || !course.getFolderPath().equals(folderWebUrl)) {
                     if (!dryRun) {
-                        course.setFolder_path(folderWebUrl);
+                        course.setFolderPath(folderWebUrl);
                         course.setUpdatedBy(username);
                         course.setUpdatedTs(OffsetDateTime.now());
                         courseRepository.save(course);
@@ -439,19 +439,19 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     result.setCoursesUpdated(result.getCoursesUpdated() + 1);
                     logger.info("Updated folder_path for training ID {}: {}", course.getTrainingId(), folderWebUrl);
                 }
-                
+
                 traverseSubtreeForFiles(client, driveId, folderId, course, username, result, dryRun, visitedFolders);
             } else {
                 logger.info("No course matched for first-level folder '{}', traversing subtree but skipping file inserts", folderName);
                 traverseSubtreeForFiles(client, driveId, folderId, null, username, result, dryRun, visitedFolders);
             }
-            
+
         } catch (Exception e) {
             logger.error("Error processing first-level folder '{}': {}", folderName, e.getMessage(), e);
             result.addError("Error processing first-level folder '" + folderName + "': " + e.getMessage());
         }
     }
-    
+
     /**
      * Recursively traverses a folder subtree to find and process .mp4 files.
      * Only inserts modules if matchedCourse is not null.
@@ -466,7 +466,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                 return;
             }
             visitedFolders.add(folderKey);
-            
+
             DriveItemCollectionPage items = client
                     .drives()
                     .byId(driveId)
@@ -475,27 +475,27 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     .children()
                     .buildRequest()
                     .get();
-            
+
             if (items == null || items.getCurrentPage() == null) {
                 logger.debug("No children found in folder: {}", folderKey);
                 return;
             }
-            
+
             do {
                 for (DriveItem item : items.getCurrentPage()) {
                     if (item.folder != null) {
                         logger.debug("Traversing subfolder: {} (id={})", item.name, item.id);
                         traverseSubtreeForFiles(client, driveId, item.id, matchedCourse, username, result, dryRun, visitedFolders);
-                        
+
                     } else if (item.remoteItem != null && item.remoteItem.folder != null) {
                         String remoteDriveId = item.remoteItem.parentReference != null && item.remoteItem.parentReference.driveId != null
                                 ? item.remoteItem.parentReference.driveId
                                 : driveId;
                         String remoteItemId = item.remoteItem.id;
-                        
+
                         logger.debug("Traversing remote subfolder (shortcut): {} (remoteDriveId={}, remoteItemId={})", item.name, remoteDriveId, remoteItemId);
                         traverseSubtreeForFiles(client, remoteDriveId, remoteItemId, matchedCourse, username, result, dryRun, visitedFolders);
-                        
+
                     } else if (item.file != null && item.name != null && item.name.toLowerCase().endsWith(".mp4")) {
                         if (matchedCourse != null) {
                             logger.debug("Found .mp4 file: {} (webUrl={})", item.name, item.webUrl);
@@ -505,21 +505,21 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                         }
                     }
                 }
-                
+
                 if (items.getNextPage() != null) {
                     items = items.getNextPage().buildRequest().get();
                 } else {
                     break;
                 }
             } while (items != null && items.getCurrentPage() != null);
-            
+
         } catch (Exception e) {
             String folderKeyForLog = driveId + ":" + folderId;
             logger.error("Error traversing subtree for folder '{}': {}", folderKeyForLog, e.getMessage(), e);
             result.addError("Error traversing subtree: " + e.getMessage());
         }
     }
-    
+
     /**
      * Matches CourseSummary by folder_path (supports both name and URL matching).
      */
@@ -529,16 +529,16 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             logger.debug("Matched by URL: {}", folderWebUrl);
             return courseOpt;
         }
-        
+
         courseOpt = courseRepository.findByFolderPathIgnoreCase(folderName);
         if (courseOpt.isPresent()) {
             logger.debug("Matched by name: {}", folderName);
             return courseOpt;
         }
-        
+
         return Optional.empty();
     }
-    
+
     /**
      * Processes a single video file and inserts/updates course module.
      * The trainingLink (MODULE_PATH) is set to the file's webUrl, which contains the full path to the video file.
@@ -548,35 +548,35 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         try {
             String filename = item.name;
             String webUrl = item.webUrl;
-            
+
             String moduleName = SessionSequenceParser.removeExtension(filename);
             Integer seqId = SessionSequenceParser.extractSessionNumber(filename);
-            
+
             logger.debug("Processing file: {} -> moduleName={}, seqId={}, webUrl={}", filename, moduleName, seqId, webUrl);
-            
+
             Optional<CourseDetail> existingModuleOpt = courseDetailRepository
                     .findByCourseTrainingIdAndTrainingLink(course.getTrainingId(), webUrl);
-            
+
             if (existingModuleOpt.isPresent()) {
                 CourseDetail existingModule = existingModuleOpt.get();
                 boolean updated = false;
-                
+
                 if (!moduleName.equals(existingModule.getSummary())) {
                     existingModule.setSummary(moduleName);
                     updated = true;
                 }
-                
+
                 if (!moduleName.equals(existingModule.getDetails())) {
                     existingModule.setDetails(moduleName);
                     updated = true;
                 }
-                
+
                 if ((seqId == null && existingModule.getSeqId() != null) ||
                     (seqId != null && !seqId.equals(existingModule.getSeqId()))) {
                     existingModule.setSeqId(seqId);
                     updated = true;
                 }
-                
+
                 if (updated) {
                     if (!dryRun) {
                         existingModule.setUpdatedBy(username);
@@ -589,7 +589,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     result.setModulesSkipped(result.getModulesSkipped() + 1);
                     logger.debug("Module unchanged, skipped: {}", moduleName);
                 }
-                
+
             } else {
                 if (!dryRun) {
                     CourseDetail newModule = CourseDetail.builder()
@@ -603,13 +603,13 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                             .updatedBy(username)
                             .updatedTs(OffsetDateTime.now())
                             .build();
-                    
+
                     courseDetailRepository.save(newModule);
                     logger.info("Inserted new module: {} (seqId: {}) for training ID {}", moduleName, seqId, course.getTrainingId());
                 }
                 result.setModulesInserted(result.getModulesInserted() + 1);
             }
-            
+
         } catch (Exception e) {
             logger.error("Error processing video file '{}': {}", item.name, e.getMessage(), e);
             result.addError("Error processing file '" + item.name + "': " + e.getMessage());
