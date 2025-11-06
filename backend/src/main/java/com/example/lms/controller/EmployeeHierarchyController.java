@@ -1,6 +1,8 @@
 package com.example.lms.controller;
 
 import com.example.lms.dto.EmployeeHierarchyResponseDto;
+import com.example.lms.dto.EmployeeSyncResult;
+import com.example.lms.service.EmployeeGraphSyncService;
 import com.example.lms.service.EmployeeHierarchyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +18,12 @@ public class EmployeeHierarchyController {
   private static final Logger logger = LoggerFactory.getLogger(EmployeeHierarchyController.class);
 
   private final EmployeeHierarchyService employeeHierarchyService;
+  private final EmployeeGraphSyncService employeeGraphSyncService;
 
-  public EmployeeHierarchyController(EmployeeHierarchyService employeeHierarchyService) {
+  public EmployeeHierarchyController(EmployeeHierarchyService employeeHierarchyService,
+                                    EmployeeGraphSyncService employeeGraphSyncService) {
     this.employeeHierarchyService = employeeHierarchyService;
+    this.employeeGraphSyncService = employeeGraphSyncService;
   }
 
   @GetMapping
@@ -35,6 +40,42 @@ public class EmployeeHierarchyController {
     } catch (Exception e) {
       logger.error("Error processing employee hierarchy request for userId: {}", userId, e);
       throw e;
+    }
+  }
+  
+  @PostMapping("/sync-from-graph")
+  public ResponseEntity<?> syncEmployeeHierarchyFromGraph(
+          @RequestHeader("Authorization") String authorizationHeader,
+          @RequestParam String emailId) {
+    
+    logger.info("Received request to sync employee hierarchy from Graph API for emailId: {}", emailId);
+    
+    try {
+      if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+        return ResponseEntity.badRequest().body("Invalid Authorization header. Expected: Bearer <token>");
+      }
+      
+      String bearerToken = authorizationHeader.substring(7);
+      
+      if (emailId == null || emailId.trim().isEmpty()) {
+        return ResponseEntity.badRequest().body("emailId parameter is required");
+      }
+      
+      EmployeeSyncResult result = employeeGraphSyncService.syncEmployeeHierarchyFromGraph(bearerToken, emailId.trim());
+      
+      logger.info("Employee hierarchy sync completed for emailId: {}. Inserted: {}, Updated: {}, Total: {}", 
+              emailId, result.getInsertedCount(), result.getUpdatedCount(), result.getTotalProcessed());
+      
+      if (!result.getErrors().isEmpty() && result.getTotalProcessed() == 0) {
+        return ResponseEntity.badRequest().body(result);
+      }
+      
+      return ResponseEntity.ok(result);
+      
+    } catch (Exception e) {
+      logger.error("Error syncing employee hierarchy from Graph API for emailId: {}", emailId, e);
+      return ResponseEntity.internalServerError()
+              .body("Failed to sync employee hierarchy: " + e.getMessage());
     }
   }
 }
