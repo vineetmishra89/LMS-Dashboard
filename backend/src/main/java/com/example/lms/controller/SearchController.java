@@ -20,7 +20,7 @@ public class SearchController {
     public SearchController(SearchService searchService) { this.searchService = searchService; }
 
     @PostMapping("getCourseDetail")
-    public List<CourseSummary> getCourseDetail(@RequestBody Map<String, Object> body){
+    public List<SearchDto> getCourseDetail(@RequestBody Map<String, Object> body){
       String category = (String)body.get("category");
       String level = (String)body.get("level");
       String instructor = (String)body.get("instructor");
