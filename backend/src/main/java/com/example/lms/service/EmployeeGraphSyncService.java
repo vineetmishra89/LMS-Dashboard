@@ -4,5 +4,5 @@ import com.example.lms.dto.EmployeeSyncResult;
 
 public interface EmployeeGraphSyncService {
     
-    EmployeeSyncResult syncEmployeeHierarchyFromGraph(String rootEmailId);
+    EmployeeSyncResult syncEmployeeHierarchyFromGraph(String bearerToken, String rootEmailId);
 }
