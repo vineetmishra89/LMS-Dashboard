@@ -70,8 +70,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                 
                 try {
                     DirectoryObjectCollectionPage directReports = client
-                            .users()
-                            .byUserId(current.emailId)
+                            .users(current.emailId)
                             .directReports()
                             .buildRequest()
                             .select("displayName,mail,jobTitle,userPrincipalName,id")
@@ -205,8 +204,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
         try {
             logger.debug("Fetching user details for: {}", emailId);
             return client
-                    .users()
-                    .byUserId(emailId)
+                    .users(emailId)
                     .buildRequest()
                     .select("displayName,mail,jobTitle,userPrincipalName,id")
                     .get();
