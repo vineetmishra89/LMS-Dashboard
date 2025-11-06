@@ -111,11 +111,16 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                         String userEmail = getEmailFromUser(user);
                         
                         if (userEmail != null && !userEmail.trim().isEmpty()) {
-                            processAndSaveEmployee(user, managerEmail, result, visitedEmails);
-                            
                             String normalizedEmail = userEmail.toLowerCase().trim();
+                            
                             if (!visitedEmails.contains(normalizedEmail)) {
+                                processAndSaveEmployee(user, managerEmail, result, visitedEmails);
+                                
                                 queue.add(new UserToProcess(userEmail, managerEmail));
+                                logger.debug("Enqueued employee for hierarchy traversal: {}", userEmail);
+                            } else {
+                                logger.debug("Skipping already visited email: {}", userEmail);
+                                result.setSkippedCount(result.getSkippedCount() + 1);
                             }
                         } else {
                             logger.warn("Skipping user with no valid email: {}", user.displayName);
