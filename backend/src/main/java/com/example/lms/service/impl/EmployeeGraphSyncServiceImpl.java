@@ -5,6 +5,7 @@ import com.example.lms.dto.EmployeeSyncResult;
 import com.example.lms.repo.EmployeeDetailsRepository;
 import com.example.lms.service.EmployeeGraphSyncService;
 import com.example.lms.service.impl.GraphClientProvider;
+import com.example.lms.util.JwtClaimExtractor;
 import com.microsoft.graph.models.DirectoryObject;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.requests.DirectoryObjectCollectionWithReferencesPage;
@@ -13,7 +14,10 @@ import okhttp3.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -24,15 +28,18 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
     
     private final GraphClientProvider graphClientProvider;
     private final EmployeeDetailsRepository employeeDetailsRepository;
+    private final JwtClaimExtractor jwtClaimExtractor;
     
     public EmployeeGraphSyncServiceImpl(GraphClientProvider graphClientProvider,
-                                       EmployeeDetailsRepository employeeDetailsRepository) {
+                                       EmployeeDetailsRepository employeeDetailsRepository,
+                                       JwtClaimExtractor jwtClaimExtractor) {
         this.graphClientProvider = graphClientProvider;
         this.employeeDetailsRepository = employeeDetailsRepository;
+        this.jwtClaimExtractor = jwtClaimExtractor;
     }
     
     @Override
-    public EmployeeSyncResult syncEmployeeHierarchyFromGraph(String bearerToken, String rootEmailId) {
+    public EmployeeSyncResult syncEmployeeHierarchyFromGraph(String rootEmailId) {
         logger.info("Starting employee hierarchy sync from Graph API for root email: {}", rootEmailId);
         
         EmployeeSyncResult result = EmployeeSyncResult.builder()
@@ -45,6 +52,12 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                 .build();
         
         try {
+            String bearerToken = extractBearerTokenFromRequest();
+            if (bearerToken == null) {
+                result.addError("No bearer token found in request");
+                return result;
+            }
+            
             GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
             
             Set<String> visitedEmails = new HashSet<>();
@@ -236,6 +249,24 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
         logger.warn("No employeeId found for user {}, generating from email hash", user.displayName);
         String email = getEmailFromUser(user);
         return email != null ? Math.abs(email.hashCode()) : (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+    }
+    
+    private String extractBearerTokenFromRequest() {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    return authHeader.substring(7);
+                }
+            }
+            logger.error("No bearer token found in request");
+            return null;
+        } catch (Exception e) {
+            logger.error("Error extracting bearer token from request: {}", e.getMessage(), e);
+            return null;
+        }
     }
     
     private static class UserToProcess {
