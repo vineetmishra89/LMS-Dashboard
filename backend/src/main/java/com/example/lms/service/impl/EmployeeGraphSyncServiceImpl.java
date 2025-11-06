@@ -7,7 +7,7 @@ import com.example.lms.service.EmployeeGraphSyncService;
 import com.example.lms.service.impl.GraphClientProvider;
 import com.microsoft.graph.models.DirectoryObject;
 import com.microsoft.graph.models.User;
-import com.microsoft.graph.requests.DirectoryObjectCollectionPage;
+import com.microsoft.graph.requests.DirectoryObjectCollectionWithReferencesPage;
 import com.microsoft.graph.requests.GraphServiceClient;
 import okhttp3.Request;
 import org.slf4j.Logger;
@@ -69,11 +69,11 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                 UserToProcess current = queue.poll();
                 
                 try {
-                    DirectoryObjectCollectionPage directReports = client
+                    DirectoryObjectCollectionWithReferencesPage directReports = client
                             .users(current.emailId)
                             .directReports()
                             .buildRequest()
-                            .select("displayName,mail,jobTitle,userPrincipalName,id")
+                            .select("displayName,mail,jobTitle,userPrincipalName,id,employeeId")
                             .get();
                     
                     if (directReports != null) {
@@ -98,7 +98,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
     }
     
     private void processDirectReportsPage(GraphServiceClient<Request> client,
-                                         DirectoryObjectCollectionPage directReports,
+                                         DirectoryObjectCollectionWithReferencesPage directReports,
                                          String managerEmail,
                                          Queue<UserToProcess> queue,
                                          EmployeeSyncResult result,
@@ -169,7 +169,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
             } else {
                 employee = new EmployeeDetails();
                 employee.setEmailId(email);
-                employee.setEmpId(generateEmpId());
+                employee.setEmpId(getEmployeeIdFromUser(user));
                 employee.setEmpActiveFlag("Y");
                 employee.setCreatedBy("GRAPH_SYNC");
                 employee.setCreatedTs(OffsetDateTime.now());
@@ -206,7 +206,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
             return client
                     .users(emailId)
                     .buildRequest()
-                    .select("displayName,mail,jobTitle,userPrincipalName,id")
+                    .select("displayName,mail,jobTitle,userPrincipalName,id,employeeId")
                     .get();
         } catch (Exception e) {
             logger.error("Error fetching user details for {}: {}", emailId, e.getMessage(), e);
@@ -224,8 +224,18 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
         return null;
     }
     
-    private Integer generateEmpId() {
-        return (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+    private Integer getEmployeeIdFromUser(User user) {
+        if (user.employeeId != null && !user.employeeId.trim().isEmpty()) {
+            try {
+                return Integer.parseInt(user.employeeId.trim());
+            } catch (NumberFormatException e) {
+                logger.warn("Could not parse employeeId '{}' for user {}, using hash instead", user.employeeId, user.displayName);
+                return Math.abs(user.employeeId.hashCode());
+            }
+        }
+        logger.warn("No employeeId found for user {}, generating from email hash", user.displayName);
+        String email = getEmailFromUser(user);
+        return email != null ? Math.abs(email.hashCode()) : (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
     }
     
     private static class UserToProcess {
