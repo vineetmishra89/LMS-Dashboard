@@ -198,7 +198,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
   }
 
   @Override
+  @Transactional
   public void unEnroll(String userId, Long courseId) {
-     enrollmentRepository.deleteByUserIdAndTrngId(userId,courseId);
+     enrollmentRepository.deleteNativeByUserIdAndTrainingId(userId,courseId);
   }
 }

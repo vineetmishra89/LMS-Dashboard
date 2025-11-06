@@ -1,6 +1,5 @@
 export interface CourseDetail {
-  trainingDetailId: string;
-  trainingId: string;
+  moduleId: string;
   trainersCurrentFeedback?: number;
   currentUserFeedback?: number;
   instructorName?: string;

@@ -25,9 +25,9 @@ public class EnrollmentController {
   }
 
   @PostMapping("unenroll")
-  public ResponseEntity<String> unenroll(@RequestBody Map<String, Object> body) {
-    enrollmentService.unEnroll((String)body.get("userId"), (Long)body.get("courseId"));
-    return ResponseEntity.ok("SUCCESS");
+  public ResponseEntity<Map<String,String>> unenroll(@RequestBody Map<String, Object> body) {
+    enrollmentService.unEnroll((String)body.get("userId"), Long.valueOf((Integer)body.get("courseId")));
+    return ResponseEntity.ok(Map.of("Status","SUCCESS"));
   }
 
   @GetMapping("/{enrollmentId}")

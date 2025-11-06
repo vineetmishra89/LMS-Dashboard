@@ -48,6 +48,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   
   private loadVideoProgress(): void {
     const user = this.userService.getCurrentUser();
+    console.log('Course ID recieved : '+this.courseId);
+    console.log('Lesson ID recieved : '+this.lessonId);
+    console.log('Url recieved : '+this.videoUrl);
     if (!user) return;
     
     this.videoProgressService.getProgress(user.id, this.courseId, this.lessonId)
@@ -85,6 +88,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   }
   
   onPause(): void {
+    console.log('Pausing the video');
     this.isPlaying = false;
     this.updateSessionWatchTime();
     this.saveCurrentProgress();
@@ -111,6 +115,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     const watchTimeDelta = Math.max(0, this.sessionWatchTime);
     
     if (watchTimeDelta > 0) {
+      console.log('Storing session watch time : '+ watchTimeDelta);
       this.videoProgressService.updateProgress({
         userId: user.id,
         courseId: this.courseId,

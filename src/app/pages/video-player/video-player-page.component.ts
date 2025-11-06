@@ -35,7 +35,7 @@ export class VideoPlayerPageComponent implements OnInit {
       this.courseService.getCourseById(courseId,userId).subscribe({
         next: (course) => {
           this.course = course;
-          console.log('Course - '+this.course.lmsTrainingDetails.length);
+          console.log('First course lession id- '+ this.course.lmsTrainingDetails[0].moduleId);
           this.isLoading = false;
         },
         error: (error) => {

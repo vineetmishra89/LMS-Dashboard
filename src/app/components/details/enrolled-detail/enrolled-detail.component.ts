@@ -29,7 +29,7 @@ export class EnrolledDetailComponent implements OnInit {
   }
 
   onVideoClick(course: CourseDetail): void {
-    this.router.navigate(['/video-player', course.trainingDetailId]);
+    this.router.navigate(['/video-player', course.moduleId]);
   }
 
   getEnrollmentFor(courseId: string): Observable<Enrollment | undefined> {

@@ -84,6 +84,7 @@ export class ViewCourseComponent implements OnInit {
     this.enrollmentService.unenroll(data).subscribe({
       next :(res) => {
         this.message = 'Unenrollment Successful.'
+        this.hasEnrolled = false;
         this.visible = true;
         console.log(res);
         this.loading = false;
