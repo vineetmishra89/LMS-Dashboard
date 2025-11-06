@@ -44,24 +44,16 @@ public class EmployeeHierarchyController {
   }
   
   @PostMapping("/sync-from-graph")
-  public ResponseEntity<?> syncEmployeeHierarchyFromGraph(
-          @RequestHeader("Authorization") String authorizationHeader,
-          @RequestParam String emailId) {
+  public ResponseEntity<?> syncEmployeeHierarchyFromGraph(@RequestParam String emailId) {
     
     logger.info("Received request to sync employee hierarchy from Graph API for emailId: {}", emailId);
     
     try {
-      if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-        return ResponseEntity.badRequest().body("Invalid Authorization header. Expected: Bearer <token>");
-      }
-      
-      String bearerToken = authorizationHeader.substring(7);
-      
       if (emailId == null || emailId.trim().isEmpty()) {
         return ResponseEntity.badRequest().body("emailId parameter is required");
       }
       
-      EmployeeSyncResult result = employeeGraphSyncService.syncEmployeeHierarchyFromGraph(bearerToken, emailId.trim());
+      EmployeeSyncResult result = employeeGraphSyncService.syncEmployeeHierarchyFromGraph(emailId.trim());
       
       logger.info("Employee hierarchy sync completed for emailId: {}. Inserted: {}, Updated: {}, Total: {}", 
               emailId, result.getInsertedCount(), result.getUpdatedCount(), result.getTotalProcessed());
