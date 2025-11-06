@@ -3,6 +3,7 @@ package com.example.lms.controller;
 import com.example.lms.domain.EnrollmentDetails;
 import com.example.lms.domain.EnrollmentMapping;
 import com.example.lms.service.EnrollmentService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +25,9 @@ public class EnrollmentController {
   }
 
   @PostMapping("unenroll")
-  public EnrollmentMapping unenroll(@RequestBody Map<String, Object> body) {
-    return enrollmentService.enroll((String)body.get("userId"), (Long)body.get("courseId"),null);
+  public ResponseEntity<String> unenroll(@RequestBody Map<String, Object> body) {
+    enrollmentService.unEnroll((String)body.get("userId"), (Long)body.get("courseId"));
+    return ResponseEntity.ok("SUCCESS");
   }
 
   @GetMapping("/{enrollmentId}")

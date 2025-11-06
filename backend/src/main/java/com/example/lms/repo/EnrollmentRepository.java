@@ -14,4 +14,6 @@ public interface EnrollmentRepository extends JpaRepository<EnrollmentMapping, L
   @Query("Select count(e) from EnrollmentMapping e where e.userId = :userId and e.status=:status")
   long countByUserIdAndStatus(@Param("userId") String userId, @Param("status") String status);
 
+  void deleteByUserIdAndTrngId(String userId, Long trngId);
+
 }
