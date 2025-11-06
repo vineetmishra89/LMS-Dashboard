@@ -24,7 +24,7 @@ import { DataSharingService } from '../../services/data-sharing.service';
 })
 export class ViewCourseComponent implements OnInit {
 
-  userId: string = 'test_trainee1@irissoftware.com';
+  userId: string = 'chetna.bhatia@irissoftware.com';
   router = inject(Router);
   liked: boolean = false;
   courseService = inject(CourseService);
