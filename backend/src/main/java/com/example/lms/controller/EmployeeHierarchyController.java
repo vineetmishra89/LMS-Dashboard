@@ -4,6 +4,8 @@ import com.example.lms.dto.EmployeeHierarchyResponseDto;
 import com.example.lms.dto.EmployeeSyncResult;
 import com.example.lms.service.EmployeeGraphSyncService;
 import com.example.lms.service.EmployeeHierarchyService;
+import com.example.lms.util.JwtClaimExtractor;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,11 +21,14 @@ public class EmployeeHierarchyController {
 
   private final EmployeeHierarchyService employeeHierarchyService;
   private final EmployeeGraphSyncService employeeGraphSyncService;
+  private final JwtClaimExtractor jwtClaimExtractor;
 
   public EmployeeHierarchyController(EmployeeHierarchyService employeeHierarchyService,
-                                    EmployeeGraphSyncService employeeGraphSyncService) {
+                                    EmployeeGraphSyncService employeeGraphSyncService,
+                                    JwtClaimExtractor jwtClaimExtractor) {
     this.employeeHierarchyService = employeeHierarchyService;
     this.employeeGraphSyncService = employeeGraphSyncService;
+    this.jwtClaimExtractor = jwtClaimExtractor;
   }
 
   @GetMapping
@@ -45,17 +50,18 @@ public class EmployeeHierarchyController {
   
   @PostMapping("/sync-from-graph")
   public ResponseEntity<?> syncEmployeeHierarchyFromGraph(
-          @RequestHeader("Authorization") String authorizationHeader,
+          HttpServletRequest request,
           @RequestParam String emailId) {
     
     logger.info("Received request to sync employee hierarchy from Graph API for emailId: {}", emailId);
     
     try {
-      if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+      String authHeader = request.getHeader("Authorization");
+      if (authHeader == null || !authHeader.startsWith("Bearer ")) {
         return ResponseEntity.badRequest().body("Invalid Authorization header. Expected: Bearer <token>");
       }
       
-      String bearerToken = authorizationHeader.substring(7);
+      String bearerToken = authHeader.substring(7);
       
       if (emailId == null || emailId.trim().isEmpty()) {
         return ResponseEntity.badRequest().body("emailId parameter is required");
