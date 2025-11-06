@@ -55,7 +55,7 @@ export class RoAdminComponent implements OnInit {
     }
 
     getUser() {
-      const emailId = 'tl1@irissoftware.com';
+      const emailId = 'rajib.bhattacharya@irissoftware.com';
       this.courseService.getEmployeeHierarchy(emailId).subscribe({
         next: (res) => {
           console.log(res);

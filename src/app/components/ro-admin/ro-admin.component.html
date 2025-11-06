@@ -20,7 +20,11 @@
               placeholder="Search by name, email, empcode"
               style="margin-right: 10px; width: 300px"
             />
-            <p-multiSelect
+            <p-dropdown 
+            [options]="filterData?.trainerNameList" [filter]="true"
+            formControlName="trainerNameList"  [showClear]="true"
+            placeholder="Select a Trainer Name" />
+            <!-- <p-multiSelect
               [options]="trainings"
               [(ngModel)]="selectedTrainings"
               showToggleAll="false"
@@ -28,7 +32,7 @@
               optionLabel="name"
               style="margin-right: 10px; width: 300px"
               placeholder="Search by training name, category, level"
-            />
+            /> -->
             <!-- <p-autoComplete 
     [(ngModel)]="selectedItem" 
     [suggestions]="suggestions" 

@@ -28,7 +28,7 @@ export class SearchComponent implements OnInit {
 
     selectedCourseType: string = 'Completed Course';
     summary: any;
-    userId = 'test_trainee1@irissoftware.com';
+    userId = 'chetna.bhatia@irissoftware.com';
     enrolledCourse: any | null = null;
     pendingCourse: any = [];
     completedCourse: any = [];
