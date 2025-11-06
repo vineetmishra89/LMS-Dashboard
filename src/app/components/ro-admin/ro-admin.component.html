@@ -20,7 +20,7 @@
               placeholder="Search by name, email, empcode"
               style="margin-right: 10px; width: 300px"
             />
-            <!-- <p-multiSelect
+            <p-multiSelect
               [options]="trainings"
               [(ngModel)]="selectedTrainings"
               showToggleAll="false"
@@ -28,11 +28,11 @@
               optionLabel="name"
               style="margin-right: 10px; width: 300px"
               placeholder="Search by training name, category, level"
-            /> -->
-            <p-autoComplete 
+            />
+            <!-- <p-autoComplete 
     [(ngModel)]="selectedItem" 
     [suggestions]="suggestions" 
-    (completeMethod)="search($event)" />
+    (completeMethod)="search($event)" /> -->
             <button pButton pRipple label="Add" class="p-button-primary" (click)="add()"></button>
             </div>
             <div></div>

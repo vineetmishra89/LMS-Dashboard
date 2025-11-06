@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { ToastModule } from 'primeng/toast';
+import { DataSharingService } from '../../services/data-sharing.service';
 
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -41,6 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   isLoading$ = new BehaviorSubject<boolean>(true);
   hasError$ = new BehaviorSubject<string | null>(null);
+   dataSharingService = inject(DataSharingService);
   messageService = inject(MessageService);
 
   currentUser$: Observable<User | null>;
@@ -127,7 +129,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   viewCourse(course: any) {
     console.log(course);
-    
+    course.trainerDetail = {
+      names: course.trainerDetailList.map((x: any) => x.trainerName).join(','),
+      emails: course.trainerDetailList.map((x: any) => x.emailId).join(',')
+    }
+    this.dataSharingService.sendData(course.trainerDetail);
     this.router.navigate(['/viewCourse', course.trainingId]);
     //this.router.navigate(['/viewCourse', course.trainingId]);
    //this.router.navigate(['viewCourse'])
