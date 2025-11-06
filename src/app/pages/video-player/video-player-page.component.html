@@ -8,8 +8,9 @@
   
   <div class="content" *ngIf="!isLoading && course">
     <app-video-player 
-      [videoUrl]="course.videoUrl || course.trainingLink" 
-      [courseId]="course.id">
+      [videoUrl]="course.lmsTrainingDetails[0].videoUrl || course.lmsTrainingDetails[0].trainingLink" 
+      [courseId]="course.lmsTrainingDetails[0].id"
+      [course]="course">
     </app-video-player>
     
     <div class="course-info">

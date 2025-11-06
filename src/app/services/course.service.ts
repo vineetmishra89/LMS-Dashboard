@@ -35,8 +35,8 @@ export class CourseService {
     );
   }
 
-  getCourseById(courseId: string): Observable<CourseMaster> {
-    return this.apiService.get<CourseMaster>(`courses/getCourseById/${courseId}`);
+  getCourseById(courseId: string, userId:string): Observable<CourseMaster> {
+    return this.apiService.get<CourseMaster>(`courses/getCourseById/${courseId}?userId=${userId}`);
   }
 
   getEnrolledCourses(userId: string): Observable<CourseMaster[]> {

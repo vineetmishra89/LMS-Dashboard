@@ -23,6 +23,7 @@ export interface CourseMaster {
   reviewComments?: string;
   prerequisite?: string;
   toolsNeeded?: string;
+  lmsTrainingDetails: CourseDetail[];
 }
 
 export interface CourseModule {

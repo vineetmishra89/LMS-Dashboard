@@ -75,13 +75,12 @@
             justify-content: center;
           "
         >
-          <div style="margin-bottom: 5px; font-size: 14px; font-weight: 400; color: black">4.6</div>
+        <div style="margin-top: 5px; font-size: 12px">{{courseDetail?.rating}} ratings</div>
           <div>
             @for(rating of courseDetail?.rating; track rating) {
               <i class="pi pi-star-fill" style="color: #c4710d"></i>
             }
           </div>
-          <div style="margin-top: 5px; font-size: 12px">{{courseDetail?.rating}} ratings</div>
         </div>
         <div
           style="

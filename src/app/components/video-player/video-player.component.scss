@@ -19,6 +19,11 @@
   }
 }
 
+.video-container {
+  height: 60%; /* Example: Define a fixed height for the parent */
+  width: 100%;
+}
+
 .video-element {
   width: 100%;
   height: auto;

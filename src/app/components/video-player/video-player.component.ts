@@ -3,6 +3,7 @@ import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoProgressService } from '../../services/video-progress.service';
 import { UserService } from '../../services/user.service';
+import { CourseMaster } from '../../models/course';
 
 @Component({
   selector: 'app-video-player',
@@ -13,6 +14,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   @Input() videoUrl!: string;
   @Input() courseId!: string;
   @Input() lessonId: string = 'default';
+  @Input() course!: CourseMaster;
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
   

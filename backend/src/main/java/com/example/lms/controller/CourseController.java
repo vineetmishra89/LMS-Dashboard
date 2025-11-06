@@ -28,7 +28,8 @@ public class CourseController {
 
   @GetMapping("/getCourseById/{courseId}")
   public CourseSummary getCourseById(@PathVariable(required = true) Long courseId,@RequestParam String userId) {
-    return courseService.search(courseId);
+    CourseSummary summary = courseService.search(courseId);
+    return summary;
   }
 
   @GetMapping("/courseCard/viewType/{viewType}")
