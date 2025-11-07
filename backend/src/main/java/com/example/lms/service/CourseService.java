@@ -4,6 +4,8 @@ import com.example.lms.domain.CourseDetail;
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.EnrollmentMapping;
 import com.example.lms.dto.CourseCardDetailDto;
+import com.example.lms.exception.DatabaseException;
+import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.repo.CourseCardRepository;
 import com.example.lms.repo.CourseDetailRepository;
 import com.example.lms.repo.CourseRepository;
@@ -38,7 +40,6 @@ public class CourseService {
 
   public List<CourseSummary> search(String category, String topic, String instructor) {
     Specification<CourseSummary> spec = Specification.where(null);
-    List<CourseSummary> courses = new ArrayList<>();
     if (category != null && !category.isBlank()) {
       spec = spec.and((root, q, cb) -> cb.equal(cb.lower(root.get("category")), category.toLowerCase()));
     }
@@ -51,11 +52,11 @@ public class CourseService {
     if (spec == null) return courseRepository.findAll();
 
     try{
-      courses = courseRepository.findAll(spec);
+      return courseRepository.findAll(spec);
     }catch(Exception ex){
-      log.error("Exception occurred : ",ex);
+      log.error("Database error while searching courses", ex);
+      throw new DatabaseException("Failed to search courses", ex);
     }
-    return courses;
   }
 
   public List<CourseSummary> getAll() {
@@ -79,20 +80,21 @@ public class CourseService {
   }
 
   public CourseSummary search(Long courseId) {
-    CourseSummary course = null;
-
     try{
-      course = courseRepository.findById(courseId).orElse(null);
+      return courseRepository.findById(courseId)
+          .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
+    }catch(ResourceNotFoundException ex){
+      throw ex;
     }catch(Exception ex){
-      log.error("Exception occurred : ",ex);
+      log.error("Database error while fetching course", ex);
+      throw new DatabaseException("Failed to fetch course with id: " + courseId, ex);
     }
-    return course;
   }
 
   public List<CourseCardDetailDto> getCourseCardList(String viewType, String category) {
-    List<Object[]> courseCardDetailList = null;
     try{
       if(StringUtils.isNotBlank(viewType)){
+        List<Object[]> courseCardDetailList = null;
         switch(viewType) {
           case "View":
             courseCardDetailList = courseCardRepository.findCourceCardDetailsByView(getCourseInterval());
@@ -107,15 +109,16 @@ public class CourseService {
             courseCardDetailList = courseCardRepository.findCourceCardDetailsByCourseCategory(category,getCourseInterval());
             break;
           default:
-            break;
+            return List.of();
         }
         return courseCardDetailList != null ? courseCardDetailList.stream()
-          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (Long) row[3], (String) row[4], (Long) row[5], (String) row[6], (String) row[7]))
-          .collect(Collectors.toList()): null;
+          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (String) row[3],(Long) row[4], (String) row[5], (Long) row[6], (String) row[7], (String) row[8]))
+          .collect(Collectors.toList()): List.of();
       }
+      return List.of();
     }catch(Exception ex){
-      log.error("Exception occurred : ",ex);
+      log.error("Database error while fetching course card list", ex);
+      throw new DatabaseException("Failed to fetch course card list", ex);
     }
-    return null;
   }
 }

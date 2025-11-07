@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -12,5 +13,6 @@ export class HeaderComponent {
   @Output() themeToggle = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();
   @Input() showMobileToggle: boolean = false;
+  authService = inject(AuthService);
 
 }

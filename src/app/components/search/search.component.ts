@@ -6,11 +6,12 @@ import { TagModule } from 'primeng/tag';
 import { Router } from '@angular/router';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { CourseService } from '../../services/course.service';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CardModule, CarouselModule, ButtonModule, TagModule, ProgressBarModule  ],
+  imports: [CardModule, CarouselModule, SkeletonModule,  ButtonModule, TagModule, ProgressBarModule  ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -27,8 +28,8 @@ export class SearchComponent implements OnInit {
 
     selectedCourseType: string = 'Completed Course';
     summary: any;
-    userId = 'trainee2@example.com';
-    enrolledCourse: any = [];
+    userId = 'chetna.bhatia@irissoftware.com';
+    enrolledCourse: any | null = null;
     pendingCourse: any = [];
     completedCourse: any = [];
     likedCourse: any = [];

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../models/user';
@@ -58,7 +58,7 @@ export class AuthService {
     
     if (token && user && !this.isTokenExpired(token)) {
       this.currentUserSubject.next(user);
-      this.isAuthenticatedSubject.next(true);
+      this.isAuthenticatedSubject.next(false);
       return;
     } /*else {
       this.logout();
@@ -82,7 +82,14 @@ export class AuthService {
   this.isAuthenticatedSubject.next(false);
   }
 
+  loginhardcode() {
+     this.isAuthenticatedSubject.next(true);
+     return of(null);
+  }
+
   login(credentials: LoginCredentials): Observable<User> {
+    console.log('login11');
+    this.isAuthenticatedSubject.next(true);
     return this.http.post<AuthResponse>(`${environment.authUrl}/login`, credentials).pipe(
       tap(response => {
         if (response.success) {

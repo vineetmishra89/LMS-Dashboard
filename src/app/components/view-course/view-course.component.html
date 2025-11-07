@@ -1,232 +1,219 @@
-<div style="margin: -20px -20px; background-color: #2c2c2c; padding: 20px 50px; position: relative">
-  <div style="position: absolute; top: 140%; right: 5%">
-    @if(hasEnrolled === false) {
-    <p-button label="Enroll" class="enroll-resume-btn" (click)="enroll()" />
-    } @else() {
-    <p-button label="Resume" class="enroll-resume-btn" (click)="resume()" />
-    }
+@if(loading) {
+  <div class="centered-box">
+    <p-progressSpinner ariaLabel="loading"  fill="#d1d5db8c" />
   </div>
-  <div class="header" style="padding-bottom: 30px">
-    <div style="font-size: 20px; font-weight: bold; color: #fff">
-      The Ultimate React Course 2025: React, Next.js, Redux & More
-    </div>
-    <div style="font-size: 16px; margin-top: 20px; color: #fff">
-      Master modern React from beginner to advanced! Next.js, Context API, React Query, Redux,
-      Tailwind, advanced patterns
-    </div>
-    <div style="font-size: 12px; margin-top: 20px; color: #fff">Trainer Name: 
-        <span (mouseover)="op.toggle($event)" style="color: #fff">Vineet Mishra</span>
-        <!-- <p-button (onClick)="op.toggle($event)" icon="pi pi-share-alt" label="Share" /> -->
-    <p-overlayPanel #op>
-        <div style="width: 300px">
-            <div>
-                <span style="font-size: 12px;">Email address:</span>
-                <p-inputGroup style="margin-top: 5px">
-                    <input pInputText value="vineet.mishra@irissoftware.com" readonly style="width: 100%; border: 0px"/>
-                    <!-- <p-inputGroupAddon>
-                        <i class="pi pi-copy"></i>
-                    </p-inputGroupAddon> -->
-                </p-inputGroup>
+}
+
+
+@if(courseDetail) {
+  <div>
+    <div style="margin: -20px -20px; background-color: #2c2c2c; padding: 20px 50px; position: relative">
+      <div style="position: absolute; top: 140%; right: 5%; display: flex; flex-direction: column">
+        @if(hasEnrolled === false) {
+        <p-button label="Enroll" class="enroll-resume-btn" (click)="enroll($event)" />
+        } @else() {
+        <p-button label="{{progress === true ? 'Start' : 'Continue'}}" class="enroll-resume-btn" (click)="resume()" />
+        <p-button label="Withdraw" class="enroll-resume-btn" style="margin-top: 20px" (click)="unenroll($event)" />
+        }
+      </div>
+      <div class="header" style="padding-bottom: 30px">
+        <div style="font-size: 20px; font-weight: bold; color: #fff">
+          {{courseDetail?.topics}}
+        </div>
+        <div style="font-size: 16px; margin-top: 20px; color: #fff">
+          {{courseDetail?.details}}
+        </div>
+        <div style="font-size: 12px; margin-top: 20px; color: #fff">Trainer Name: 
+            <span (mouseover)="op.toggle($event)" style="color: #fff">{{courseDetail.trainerNames}}</span>
+            <!-- <p-button (onClick)="op.toggle($event)" icon="pi pi-share-alt" label="Share" /> -->
+        <p-overlayPanel #op>
+            <div style="width: 300px">
+                <div>
+                    <span style="font-size: 12px;">Email address:</span>
+                    <p-inputGroup style="margin-top: 5px">
+                      <div style="display: flex; flex-direction: column; width: 100%">
+                        @for(item of courseDetail.trainerEmails; track item) {
+                          <input pInputText value="{{item}}" readonly style="width: 100%; border: 0px"/>
+                        }
+                      </div>
+                     
+                        
+                        <!-- <p-inputGroupAddon>
+                            <i class="pi pi-copy"></i>
+                        </p-inputGroupAddon> -->
+                    </p-inputGroup>
+                </div>
             </div>
+        </p-overlayPanel>
         </div>
-    </p-overlayPanel>
-    </div>
-  </div>
-  <div
-    style="
-      display: flex;
-      height: 76px;
-      align-items: center;
-      background: #fff;
-      position: absolute;
-      border: 1px solid #b1b1b1;
-      border-radius: 5px;
-      width: 60vw;
-      bottom: -40px;
-    "
-  >
-    <!-- <div style="height: 100%; display: flex; align-items: center; border-right: 1px solid #b1b1b1">Recommend this</div>
-    <div style="height: 100%; display: flex; align-items: center; border-right: 1px solid #b1b1b1">
-      <i class="pi pi-share-alt" style="font-size: 24px; color: var(--bluegray-300)"></i>
-    </div> -->
-    <div
-      style="
-        height: 100%;
-        display: flex;
-        width: 33.33%;
-        align-items: center;
-        border-right: 1px solid #b1b1b1;
-        flex-direction: column;
-        justify-content: center;
-      "
-    >
-      <div style="margin-bottom: 5px; font-size: 14px; font-weight: 400; color: black">4.6</div>
-      <div>
-        <i class="pi pi-star-fill" style="color: #c4710d"></i
-        ><i class="pi pi-star-fill" style="color: #c4710d"></i
-        ><i class="pi pi-star-fill" style="color: #c4710d"></i
-        ><i class="pi pi-star-fill" style="color: #c4710d"></i
-        ><i class="pi pi-star-half-fill" style="color: #c4710d"></i>
       </div>
-      <div style="margin-top: 5px; font-size: 12px">4 ratings</div>
-    </div>
-    <div
-      style="
-        height: 100%;
-        display: flex;
-        width: 33.33%;
-        align-items: center;
-        flex-direction: column;
-        justify-content: center;
-        border-right: 1px solid #b1b1b1;
-      "
-    >
-      <div><i class="pi pi-users" style="font-size: 20px"></i></div>
-      <div style="font-size: 14px">1,000</div>
-      <div style="margin-top: 5px; font-size: 12px">Learners</div>
-    </div>
-    
-    <div style="height: 100%; width: 33.33%; display: flex; align-items: center;  justify-content: center; border-right: 1px solid #b1b1b1; cursor: pointer;">
-      @if(liked) {
-        <i class="pi pi-heart-fill" (click)="liked = false" style="font-size: 24px; color: var(--red-600); cursor: pointer"></i>
-      } @else() {
-        <i class="pi pi-heart" (click)="liked = true" style="font-size: 24px; color: var(--bluegray-300); cursor: pointer"></i>
-      }
+      <div
+        style="
+          display: flex;
+          height: 76px;
+          align-items: center;
+          background: #fff;
+          position: absolute;
+          border: 1px solid #b1b1b1;
+          border-radius: 5px;
+          width: 60vw;
+          bottom: -40px;
+        "
+      >
+        <!-- <div style="height: 100%; display: flex; align-items: center; border-right: 1px solid #b1b1b1">Recommend this</div>
+        <div style="height: 100%; display: flex; align-items: center; border-right: 1px solid #b1b1b1">
+          <i class="pi pi-share-alt" style="font-size: 24px; color: var(--bluegray-300)"></i>
+        </div> -->
+        <div
+          style="
+            height: 100%;
+            display: flex;
+            width: 33.33%;
+            align-items: center;
+            border-right: 1px solid #b1b1b1;
+            flex-direction: column;
+            justify-content: center;
+          "
+        >
         
-    </div>
-    
-  </div>
-</div>
-
-<div class="content" style="margin-top: 90px; margin-left: 20px; margin-right: 20px">
-  <div style="margin-top: 15px">
-    <div style="font-size: 18px; font-weight: bold">This course includes:</div>
-    <div class="flex-container" style="width: 400px; margin-top: 10px">
-      <div class="flex-item">200 duration</div>
-      <div class="flex-item">
-        <a href="/" style="color: var(--primary-700)">Material Link</a>
+          <div>
+            @for(item of numberToStars(ratings); track $index) {
+              <i class="pi pi-star-fill" style="color: #c4710d"></i>
+            }
+          </div>
+          <div style="margin-top: 5px; font-size: 13px">{{ratings}} ratings</div>
+        </div>
+        <div
+          style="
+            height: 100%;
+            display: flex;
+            width: 33.33%;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid #b1b1b1;
+          "
+        >
+          <div><i class="pi pi-users" style="font-size: 20px"></i></div>
+          <div style="font-size: 14px">{{totalLearners}}</div>
+          <div style="margin-top: 5px; font-size: 12px">Learners</div>
+        </div>
+        
+        <div style="height: 100%; width: 33.33%; display: flex; align-items: center;  justify-content: center; border-right: 1px solid #b1b1b1; cursor: pointer;">
+          @if(liked) {
+            <i class="pi pi-heart-fill" (click)="liked = false" style="font-size: 24px; color: var(--red-600); cursor: pointer"></i>
+          } @else() {
+            <i class="pi pi-heart" (click)="liked = true" style="font-size: 24px; color: var(--bluegray-300); cursor: pointer"></i>
+          }
+        </div>
       </div>
     </div>
-  </div>
-  <div style="margin-top: 30px">
-    <div style="font-size: 18px; font-weight: bold">Pre requisites:</div>
-    <div style="margin-top: 10px">Basic knowledge of JavaScript</div>
-  </div>
-  <div style="margin-top: 30px">
-    <div style="font-size: 18px; font-weight: bold">Tools required:</div>
-    <div style="margin-top: 10px"><span>VS Code, Node.js</span> <a href="/" style="margin-left: 20px; color: var(--primary-700)">IT Ticket Support</a></div>
-  </div>
-</div>
-<div class="content" style="margin-top: 30px; margin-left: 20px; margin-right: 20px">
-  <div style="margin-top: 15px">
-    <div style="font-size: 18px; font-weight: bold">Course Content</div>
-    <div style="width: 400px; margin-top: 10px">
-      <ul style="list-style: none">
-        <li style="display: flex; align-items: center; margin: 20px 0px">
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-youtube"></i>
-            <span
-              style="
-                margin-left: 10px;
-                margin-right: 10px;
-                display: inline-block;
-                width: 350px;
-                color: var(--text-color);
-              "
-            >
-              Course Roadmap and Projects
-            </span>
-          </div>
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
-            <span style="font-size: 10px; margin-left: 10px; width: 60px">22:00 mins</span>
-          </div>
-        </li>
-        <li style="display: flex; align-items: center; margin: 20px 0px">
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-youtube"></i>
-            <span
-              style="
-                margin-left: 10px;
-                margin-right: 10px;
-                display: inline-block;
-                width: 350px;
-                color: var(--text-color);
-              "
-            >
-              Course Roadmap and Projects
-            </span>
-          </div>
-
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
-            <span style="font-size: 10px; margin-left: 10px; width: 60px">22:00 mins</span>
-          </div>
-        </li>
-        <li style="display: flex; align-items: center; margin: 20px 0px">
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-youtube"></i>
-            <span
-              style="
-                margin-left: 10px;
-                margin-right: 10px;
-                display: inline-block;
-                width: 350px;
-                color: var(--text-color);
-              "
-            >
-              Course Roadmap and Projects
-            </span>
-          </div>
-
-          <div style="display: flex; align-items: center">
-            <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
-            <span style="font-size: 10px; margin-left: 10px; width: 60px">22:00 mins</span>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</div>
-
-<div style="margin-top: 30px; margin-left: 20px; margin-right: 20px">
-  <div style="font-size: 18px; font-weight: bold">
-    <div style="display: flex; align-items: center">
-      <i class="pi pi-star-fill" style="color: #c4710d; margin-right: 5px"></i>
-      <span>4.6 rating - 4 ratings</span>
-    </div>
-  </div>
-  <div style="display: flex; flex-wrap: wrap">
-    @for(item of courseRatings; track item) {
-    <div
-      style="
-        width: 33%;
-        margin: 20px;
-        padding: 20px 15px 20px 15px;
-        border-top: 1px solid var(--gray-300);
-      "
-    >
-      <div>
-        <div>
-          <div style="font-size: 13px; font-weight: bold">{{ item.user }}</div>
-          <div>
-            <span
-              ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
-              ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
-              ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
-              ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
-              ><i class="pi pi-star-half-fill" style="color: #c4710d; font-size: 9px"></i>
-            </span>
-            <span style="font-size: 12px; margin-left: 5px; color: var(--bluegray-500)">{{
-              item.when
-            }}</span>
+    
+    <div class="content" style="margin-top: 90px; margin-left: 20px; margin-right: 20px">
+      <div style="margin-top: 15px">
+        <div style="font-size: 18px; font-weight: bold">This course includes:</div>
+        <div class="flex-container" style="width: 400px; margin-top: 10px">
+          <div class="flex-item">{{courseDetail?.duration}} Hours duration</div>
+          <div class="flex-item">
+            <a href="/" style="color: var(--primary-700)">Material Link</a>
           </div>
         </div>
       </div>
-      <div style="font-size: 13px; margin-top: 10px">
-        {{ item.comments }}
+      <div style="margin-top: 30px">
+        <div style="font-size: 18px; font-weight: bold">Pre requisites:</div>
+        <div style="margin-top: 10px">{{courseDetail?.prerequisite}}</div>
+      </div>
+      <div style="margin-top: 30px">
+        <div style="font-size: 18px; font-weight: bold">Tools required:</div>
+        <div style="margin-top: 10px"><span>{{courseDetail?.toolsNeeded}}</span> <a href="https://supporthub.irissoftware.com/support/catalog/items" target="_blank" style="margin-left: 20px; color: var(--primary-700)">IT Ticket Support</a></div>
       </div>
     </div>
-    }
+    <div class="content" style="margin-top: 30px; margin-left: 20px; margin-right: 20px">
+      <div style="margin-top: 15px">
+        <div style="font-size: 18px; font-weight: bold">Course Content</div>
+        <div style="width: 90vw; margin-top: 10px">
+          <ul style="list-style: none">
+            @for(content of courseDetail?.lmsTrainingDetails; track content) {
+              <li class="playlist-section">
+                <div style="display: flex; align-items: center">
+                  <i class="pi pi-youtube"></i>
+                  <span class="playlist-item">
+                    {{content?.details}}
+                  </span>
+                </div>
+                <div style="display: flex; align-items: center">
+                  <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
+                  <span style="font-size: 10px; margin-left: 10px; width: 60px">
+                    {{content?.duration}} mins
+                  </span>
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p-dialog header="" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <span style="color: grey; margin-bottom: 30px">{{message}}</span>
+        <div>
+            <p-button label="OK" (onClick)="visible = false" />
+        </div>
+      </div>
+      
+    </p-dialog>
+    
+    <div style="margin-top: 30px; margin-left: 20px; margin-right: 20px">
+      <div style="font-size: 18px; font-weight: bold">
+        <div style="display: flex; align-items: center">
+          <i class="pi pi-star-fill" style="color: #c4710d; margin-right: 5px"></i>
+          <span>4.6 rating - 4 ratings</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap">
+        @for(item of courseRatings; track item) {
+        <div
+          style="
+            width: 33%;
+            margin: 20px;
+            padding: 20px 15px 20px 15px;
+            border-top: 1px solid var(--gray-300);
+          "
+        >
+          <div>
+            <div>
+              <div style="font-size: 13px; font-weight: bold">{{ item.user }}</div>
+              <div>
+                <span
+                  ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
+                  ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
+                  ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
+                  ><i class="pi pi-star-fill" style="color: #c4710d; font-size: 9px"></i
+                  ><i class="pi pi-star-half-fill" style="color: #c4710d; font-size: 9px"></i>
+                </span>
+                <span style="font-size: 12px; margin-left: 5px; color: var(--bluegray-500)">{{
+                  item.when
+                }}</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-size: 13px; margin-top: 10px">
+            {{ item.comments }}
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    
   </div>
-</div>
+
+} @else {
+  <p-skeleton width="20rem" styleClass="skeleton" borderRadius="16px" />
+  <p-skeleton width="40rem" styleClass="skeleton" borderRadius="16px" />
+  <p-skeleton width="60rem" styleClass="skeleton" borderRadius="16px" />
+  <p-skeleton width="80rem" styleClass="skeleton" borderRadius="16px" />
+  <p-skeleton width="100rem" height="skeleton" borderRadius="16px" />
+
+}
+
+<p-toast />

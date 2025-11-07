@@ -4,6 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { Router } from '@angular/router';
 import { CourseService } from '../../services/course.service';
+import { DataSharingService } from '../../services/data-sharing.service';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +17,7 @@ export class HomeComponent {
   products: any[] | undefined;
   router = inject(Router);
   courseService = inject(CourseService);
+  dataSharingService = inject(DataSharingService);
 
   responsiveOptions: any[] | undefined;
   trendingCourses: any[] = [];
@@ -60,8 +62,15 @@ export class HomeComponent {
       }
   }
 
-  viewCourse() {
-    this.router.navigate(['viewCourse'])
+  viewCourse(product: any) {
+    console.log(product);
+    product.trainerDetail = {
+      names: product.trainerNames, 
+      emails: product.trainerEmailIds
+    }
+    this.dataSharingService.sendData(product.trainerDetail);
+    this.router.navigate(['/viewCourse', product.trngId]);
+   //this.router.navigate(['viewCourse'])
   }
 
   async loadHomePageCourses() {

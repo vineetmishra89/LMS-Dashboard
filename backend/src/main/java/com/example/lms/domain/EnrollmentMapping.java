@@ -34,17 +34,32 @@ public class EnrollmentMapping {
   @Column(name = "enrolled_ts")
   private OffsetDateTime enrolledTs;
 
+  @Column(name = "enrolled_by_email_id")
+  private String enrolledByEmailId;
+
   @Column(name = "started_ts")
   private OffsetDateTime startTs;
 
   @Column(name = "enrollment_type")
-  private String enrollment_type;
+  private String enrollmentType;
 
   @Column(name = "progress_percent")
   private Long progressPercent;
 
   @Column(name = "last_accessed_ts")
   private OffsetDateTime lastAccessedAt;
+
+  @Column(name = "created_ts")
+  private OffsetDateTime createdTs;
+
+  @Column(name = "updated_ts")
+  private OffsetDateTime updatedTs;
+
+  @Column(name = "created_by")
+  private String createdBy;
+
+  @Column(name = "updated_By")
+  private String updatedBy;
 
   @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference

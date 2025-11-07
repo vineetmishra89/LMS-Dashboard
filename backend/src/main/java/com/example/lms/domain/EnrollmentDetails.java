@@ -28,6 +28,18 @@ public class EnrollmentDetails implements Serializable {
   @Column(name = "last_accessed_ts")
   private OffsetDateTime lastAccessedAt;
 
+  @Column(name = "created_ts")
+  private OffsetDateTime createdTs;
+
+  @Column(name = "updated_ts")
+  private OffsetDateTime updatedTs;
+
+  @Column(name = "created_by")
+  private String createdBy;
+
+  @Column(name = "updated_By")
+  private String updatedBy;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("trainingEmrollmentId")
   @JoinColumn(name = "trng_enrl_id")

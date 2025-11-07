@@ -7,14 +7,15 @@ BEGIN;
 
 -- Data from 02-insert-lms-roles.sql
 
-INSERT INTO LMS_ROLE_DETAILS (ROLE_ID, ROLE_NAME, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
+INSERT INTO LMS_SCHEMA.LMS_ROLE_DETAILS (ROLE_ID, ROLE_NAME, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
 (1, 'admin', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 (2, 'lnd', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 (3, 'trainee', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
-(4, 'trainer', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP);
+(4, 'trainer', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
+(5, 'ro', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP);
 
 -- Data from 12-insert-lms-user-roles.sql
-INSERT INTO LMS_USER_ROLES (EMAIL_ID, ROLE_ID, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
+INSERT INTO LMS_SCHEMA.LMS_USER_ROLES (EMAIL_ID, ROLE_ID, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
 ('admin1@example.com', 1, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('admin2@example.com', 1, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('admin3@example.com', 1, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
@@ -225,7 +226,7 @@ INSERT INTO LMS_USER_ROLES (EMAIL_ID, ROLE_ID, CREATED_BY, CREATED_TS, UPDATED_B
 ('trainee200@example.com', 3, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP);
 
 -- Data from 13-insert-lms-trainer-dtls.sql
-INSERT INTO LMS_TRAINER_DTLS (TRAINER_NAME, EMAIL_ID, TRAINER_TYPE, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
+INSERT INTO LMS_SCHEMA.LMS_TRAINER_DTLS (TRAINER_NAME, EMAIL_ID, TRAINER_TYPE, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
 ('John Smith', 'john.smith@external.com', 'External', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Sarah Johnson', 'sarah.johnson@external.com', 'External', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Michael Brown', 'michael.brown@external.com', 'External', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
@@ -245,10 +246,10 @@ INSERT INTO LMS_TRAINER_DTLS (TRAINER_NAME, EMAIL_ID, TRAINER_TYPE, CREATED_BY, 
 ('Barbara Robinson', 'barbara.robinson@company.com', 'Internal', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Joseph Clark', 'joseph.clark@company.com', 'Internal', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Susan Rodriguez', 'susan.rodriguez@company.com', 'Internal', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
-('Charles Lewis', 'charles.lewis@company.com', 'Internal'), 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP;
+('Charles Lewis', 'charles.lewis@company.com', 'Internal', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP);
 
 -- Data from 14-insert-lms-trng-summary.sql
-INSERT INTO LMS_TRNG_SUMMARY (TRNG_TOPIC, TRNG_DETAILS, PRE_REQUISITES, LEVEL_CODE, TRNG_TYPE, RATING, CATEGORY, TOOLS_NEEDED, TECHNOLOGY, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
+INSERT INTO LMS_SCHEMA.LMS_TRNG_SUMMARY (TRNG_TOPIC, TRNG_DETAILS, PRE_REQUISITES, LEVEL_CODE, TRNG_TYPE, RATING, CATEGORY, TOOLS_NEEDED, TECHNOLOGY, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
 ('Business Communication Basics', 'Learn the fundamentals of professional business communication', 'None', 'Beginner', 'EXTERNAL', 4, 'Behavioral', 'Presentation software, Video conferencing tools', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Effective Email Writing', 'Master the art of writing clear and professional emails', 'None', 'Beginner', 'EXTERNAL', 3, 'Behavioral', 'Email client, Grammar checking tools', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Active Listening Skills', 'Develop active listening techniques for better communication', 'None', 'Beginner', 'EXTERNAL', 5, 'Behavioral', 'Audio recording tools', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
@@ -259,7 +260,7 @@ INSERT INTO LMS_TRNG_SUMMARY (TRNG_TOPIC, TRNG_DETAILS, PRE_REQUISITES, LEVEL_CO
 ('Finance 101', 'Introduction to corporate finance principles', 'None', 'Beginner', 'EXTERNAL', 5, 'Functional', 'Spreadsheet software', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Supply Chain Basics', 'Understanding supply chain management fundamentals', 'None', 'Beginner', 'EXTERNAL', 4, 'Functional', 'Supply chain software', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Customer Service Excellence', 'Fundamentals of customer service in financial services', 'None', 'Beginner', 'EXTERNAL', 4, 'Functional', 'CRM software', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
-('Java Programming Basics', 'Introduction to Java programming language', 'Basic computer skills', 'Beginner', 'EXTERNAL', 5, 'Technical', 'JDK, IDE (Eclipse or IntelliJ)', 'Java'),
+('Java Programming Basics', 'Introduction to Java programming language', 'Basic computer skills', 'Beginner', 'EXTERNAL', 5, 'Technical', 'JDK, IDE (Eclipse or IntelliJ)', 'Java','SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('SQL Fundamentals', 'Learn basic SQL queries and database concepts', 'None', 'Beginner', 'EXTERNAL', 4, 'Technical', 'Database server, SQL client', 'SQL', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Oracle Database Introduction', 'Getting started with Oracle database', 'SQL basics', 'Beginner', 'EXTERNAL', 4, 'Technical', 'Oracle database, SQL Developer', 'Oracle', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Python for Beginners', 'Introduction to Python programming', 'None', 'Beginner', 'EXTERNAL', 5, 'Technical', 'Python interpreter, Code editor', 'Python', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
@@ -308,7 +309,7 @@ INSERT INTO LMS_TRNG_SUMMARY (TRNG_TOPIC, TRNG_DETAILS, PRE_REQUISITES, LEVEL_CO
 ('DevOps Practices', 'Implementing DevOps in software development', 'Git, Linux basics', 'Intermediate', 'INTERNAL', 4, 'Technical', 'CI/CD tools', 'DevOps', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('AWS Cloud Services', 'Working with Amazon Web Services', 'Cloud basics', 'Intermediate', 'INTERNAL', 5, 'Technical', 'AWS account, AWS CLI', 'AWS', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Security Best Practices', 'Application security fundamentals', 'Programming knowledge', 'Intermediate', 'INTERNAL', 4, 'Technical', 'Security testing tools', 'Security', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
-('Agile and Scrum', 'Agile methodologies for software development', 'None', 'Intermediate', 'INTERNAL', 4, 'Technical', 'Agile tools (Jira)', 'Agile'),
+('Agile and Scrum', 'Agile methodologies for software development', 'None', 'Intermediate', 'INTERNAL', 4, 'Technical', 'Agile tools (Jira)', 'Agile', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Executive Leadership', 'Strategic leadership for executives', 'Extensive leadership experience', 'Advanced', 'EXTERNAL', 5, 'Behavioral', 'Executive coaching tools', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Strategic Thinking', 'Developing strategic thinking capabilities', 'Management experience', 'Advanced', 'EXTERNAL', 5, 'Behavioral', 'Strategy frameworks', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('Organizational Development', 'Leading organizational transformation', 'Change management experience', 'Advanced', 'EXTERNAL', 4, 'Behavioral', 'OD assessment tools', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
@@ -341,7 +342,7 @@ INSERT INTO LMS_TRNG_SUMMARY (TRNG_TOPIC, TRNG_DETAILS, PRE_REQUISITES, LEVEL_CO
 ('AI and ML Operations', 'Managing AI/ML in production', 'Machine learning knowledge', 'Advanced', 'INTERNAL', 4, 'Technical', 'MLOps tools, Kubeflow', 'AI/ML', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP);
 
 -- Data from 15-insert-lms-training-dtls.sql
-INSERT INTO LMS_TRNG_DTLS (TRNG_ID, MODULE_NAME, MODULE_DTLS, MODULE_DURATION, TRAINER_ID, MODULE_PATH, SEQ_ID, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
+INSERT INTO LMS_SCHEMA.LMS_TRNG_DTLS (TRNG_ID, MODULE_NAME, MODULE_DTLS, MODULE_DURATION, TRAINER_ID, MODULE_PATH, SEQ_ID, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
 (1, 'Introduction to Communication', 'Understanding the basics of business communication', 60, 1, '/courses/comm/intro.mp4', 1, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 (1, 'Verbal Communication Skills', 'Mastering verbal communication in business', 90, 1, '/courses/comm/verbal.mp4', 2, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 (1, 'Non-Verbal Cues', 'Understanding body language and non-verbal signals', 45, 2, '/courses/comm/nonverbal.mp4', 3, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
@@ -920,7 +921,7 @@ INSERT INTO LMS_TRNG_DTLS (TRNG_ID, MODULE_NAME, MODULE_DTLS, MODULE_DURATION, T
 (90, 'MLOps Tools', 'Using MLOps platforms and tools', 90, 8, '/courses/mlops/tools.mp4', 6, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP);
 
 -- Data from 16-insert-lms-user-trng-enrollment-mapping.sql
-INSERT INTO LMS_USER_TRNG_ENROLLMENT_MAPPING (EMAIL_ID, TRNG_ID, STATUS, ENROLLED_TS, STARTED_TS, COMPLETED_TS, ENROLLMENT_TYPE, ENROLLED_BY_EMAIL_ID, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
+INSERT INTO LMS_SCHEMA.LMS_USER_TRNG_ENROLLMENT_MAPPING (EMAIL_ID, TRNG_ID, STATUS, ENROLLED_TS, STARTED_TS, COMPLETED_TS, ENROLLMENT_TYPE, ENROLLED_BY_EMAIL_ID, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
 ('trainee1@example.com', 1, 'Completed', '2024-01-15 09:00:00', '2024-01-20 10:00:00', '2024-02-15 14:30:00', 'VOLUNTARY', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('trainee1@example.com', 25, 'In Progress', '2024-03-01 08:30:00', '2024-03-05 09:15:00', NULL, 'MANDATORY', 'admin1@example.com', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 ('trainee2@example.com', 5, 'Enrolled', '2024-03-20 14:00:00', NULL, NULL, 'VOLUNTARY', NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
@@ -1023,7 +1024,7 @@ INSERT INTO LMS_USER_TRNG_ENROLLMENT_MAPPING (EMAIL_ID, TRNG_ID, STATUS, ENROLLE
 ('trainee50@example.com', 85, 'Completed', '2024-04-08 10:30:00', '2024-04-12 15:15:00', '2024-05-10 13:00:00', 'MANDATORY', 'lnd2@example.com', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP);
 
 -- Data from 17-insert-lms-user-trng-enrollment-dtls.sql
-INSERT INTO LMS_USER_TRNG_ENROLLMENT_DTLS (TRNG_ENRL_ID, MODULE_ID, STATUS, CURRENT_LEARNING_TS, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
+INSERT INTO LMS_SCHEMA.LMS_USER_TRNG_ENROLLMENT_DTLS (TRNG_ENRL_ID, MODULE_ID, STATUS, CURRENT_LEARNING_TS, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
 (1, 1, 'Completed', '2024-01-20 10:15:00', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 (1, 2, 'Completed', '2024-01-22 14:30:00', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 (1, 3, 'Completed', '2024-01-25 09:45:00', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
@@ -1272,7 +1273,7 @@ INSERT INTO LMS_USER_TRNG_ENROLLMENT_DTLS (TRNG_ENRL_ID, MODULE_ID, STATUS, CURR
 (40, 523, 'Completed', '2024-03-03 12:15:00', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP);
 
 -- Data from 18-insert-lms-trng-search-hist.sql
-INSERT INTO LMS_TRNG_SEARCH_HIST (TRNG_ID, EMAIL_ID, VIEW_TS, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
+INSERT INTO LMS_SCHEMA.LMS_TRNG_SEARCH_HIST (TRNG_ID, EMAIL_ID, VIEW_TS, CREATED_BY, CREATED_TS, UPDATED_BY, UPDATED_TS) VALUES
 (56, 'trainee133@example.com', '2024-02-15 18:36:00', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 (68, 'trainee107@example.com', '2024-09-28 05:41:00', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),
 (26, 'trainee3@example.com', '2024-04-03 20:04:00', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP),

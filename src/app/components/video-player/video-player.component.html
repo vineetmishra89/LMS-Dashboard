@@ -4,6 +4,9 @@
       #videoElement
       [src]="videoUrl"
       controls
+      autoplay
+      muted
+      loop
       preload="metadata"
       (loadedmetadata)="onVideoLoaded()"
       (play)="onPlay()"
