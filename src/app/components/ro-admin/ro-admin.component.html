@@ -1,0 +1,112 @@
+@if(loading) {
+<div class="centered-box">
+  <p-progressSpinner ariaLabel="loading" fill="#d1d5db8c" />
+</div>
+}
+<div>
+  <div>
+    <p-tabView class="admin-tab-view">
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+            <span class="font-bold white-space-nowrap m-0"> Assign Training </span>
+            <span class="pi pi-user-plus" style="margin-left: 8px"></span>
+          </div>
+        </ng-template>
+        <div>
+          <div>
+            <form [formGroup]="filterFormGroup" class="ro-form-group">
+              <p-multiSelect
+                [options]="users"
+                formControlName="selectedUsers"
+                optionLabel="empName"
+                filterBy="empName,empId,emailId"
+                [selectAll]="null"
+                styleClass="assign-training-multiselect"
+                placeholder="Search by Employee Name, Email Id, Emp Code"
+                
+              />
+              <p-dropdown
+                formControlName="selectedTrainingName"
+                [options]="filterData?.trainingNameList"
+                [filter]="true"
+                optionLabel="trainingName"
+                placeholder="Select a Training Name"
+              />
+              <button
+              pButton
+              pRipple
+              label="Add"
+              class="p-button-primary"
+              [disabled]="!filterFormGroup?.valid"
+              (click)="add()"
+            ></button>
+            <button
+              pButton
+              pRipple
+              label="Assign Training"
+              class="p-button-primary"
+              [disabled]="selectedUserTraining?.length === 0"
+              (click)="bulkEnroll()"
+            ></button>
+            </form>
+            
+          </div>
+          <div style="margin-top: 20px">
+            @if(selectedUserTraining?.length > 0) {
+              <p-table [value]="selectedUserTraining" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Emp Code</th>
+                    <th>Emp Name</th>
+                    <th>Designation</th>
+                    <th>Email Id</th>
+                    <th>Training Name</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product>
+                  <tr>
+                    <td>{{ product.empId }}</td>
+                    <td>{{ product.empName }}</td>
+                    <td>{{ product.empDesignation }}</td>
+                    <td>{{ product.emailId }}</td>
+                    <td>{{ selectedTrainingName?.trainingName }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            }
+            
+          </div>
+          <div></div>
+        </div>
+      </p-tabPanel>
+      <!-- <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+                <span class="font-bold white-space-nowrap m-0"> Progress </span>
+                <span class="pi pi-chart-line" style="margin-left: 8px"></span>
+              </div>
+            </ng-template>
+            <div>
+              <ng-container *ngTemplateOutlet="metrics"></ng-container>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+                <span class="font-bold white-space-nowrap m-0"> Metrics </span>
+                <span class="pi pi-chart-line" style="margin-left: 8px"></span>
+              </div>
+            </ng-template>
+            <div>
+              <ng-container *ngTemplateOutlet="metrics"></ng-container>
+            </div>
+          </p-tabPanel> -->
+    </p-tabView>
+  </div>
+</div>
+
+<ng-template #metrics>
+  <div style="margin: 5px 10px 30px 10px">Individual | Group wise</div>
+</ng-template>
+<p-toast />

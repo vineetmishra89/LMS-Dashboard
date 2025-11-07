@@ -1,0 +1,115 @@
+/* 1. Basic Reset and Font */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* Use the Poppins font we linked in HTML */
+    font-family: 'Poppins', sans-serif;
+    /* Set a nice background color */
+    background-color: #f4f7fa; 
+    /* Center the login box on the screen */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* 2. Login Container Style */
+.login-container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    width: 500px;
+    //max-width: 400px;
+    /* Soft shadow for a floating effect */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); 
+    text-align: center;
+    // margin-top: 80px;
+}
+
+/* 3. Header/Title Style */
+h1 {
+    margin-bottom: 30px;
+    color: #333333;
+    font-weight: 600;
+}
+
+/* 4. Form and Input Group */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 400;
+    color: #555555;
+    font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+/* Input focus effect */
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff; /* Accent color */
+    outline: none; /* Remove default focus outline */
+}
+
+/* 5. Button Style */
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff; /* Primary button color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+/* Button hover effect */
+.login-button:hover {
+    background-color: #0056b3;
+}
+
+.login-button:active {
+    transform: scale(0.99); /* Slight press effect */
+}
+
+/* 6. Footer Links */
+.footer-links {
+    margin-top: 20px;
+    font-size: 0.85rem;
+}
+
+.footer-links a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.footer-links span {
+    margin: 0 8px;
+    color: #cccccc;
+}

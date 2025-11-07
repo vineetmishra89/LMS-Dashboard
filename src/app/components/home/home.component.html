@@ -1,0 +1,388 @@
+<div style="">
+  <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
+    Trending Course
+  </div>
+  <p-carousel
+    [value]="trendingCourses"
+    [numVisible]="5"
+    [numScroll]="3"
+    [circular]="false"
+    [responsiveOptions]="responsiveOptions"
+  >
+    <ng-template let-product pTemplate="item">
+      <div class="catalog card card-body">
+        <div
+          style="font-size: 14px; display: flex; justify-content: space-between; margin-top: 5px"
+        >
+          <div class="card-body-2">{{ product['category'] }}</div>
+          <div>
+            <div style="font-size: 12px; display: flex">
+              <i class="pi pi-star-fill" style="font-size: 12px; color: #c4710d"></i>
+              <span style="margin-left: 4px; color: #28313f">4.8</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-weight: 500; font-size: 18px; margin-top: 10px">
+          {{ product['courseName'] }}
+        </div>
+        <i class="fa fa-light fa-chevron-down"></i>
+        <div
+          style="font-size: 12px; font-weight: 400; opacity: 0.7; margin-top: 5px"
+          class="text-truncate"
+          [title]="product['trainerNames']"
+        >
+          <i class="pi pi-crown" style="font-size: 10px"></i>
+          <span style="margin-left: 5px" class="text-truncate">{{ product['trainerNames'] }}</span>
+        </div>
+        <div style="margin-top: 10px">
+          <div class="card-content">
+            <div style="opacity: 0.85">Duration</div>
+            <div style="font-weight: 400">{{ product['duration'] }} Hours</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Level</div>
+            <div style="font-weight: 400">{{ product['level'] }}</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Modules</div>
+            <div style="font-weight: 400">{{ product['modules'] }}</div>
+          </div>
+        </div>
+        <div class="actions" style="margin-top: auto">
+          <button
+            pButton
+            pRipple
+            label="View Course"
+            style="width: 100%"
+            class="p-button-primary"
+            (click)="viewCourse(product)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+
+  <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
+    Top Searched
+  </div>
+
+  <p-carousel
+    [value]="topSearched"
+    [numVisible]="5"
+    [numScroll]="3"
+    [circular]="false"
+    [responsiveOptions]="responsiveOptions"
+  >
+    <ng-template let-product pTemplate="item">
+      <div class="catalog card card-body">
+        <div
+          style="font-size: 14px; display: flex; justify-content: space-between; margin-top: 5px"
+        >
+          <div class="card-body-2">{{ product['category'] }}</div>
+          <div>
+            <div style="font-size: 12px; display: flex">
+              <i class="pi pi-star-fill" style="font-size: 12px; color: #c4710d"></i>
+              <span style="margin-left: 4px; color: #28313f">4.8</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-weight: 500; font-size: 18px; margin-top: 10px">
+          {{ product['courseName'] }}
+        </div>
+        <i class="fa fa-light fa-chevron-down"></i>
+        <div
+          style="font-size: 12px; font-weight: 400; opacity: 0.7; margin-top: 5px"
+          class="text-truncate"
+          [title]="product['trainerNames']"
+        >
+          <i class="pi pi-crown" style="font-size: 10px"></i>
+          <span style="margin-left: 5px" class="text-truncate">{{ product['trainerNames'] }}</span>
+        </div>
+        <div style="margin-top: 10px">
+          <div class="card-content">
+            <div style="opacity: 0.85">Duration</div>
+            <div style="font-weight: 400">{{ product['duration'] }} Hours</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Level</div>
+            <div style="font-weight: 400">{{ product['level'] }}</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Modules</div>
+            <div style="font-weight: 400">{{ product['modules'] }}</div>
+          </div>
+        </div>
+        <div class="actions" style="margin-top: auto">
+          <button
+            pButton
+            pRipple
+            label="View Course"
+            style="width: 100%"
+            class="p-button-primary"
+            (click)="viewCourse(product)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+
+  <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
+    Top Rated
+  </div>
+
+  <p-carousel
+    [value]="topRated"
+    [numVisible]="5"
+    [numScroll]="3"
+    [circular]="false"
+    [responsiveOptions]="responsiveOptions"
+  >
+    <ng-template let-product pTemplate="item">
+      <div class="catalog card card-body">
+        <div
+          style="font-size: 14px; display: flex; justify-content: space-between; margin-top: 5px"
+        >
+          <div class="card-body-2">{{ product['category'] }}</div>
+          <div>
+            <div style="font-size: 12px; display: flex">
+              <i class="pi pi-star-fill" style="font-size: 12px; color: #c4710d"></i>
+              <span style="margin-left: 4px; color: #28313f">4.8</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-weight: 500; font-size: 18px; margin-top: 10px">
+          {{ product['courseName'] }}
+        </div>
+        <i class="fa fa-light fa-chevron-down"></i>
+        <div
+          style="font-size: 12px; font-weight: 400; opacity: 0.7; margin-top: 5px"
+          class="text-truncate"
+          [title]="product['trainerNames']"
+        >
+          <i class="pi pi-crown" style="font-size: 10px"></i>
+          <span style="margin-left: 5px" class="text-truncate">{{ product['trainerNames'] }}</span>
+        </div>
+        <div style="margin-top: 10px">
+          <div class="card-content">
+            <div style="opacity: 0.85">Duration</div>
+            <div style="font-weight: 400">{{ product['duration'] }} Hours</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Level</div>
+            <div style="font-weight: 400">{{ product['level'] }}</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Modules</div>
+            <div style="font-weight: 400">{{ product['modules'] }}</div>
+          </div>
+        </div>
+        <div class="actions" style="margin-top: auto">
+          <button
+            pButton
+            pRipple
+            label="View Course"
+            style="width: 100%"
+            class="p-button-primary"
+            (click)="viewCourse(product)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+
+  <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
+    Technical
+  </div>
+
+  <p-carousel
+    [value]="technical"
+    [numVisible]="5"
+    [numScroll]="3"
+    [circular]="false"
+    [responsiveOptions]="responsiveOptions"
+  >
+    <ng-template let-product pTemplate="item">
+      <div class="catalog card card-body">
+        <div
+          style="font-size: 14px; display: flex; justify-content: space-between; margin-top: 5px"
+        >
+          <div class="card-body-2">{{ product['category'] }}</div>
+          <div>
+            <div style="font-size: 12px; display: flex">
+              <i class="pi pi-star-fill" style="font-size: 12px; color: #c4710d"></i>
+              <span style="margin-left: 4px; color: #28313f">4.8</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-weight: 500; font-size: 18px; margin-top: 10px">
+          {{ product['courseName'] }}
+        </div>
+        <i class="fa fa-light fa-chevron-down"></i>
+        <div
+          style="font-size: 12px; font-weight: 400; opacity: 0.7; margin-top: 5px"
+          class="text-truncate"
+          [title]="product['trainerNames']"
+        >
+          <i class="pi pi-crown" style="font-size: 10px"></i>
+          <span style="margin-left: 5px" class="text-truncate">{{ product['trainerNames'] }}</span>
+        </div>
+        <div style="margin-top: 10px">
+          <div class="card-content">
+            <div style="opacity: 0.85">Duration</div>
+            <div style="font-weight: 400">{{ product['duration'] }} Hours</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Level</div>
+            <div style="font-weight: 400">{{ product['level'] }}</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Modules</div>
+            <div style="font-weight: 400">{{ product['modules'] }}</div>
+          </div>
+        </div>
+        <div class="actions" style="margin-top: auto">
+          <button
+            pButton
+            pRipple
+            label="View Course"
+            style="width: 100%"
+            class="p-button-primary"
+            (click)="viewCourse(product)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+
+  <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
+    Behavioral
+  </div>
+
+  <p-carousel
+    [value]="behavioral"
+    [numVisible]="5"
+    [numScroll]="3"
+    [circular]="false"
+    [responsiveOptions]="responsiveOptions"
+  >
+    <ng-template let-product pTemplate="item">
+      <div class="catalog card card-body">
+        <div
+          style="font-size: 14px; display: flex; justify-content: space-between; margin-top: 5px"
+        >
+          <div class="card-body-2">{{ product['category'] }}</div>
+          <div>
+            <div style="font-size: 12px; display: flex">
+              <i class="pi pi-star-fill" style="font-size: 12px; color: #c4710d"></i>
+              <span style="margin-left: 4px; color: #28313f">4.8</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-weight: 500; font-size: 18px; margin-top: 10px">
+          {{ product['courseName'] }}
+        </div>
+        <i class="fa fa-light fa-chevron-down"></i>
+        <div
+          style="font-size: 12px; font-weight: 400; opacity: 0.7; margin-top: 5px"
+          class="text-truncate"
+          [title]="product['trainerNames']"
+        >
+          <i class="pi pi-crown" style="font-size: 10px"></i>
+          <span style="margin-left: 5px" class="text-truncate">{{ product['trainerNames'] }}</span>
+        </div>
+        <div style="margin-top: 10px">
+          <div class="card-content">
+            <div style="opacity: 0.85">Duration</div>
+            <div style="font-weight: 400">{{ product['duration'] }} Hours</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Level</div>
+            <div style="font-weight: 400">{{ product['level'] }}</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Modules</div>
+            <div style="font-weight: 400">{{ product['modules'] }}</div>
+          </div>
+        </div>
+        <div class="actions" style="margin-top: auto">
+          <button
+            pButton
+            pRipple
+            label="View Course"
+            style="width: 100%"
+            class="p-button-primary"
+            (click)="viewCourse(product)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+
+  <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
+    Functional
+  </div>
+
+  <p-carousel
+    [value]="functional"
+    [numVisible]="5"
+    [numScroll]="3"
+    [circular]="false"
+    [responsiveOptions]="responsiveOptions"
+  >
+    <ng-template let-product pTemplate="item">
+      <div class="catalog card card-body">
+        <div
+          style="font-size: 14px; display: flex; justify-content: space-between; margin-top: 5px"
+        >
+          <div class="card-body-2">{{ product['category'] }}</div>
+          <div>
+            <div style="font-size: 12px; display: flex">
+              <i class="pi pi-star-fill" style="font-size: 12px; color: #c4710d"></i>
+              <span style="margin-left: 4px; color: #28313f">4.8</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-weight: 500; font-size: 18px; margin-top: 10px">
+          {{ product['courseName'] }}
+        </div>
+        <i class="fa fa-light fa-chevron-down"></i>
+        <div
+          style="font-size: 12px; font-weight: 400; opacity: 0.7; margin-top: 5px"
+          class="text-truncate"
+          [title]="product['trainerNames']"
+        >
+          <i class="pi pi-crown" style="font-size: 10px"></i>
+          <span style="margin-left: 5px" class="text-truncate">{{ product['trainerNames'] }}</span>
+        </div>
+        <div style="margin-top: 10px">
+          <div class="card-content">
+            <div style="opacity: 0.85">Duration</div>
+            <div style="font-weight: 400">{{ product['duration'] }} Hours</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Level</div>
+            <div style="font-weight: 400">{{ product['level'] }}</div>
+          </div>
+          <div class="card-content">
+            <div style="opacity: 0.85">Modules</div>
+            <div style="font-weight: 400">{{ product['modules'] }}</div>
+          </div>
+        </div>
+        <div class="actions" style="margin-top: auto">
+          <button
+            pButton
+            pRipple
+            label="View Course"
+            style="width: 100%"
+            class="p-button-primary"
+            (click)="viewCourse(product)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+
+  <div style="background-color: #2c2c2c; height: 100px; margin: 20px -20px -20px -20px">
+    <div></div>
+  </div>
+</div>

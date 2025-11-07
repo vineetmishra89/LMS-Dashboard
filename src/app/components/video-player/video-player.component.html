@@ -1,0 +1,28 @@
+<div class="video-player-container">
+  <div class="video-wrapper" [class.loading]="isLoading">
+    <video 
+      #videoElement
+      [src]="videoUrl"
+      controls
+      autoplay
+      muted
+      loop
+      preload="metadata"
+      (loadedmetadata)="onVideoLoaded()"
+      (play)="onPlay()"
+      (pause)="onPause()"
+      (timeupdate)="onTimeUpdate()"
+      class="video-element">
+      Your browser does not support the video tag.
+    </video>
+    
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Loading video...</p>
+    </div>
+  </div>
+  
+  <div class="progress-info">
+    <span>Progress: {{progress | number:'1.1-1'}}%</span>
+  </div>
+</div>

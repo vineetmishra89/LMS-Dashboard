@@ -1,0 +1,17 @@
+video {
+    width: 100%;  /* Makes the video take up the full width of its parent container */
+    height: 100%; /* Makes the video take up 50% of the height of its parent container */
+    
+    /* Optional: Use object-fit to control how the video content fills the dimensions */
+    object-fit: cover; 
+}
+.video-container {
+    height: 60%; /* Example: Define a fixed height for the parent */
+    width: 100%;
+}
+.color-active {
+    color: inherit;
+}
+.color-disabled {
+    color: #8d95a7;
+}

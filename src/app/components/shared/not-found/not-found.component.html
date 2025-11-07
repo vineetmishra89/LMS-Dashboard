@@ -1,0 +1,87 @@
+<div class="error-page">
+  <div class="error-content">
+    <!-- Animated 404 Illustration -->
+    <div class="error-illustration">
+      <div class="number-404">
+        <span class="four">4</span>
+        <span class="zero">0</span>
+        <span class="four">4</span>
+      </div>
+      <div class="floating-elements">
+        <div class="search-icon">🔍</div>
+        <div class="question-mark">❓</div>
+        <div class="compass">🧭</div>
+      </div>
+    </div>
+    
+    <!-- Error Message -->
+    <div class="error-message">
+      <h1>Oops! Page Not Found</h1>
+      <p class="error-description">
+        The page you're looking for doesn't exist or has been moved.
+        Don't worry, let's get you back on track!
+      </p>
+      
+      <!-- URL Info -->
+      <div class="url-info" *ngIf="attemptedUrl">
+        <div class="url-label">You were trying to reach:</div>
+        <code class="attempted-url">{{ attemptedUrl }}</code>
+      </div>
+    </div>
+
+    <!-- Helpful Suggestions -->
+    <div class="suggestions-section">
+      <h3>Here are some popular pages:</h3>
+      <div class="suggestions-grid">
+        <div 
+          *ngFor="let page of suggestedPages" 
+          class="suggestion-card"
+          (click)="navigateTo(page.path)">
+          <div class="card-icon">{{ page.icon }}</div>
+          <div class="card-content">
+            <div class="card-title">{{ page.name }}</div>
+            <div class="card-description">{{ page.description }}</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="error-actions">
+      <button class="btn btn-primary" (click)="goToDashboard()">
+        🏠 <span>Go to Dashboard</span>
+      </button>
+      <button class="btn btn-secondary" (click)="goBack()">
+        ← <span>Go Back</span>
+      </button>
+      <button class="btn btn-outline" (click)="searchCourses()">
+        🔍 <span>Search Courses</span>
+      </button>
+    </div>
+
+    <!-- Help Options -->
+    <div class="help-section">
+      <div class="help-text">Still can't find what you're looking for?</div>
+      <div class="help-actions">
+        <button class="help-link" (click)="reportBrokenLink()">
+          📝 Report broken link
+        </button>
+        <a href="mailto:support@yourlms.com" class="help-link">
+          📧 Contact support
+        </a>
+        <a routerLink="/help" class="help-link">
+          ❓ Visit help center
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background Elements -->
+  <div class="background-elements">
+    <div class="bg-element element-1"></div>
+    <div class="bg-element element-2"></div>
+    <div class="bg-element element-3"></div>
+    <div class="bg-element element-4"></div>
+  </div>
+</div>
