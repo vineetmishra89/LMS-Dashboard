@@ -24,58 +24,85 @@
                 [selectAll]="null"
                 styleClass="assign-training-multiselect"
                 placeholder="Search by Employee Name, Email Id, Emp Code"
-                
               />
-              <p-dropdown
+              <p-multiSelect
+                [options]="filterData?.trainingNameList"
+                formControlName="selectedTrainingName"
+                optionLabel="trainingName"
+                filterBy="trainingName"
+                [selectAll]="null"
+                styleClass="assign-training-multiselect"
+                placeholder="Search by Training Name"
+              />
+              <!-- <p-dropdown
                 formControlName="selectedTrainingName"
                 [options]="filterData?.trainingNameList"
                 [filter]="true"
                 optionLabel="trainingName"
                 placeholder="Select a Training Name"
-              />
+              /> -->
+              <!-- <button
+                pButton
+                pRipple
+                label="Add"
+                class="p-button-primary"
+                [disabled]="!filterFormGroup?.valid"
+                (click)="add()"
+              ></button> -->
               <button
-              pButton
-              pRipple
-              label="Add"
-              class="p-button-primary"
-              [disabled]="!filterFormGroup?.valid"
-              (click)="add()"
-            ></button>
-            <button
-              pButton
-              pRipple
-              label="Assign Training"
-              class="p-button-primary"
-              [disabled]="selectedUserTraining?.length === 0"
-              (click)="bulkEnroll()"
-            ></button>
+                pButton
+                pRipple
+                label="Assign Training"
+                class="p-button-primary"
+                [disabled]="filterFormGroup?.value?.selectedUsers?.length === 0 || filterFormGroup?.value?.selectedTrainingName?.length === 0"
+                (click)="bulkEnroll()"
+              ></button>
             </form>
-            
+            @if(filterFormGroup?.value?.selectedUsers?.length > 0) {
+            <div style="margin: 30px 0px 15px 15px">
+              <span style="font-weight: bold; font-size: 16px;">Selected Employees</span>
+              <span> ({{ filterFormGroup?.value?.selectedUsers?.length }})</span>
+            </div>
+            <div class="selected-section">
+              @for(user of filterFormGroup?.value?.selectedUsers; track user) {
+              <div [title]="user.emailId">{{ user.empName }}</div>
+              }
+            </div>
+            } @if(filterFormGroup?.value?.selectedTrainingName?.length > 0) {
+            <div style="margin: 30px 0px 15px 15px">
+              <span style="font-weight: bold; font-size: 16px;">Selected Trainings</span>
+              <span> ({{ filterFormGroup?.value?.selectedTrainingName?.length }})</span>
+            </div>
+            <div class="selected-section">
+              @for(training of filterFormGroup?.value?.selectedTrainingName; track training) {
+              <div>{{ training.trainingName }}</div>
+              }
+            </div>
+            }
           </div>
           <div style="margin-top: 20px">
             @if(selectedUserTraining?.length > 0) {
-              <p-table [value]="selectedUserTraining" [tableStyle]="{ 'min-width': '50rem' }">
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th>Emp Code</th>
-                    <th>Emp Name</th>
-                    <th>Designation</th>
-                    <th>Email Id</th>
-                    <th>Training Name</th>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-product>
-                  <tr>
-                    <td>{{ product.empId }}</td>
-                    <td>{{ product.empName }}</td>
-                    <td>{{ product.empDesignation }}</td>
-                    <td>{{ product.emailId }}</td>
-                    <td>{{ selectedTrainingName?.trainingName }}</td>
-                  </tr>
-                </ng-template>
-              </p-table>
+            <p-table [value]="selectedUserTraining" [tableStyle]="{ 'min-width': '50rem' }">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Emp Code</th>
+                  <th>Emp Name</th>
+                  <th>Designation</th>
+                  <th>Email Id</th>
+                  <th>Training Name</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-product>
+                <tr>
+                  <td>{{ product.empId }}</td>
+                  <td>{{ product.empName }}</td>
+                  <td>{{ product.empDesignation }}</td>
+                  <td>{{ product.emailId }}</td>
+                  <td>{{ selectedTrainingName?.trainingName }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
             }
-            
           </div>
           <div></div>
         </div>
