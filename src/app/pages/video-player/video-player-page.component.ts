@@ -57,7 +57,7 @@ export class VideoPlayerPageComponent implements OnInit {
     });
   }
 
-  moduleSelected(selectedModule: any) {
+  moduleSelected(selectedModule: any, index: number) {
     this.selectedModule = selectedModule
 
   }

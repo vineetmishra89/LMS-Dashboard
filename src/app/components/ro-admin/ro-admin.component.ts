@@ -13,13 +13,20 @@ import { TagModule } from 'primeng/tag';
 import { TabViewModule } from 'primeng/tabview';
 import { Component, inject, OnInit } from '@angular/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { EnrollmentService } from '../../services/enrollment.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+
+
 
 @Component({
   selector: 'app-ro-admin',
   standalone: true,
-  imports: [TabViewModule, DropdownModule, AutoCompleteModule,  TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
+  imports: [TabViewModule , ToastModule, DropdownModule, AutoCompleteModule, ProgressSpinnerModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
   templateUrl: './ro-admin.component.html',
-  styleUrl: './ro-admin.component.scss'
+  styleUrl: './ro-admin.component.scss',
+    providers: [MessageService, ConfirmationService]
 })
 
 export class RoAdminComponent implements OnInit {
@@ -40,6 +47,9 @@ export class RoAdminComponent implements OnInit {
     metricsService = inject(MetricsService);
     filterFormGroup: FormGroup | undefined;
     courseService = inject(CourseService);
+     enrollmentService = inject(EnrollmentService);
+     messageService = inject(MessageService);
+     confirmationService = inject(ConfirmationService);
     filterData: any = null;
     trainingNameList: any = [];
     searchedCourse: any[] = [];
@@ -49,13 +59,28 @@ export class RoAdminComponent implements OnInit {
     selectedItem: any;
 
     suggestions: any[] | undefined;
+    selectedTrainingName: any | undefined;
+    selectedUserTraining: any[] = [];
+    roEmailId = 'rajib.bhattacharya@irissoftware.com';
 
     ngOnInit(): void {
+      this.loadForm();
       this.getUser();
+      this.getCourseSearchList();
+      
     }
 
+    
+ loadForm() {
+  
+  this.filterFormGroup = new FormGroup({
+    selectedUsers: new FormControl([]),
+    selectedTrainingName: new FormControl(null)
+  })
+ }
+
     getUser() {
-      const emailId = 'rajib.bhattacharya@irissoftware.com';
+      const emailId = this.roEmailId;
       this.courseService.getEmployeeHierarchy(emailId).subscribe({
         next: (res) => {
           console.log(res);
@@ -63,34 +88,42 @@ export class RoAdminComponent implements OnInit {
         }
       })
     }
-    add() {
 
+    add() {
+      if (this.filterFormGroup?.get('selectedUsers')?.value?.length === 0) {
+        this.messageService.add({ severity: 'warn', summary: '', detail: 'Please select employee' });
+        return;
+      }if (this.filterFormGroup?.get('selectedTrainingName')?.value == undefined || this.filterFormGroup?.get('selectedTrainingName')?.value == null) {
+        this.messageService.add({ severity: 'warn', summary: '', detail: 'Please select training name' });
+        return;
+      }
+
+      this.selectedUserTraining = this.filterFormGroup?.get('selectedUsers')?.value;
     }
 
     search(event: AutoCompleteCompleteEvent) {
       this.suggestions = [...Array(10).keys()].map(item => event.query + '-' + item);
   }
+
+  bulkEnroll() {
+    this.loading = true;
     
-    getCourseData() {
-      this.loading = true;
-      const data = {
-        category: this.filterFormGroup?.get('categoryList')?.value,
-        topic: this.filterFormGroup?.get('trainingNameList')?.value,
-        instructor: this.filterFormGroup?.get('trainerNameList')?.value,
-        level: this.filterFormGroup?.get('levelList')?.value
-  
-      }
-      this.courseService.getCourseDetail(data).subscribe({
-        next: (res) => {
-          this.searchedCourse = res;
-          this.loading = false;
-        }, error: (err: Error) => {
-          this.loading = false;
-         // this.messageService.add({ severity: 'error', summary: 'Error', detail: err['message'] });
-    
-        }
-      })
+    const data = {
+      userId: this.roEmailId,
+      emailIdList: this.selectedUsers.map((x: any) => x.emailId),
+      courseIdList: this.selectedTrainingName.map((x: any) => x.trainingName),
+      enrollmentType: 'Mandatory'
     }
+    this.enrollmentService.enroll(data).subscribe({
+      next :(res) => {
+        this.loading = false;
+        this.selectedUserTraining = [];
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successful' });
+
+      }
+    });
+  }
+
 
     getCourseSearchList() {
       this.courseService.getCourseSearchList().subscribe({
