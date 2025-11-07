@@ -111,10 +111,10 @@ export class RoAdminComponent implements OnInit {
     const data = {
       userId: this.roEmailId,
       emailIdList: this.filterFormGroup?.get('selectedUsers')?.value.map((x: any) => x.emailId),
-      courseIdList: this.filterFormGroup?.get('selectedTrainingName')?.value.map((x: any) => x.trainingName),
+      courseIdList: this.filterFormGroup?.get('selectedTrainingName')?.value.map((x: any) => x.trainingId),
       enrollmentType: 'Mandatory'
     }
-    this.enrollmentService.enroll(data).subscribe({
+    this.enrollmentService.bulkEnroll(data).subscribe({
       next :(res) => {
         this.loading = false;
         this.filterFormGroup?.reset();
