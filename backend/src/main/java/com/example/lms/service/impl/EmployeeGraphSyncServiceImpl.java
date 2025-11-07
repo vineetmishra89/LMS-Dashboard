@@ -19,22 +19,22 @@ import java.util.*;
 
 @Service
 public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(EmployeeGraphSyncServiceImpl.class);
-    
+
     private final GraphClientProvider graphClientProvider;
     private final EmployeeDetailsRepository employeeDetailsRepository;
-    
+
     public EmployeeGraphSyncServiceImpl(GraphClientProvider graphClientProvider,
                                        EmployeeDetailsRepository employeeDetailsRepository) {
         this.graphClientProvider = graphClientProvider;
         this.employeeDetailsRepository = employeeDetailsRepository;
     }
-    
+
     @Override
     public EmployeeSyncResult syncEmployeeHierarchyFromGraph(String bearerToken, String rootEmailId) {
         logger.info("Starting employee hierarchy sync from Graph API for root email: {}", rootEmailId);
-        
+
         EmployeeSyncResult result = EmployeeSyncResult.builder()
                 .rootEmail(rootEmailId)
                 .insertedCount(0)
@@ -43,31 +43,31 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                 .totalProcessed(0)
                 .errors(new ArrayList<>())
                 .build();
-        
+
         try {
             GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
-            
+
             Set<String> visitedEmails = new HashSet<>();
             Queue<UserToProcess> queue = new LinkedList<>();
-            
+
             User rootUser = fetchUserDetails(client, rootEmailId);
             if (rootUser == null) {
                 result.addError("Root user not found: " + rootEmailId);
                 return result;
             }
-            
+
             String rootEmail = getEmailFromUser(rootUser);
             if (rootEmail == null || rootEmail.trim().isEmpty()) {
                 result.addError("Root user has no valid email address");
                 return result;
             }
-            
+
             processAndSaveEmployee(rootUser, null, result, visitedEmails);
             queue.add(new UserToProcess(rootEmail, rootEmail));
-            
+
             while (!queue.isEmpty()) {
                 UserToProcess current = queue.poll();
-                
+
                 try {
                     DirectoryObjectCollectionWithReferencesPage directReports = client
                             .users(current.emailId)
@@ -75,28 +75,28 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                             .buildRequest()
                             .select("displayName,mail,jobTitle,userPrincipalName,id,employeeId")
                             .get();
-                    
+
                     if (directReports != null) {
                         processDirectReportsPage(client, directReports, current.emailId, queue, result, visitedEmails);
                     }
-                    
+
                 } catch (Exception e) {
                     logger.error("Error fetching direct reports for {}: {}", current.emailId, e.getMessage(), e);
                     result.addError("Failed to fetch direct reports for " + current.emailId + ": " + e.getMessage());
                 }
             }
-            
-            logger.info("Employee hierarchy sync completed. Inserted: {}, Updated: {}, Skipped: {}, Total: {}", 
+
+            logger.info("Employee hierarchy sync completed. Inserted: {}, Updated: {}, Skipped: {}, Total: {}",
                     result.getInsertedCount(), result.getUpdatedCount(), result.getSkippedCount(), result.getTotalProcessed());
-            
+
         } catch (Exception e) {
             logger.error("Error during employee hierarchy sync: {}", e.getMessage(), e);
             result.addError("Sync failed: " + e.getMessage());
         }
-        
+
         return result;
     }
-    
+
     private void processDirectReportsPage(GraphServiceClient<Request> client,
                                          DirectoryObjectCollectionWithReferencesPage directReports,
                                          String managerEmail,
@@ -109,13 +109,13 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                     if (directoryObject instanceof User) {
                         User user = (User) directoryObject;
                         String userEmail = getEmailFromUser(user);
-                        
+
                         if (userEmail != null && !userEmail.trim().isEmpty()) {
                             String normalizedEmail = userEmail.toLowerCase().trim();
-                            
+
                             if (!visitedEmails.contains(normalizedEmail)) {
                                 processAndSaveEmployee(user, managerEmail, result, visitedEmails);
-                                
+
                                 queue.add(new UserToProcess(userEmail, managerEmail));
                                 logger.debug("Enqueued employee for hierarchy traversal: {}", userEmail);
                             } else {
@@ -129,7 +129,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                     }
                 }
             }
-            
+
             if (directReports.getNextPage() != null) {
                 try {
                     directReports = directReports.getNextPage().buildRequest().get();
@@ -143,7 +143,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
             }
         } while (directReports != null && directReports.getCurrentPage() != null);
     }
-    
+
     private void processAndSaveEmployee(User user, String managerEmail, EmployeeSyncResult result, Set<String> visitedEmails) {
         try {
             String email = getEmailFromUser(user);
@@ -151,22 +151,22 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                 logger.warn("Cannot process user with no email: {}", user.displayName);
                 return;
             }
-            
+
             String normalizedEmail = email.toLowerCase().trim();
-            
+
             if (visitedEmails.contains(normalizedEmail)) {
                 logger.debug("Skipping already visited email: {}", email);
                 result.setSkippedCount(result.getSkippedCount() + 1);
                 return;
             }
-            
+
             visitedEmails.add(normalizedEmail);
-            
+
             Optional<EmployeeDetails> existingOpt = employeeDetailsRepository.findByEmailIdIgnoreCase(email);
-            
+
             EmployeeDetails employee;
             boolean isUpdate = false;
-            
+
             if (existingOpt.isPresent()) {
                 employee = existingOpt.get();
                 isUpdate = true;
@@ -180,31 +180,31 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
                 employee.setCreatedTs(OffsetDateTime.now());
                 logger.debug("Creating new employee: {}", email);
             }
-            
+
             employee.setEmpName(user.displayName);
             employee.setEmpDesignation(user.jobTitle);
             employee.setRoEmailId(managerEmail);
             employee.setUpdatedBy("GRAPH_SYNC");
             employee.setUpdatedTs(OffsetDateTime.now());
-            
+
             employeeDetailsRepository.save(employee);
-            
+
             if (isUpdate) {
                 result.setUpdatedCount(result.getUpdatedCount() + 1);
             } else {
                 result.setInsertedCount(result.getInsertedCount() + 1);
             }
-            
+
             result.setTotalProcessed(result.getTotalProcessed() + 1);
-            
+
             logger.debug("Successfully saved employee: {} ({})", employee.getEmpName(), email);
-            
+
         } catch (Exception e) {
             logger.error("Error saving employee {}: {}", user.displayName, e.getMessage(), e);
             result.addError("Failed to save employee " + user.displayName + ": " + e.getMessage());
         }
     }
-    
+
     private User fetchUserDetails(GraphServiceClient<Request> client, String emailId) {
         try {
             logger.debug("Fetching user details for: {}", emailId);
@@ -218,7 +218,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
             return null;
         }
     }
-    
+
     private String getEmailFromUser(User user) {
         if (user.mail != null && !user.mail.trim().isEmpty()) {
             return user.mail.trim();
@@ -228,7 +228,7 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
         }
         return null;
     }
-    
+
     private Integer getEmployeeIdFromUser(User user) {
         if (user.employeeId != null && !user.employeeId.trim().isEmpty()) {
             try {
@@ -239,14 +239,15 @@ public class EmployeeGraphSyncServiceImpl implements EmployeeGraphSyncService {
             }
         }
         logger.warn("No employeeId found for user {}, generating from email hash", user.displayName);
-        String email = getEmailFromUser(user);
-        return email != null ? Math.abs(email.hashCode()) : (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+        //String email = getEmailFromUser(user);
+        //return email != null ? Math.abs(email.hashCode()) : (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+        return -1;
     }
-    
+
     private static class UserToProcess {
         String emailId;
         String managerEmail;
-        
+
         UserToProcess(String emailId, String managerEmail) {
             this.emailId = emailId;
             this.managerEmail = managerEmail;
