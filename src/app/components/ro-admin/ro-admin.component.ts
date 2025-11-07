@@ -17,13 +17,13 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-
+import { PickListModule } from 'primeng/picklist';
 
 
 @Component({
   selector: 'app-ro-admin',
   standalone: true,
-  imports: [TabViewModule , ToastModule, DropdownModule, AutoCompleteModule, ProgressSpinnerModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
+  imports: [TabViewModule , ToastModule, PickListModule, DropdownModule, AutoCompleteModule, ProgressSpinnerModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
   templateUrl: './ro-admin.component.html',
   styleUrl: './ro-admin.component.scss',
     providers: [MessageService, ConfirmationService]
@@ -75,7 +75,7 @@ export class RoAdminComponent implements OnInit {
   
   this.filterFormGroup = new FormGroup({
     selectedUsers: new FormControl([]),
-    selectedTrainingName: new FormControl(null)
+    selectedTrainingName: new FormControl([])
   })
  }
 
@@ -93,7 +93,7 @@ export class RoAdminComponent implements OnInit {
       if (this.filterFormGroup?.get('selectedUsers')?.value?.length === 0) {
         this.messageService.add({ severity: 'warn', summary: '', detail: 'Please select employee' });
         return;
-      }if (this.filterFormGroup?.get('selectedTrainingName')?.value == undefined || this.filterFormGroup?.get('selectedTrainingName')?.value == null) {
+      }if (this.filterFormGroup?.get('selectedTrainingName')?.value?.length == 0) {
         this.messageService.add({ severity: 'warn', summary: '', detail: 'Please select training name' });
         return;
       }
@@ -110,16 +110,19 @@ export class RoAdminComponent implements OnInit {
     
     const data = {
       userId: this.roEmailId,
-      emailIdList: this.selectedUsers.map((x: any) => x.emailId),
-      courseIdList: this.selectedTrainingName.map((x: any) => x.trainingName),
+      emailIdList: this.filterFormGroup?.get('selectedUsers')?.value.map((x: any) => x.emailId),
+      courseIdList: this.filterFormGroup?.get('selectedTrainingName')?.value.map((x: any) => x.trainingName),
       enrollmentType: 'Mandatory'
     }
     this.enrollmentService.enroll(data).subscribe({
       next :(res) => {
         this.loading = false;
-        this.selectedUserTraining = [];
+        this.filterFormGroup?.reset();
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successful' });
 
+      }, error: (err: Error) => {
+        this.loading = false;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
       }
     });
   }
