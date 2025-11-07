@@ -32,12 +32,12 @@ import { ToastModule } from 'primeng/toast';
 export class RoAdminComponent implements OnInit {
    cities: any[] = [];
     selectedCity: any = null;
-    users: any[] | undefined;
+    users: any[] | undefined = [];
     loading: boolean = false;
     downloading: boolean = false;
     groupType: any = [];
   
-    selectedUsers: any | undefined;
+    selectedUsers: any[] | undefined = [];
     selectedGroupType: any | undefined;
     trainings: any[] | undefined;
   
