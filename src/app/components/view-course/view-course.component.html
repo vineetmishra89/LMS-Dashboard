@@ -75,12 +75,13 @@
             justify-content: center;
           "
         >
-        <div style="margin-top: 5px; font-size: 12px">{{courseDetail?.rating}} ratings</div>
+        
           <div>
-            @for(rating of courseDetail?.rating; track rating) {
+            @for(item of numberToStars(ratings); track $index) {
               <i class="pi pi-star-fill" style="color: #c4710d"></i>
             }
           </div>
+          <div style="margin-top: 5px; font-size: 13px">{{ratings}} ratings</div>
         </div>
         <div
           style="
@@ -94,7 +95,7 @@
           "
         >
           <div><i class="pi pi-users" style="font-size: 20px"></i></div>
-          <div style="font-size: 14px">1,000</div>
+          <div style="font-size: 14px">{{totalLearners}}</div>
           <div style="margin-top: 5px; font-size: 12px">Learners</div>
         </div>
         
@@ -104,9 +105,7 @@
           } @else() {
             <i class="pi pi-heart" (click)="liked = true" style="font-size: 24px; color: var(--bluegray-300); cursor: pointer"></i>
           }
-            
         </div>
-        
       </div>
     </div>
     
@@ -132,21 +131,13 @@
     <div class="content" style="margin-top: 30px; margin-left: 20px; margin-right: 20px">
       <div style="margin-top: 15px">
         <div style="font-size: 18px; font-weight: bold">Course Content</div>
-        <div style="width: 400px; margin-top: 10px">
+        <div style="width: 90vw; margin-top: 10px">
           <ul style="list-style: none">
             @for(content of courseDetail?.lmsTrainingDetails; track content) {
-              <li style="display: flex; align-items: center; margin: 20px 0px">
+              <li class="playlist-section">
                 <div style="display: flex; align-items: center">
                   <i class="pi pi-youtube"></i>
-                  <span
-                    style="
-                      margin-left: 10px;
-                      margin-right: 10px;
-                      display: inline-block;
-                      width: 350px;
-                      color: var(--text-color);
-                    "
-                  >
+                  <span class="playlist-item">
                     {{content?.details}}
                   </span>
                 </div>

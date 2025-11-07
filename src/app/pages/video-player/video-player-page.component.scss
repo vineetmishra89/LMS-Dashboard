@@ -88,6 +88,12 @@
 }
 .color-active {
   color: inherit;
+  cursor: pointer;
+
+}
+.color-active:hover, .color-active:active, .selected-module {
+  background-color: #bee0ebad;
+  
 }
 .color-disabled {
   color: #8d95a7;

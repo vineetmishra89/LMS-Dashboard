@@ -16,6 +16,7 @@ export class VideoPlayerPageComponent implements OnInit {
   isLoading = true;
    dataSharingService = inject(DataSharingService);
    playCourseData: any = null;
+   selectedModule: any = null;
    
   
   constructor(
@@ -42,6 +43,7 @@ export class VideoPlayerPageComponent implements OnInit {
           this.course = course;
           console.log('First course lession id- '+ this.course.lmsTrainingDetails[0].moduleId);
           this.isLoading = false;
+          this.selectedModule = course.lmsTrainingDetails[0];
         },
         error: (error) => {
           console.error('Failed to load course:', error);
@@ -53,6 +55,11 @@ export class VideoPlayerPageComponent implements OnInit {
     this.dataSharingService.getData().subscribe(data => {
       this.playCourseData = data;
     });
+  }
+
+  moduleSelected(selectedModule: any) {
+    this.selectedModule = selectedModule
+
   }
   
   goBack(): void {
