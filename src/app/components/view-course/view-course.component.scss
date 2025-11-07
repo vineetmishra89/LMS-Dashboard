@@ -35,3 +35,14 @@
     justify-content: center;
     z-index: 999;
   }
+  .playlist-item {
+    
+    margin-left: 10px;
+    margin-right: 10px;
+    display: inline-block;
+    max-width: 70vw;
+    color: var(--text-color);
+  }
+.playlist-section {
+    display: flex; align-items: center; margin: 20px 0px;
+}

@@ -2,6 +2,7 @@ package com.example.lms.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.*;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -20,5 +21,10 @@ public class CorsConfig {
     config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
     source.registerCorsConfiguration("/api/**", config);
     return new CorsFilter(source);
+  }
+  
+  @Bean
+  public RestTemplate restTemplate() {
+      return new RestTemplate();
   }
 }

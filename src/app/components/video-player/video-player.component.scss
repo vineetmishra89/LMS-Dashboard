@@ -1,6 +1,6 @@
 .video-player-container {
   width: 100%;
-  max-width: 800px;
+  // max-width: 800px;
   margin: 0 auto;
 }
 
@@ -17,6 +17,11 @@
     align-items: center;
     justify-content: center;
   }
+}
+
+.video-container {
+  height: 60%; /* Example: Define a fixed height for the parent */
+  width: 100%;
 }
 
 .video-element {

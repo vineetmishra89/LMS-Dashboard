@@ -14,4 +14,9 @@ public interface CourseDetailRepository extends JpaRepository<CourseDetail, Long
 
   @Override
   Optional<CourseDetail> findById(Long id);
+
+  /**
+   * Find CourseDetail by training ID and module path (for idempotency check).
+   */
+  Optional<CourseDetail> findByCourseTrainingIdAndTrainingLink(Long trainingId, String trainingLink);
 }

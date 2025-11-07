@@ -594,4 +594,8 @@ export class EnrollmentService {
   unenroll(data: any) {
     return this.apiService.post<any>(`enrollments/unenroll`, data);
   }
+
+  bulkEnroll(data: any) {
+    return this.apiService.post<any>(`enrollments/bulk-enroll`, data);
+  }
 }

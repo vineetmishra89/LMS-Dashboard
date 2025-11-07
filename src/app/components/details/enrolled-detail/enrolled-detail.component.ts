@@ -15,7 +15,7 @@ import { EnrollmentService } from '../../../services/enrollment.service';
 export class EnrolledDetailComponent implements OnInit {
   enrolledCourses$!: Observable<CourseMaster[]>;
   enrollments$!: Observable<Enrollment[]>;
-  userId: string = 'test_trainee1@irissoftware.com';
+  userId: string = 'chetna.bhatia@irissoftware.com';
 
   constructor(
     private courseService: CourseService,
@@ -29,7 +29,7 @@ export class EnrolledDetailComponent implements OnInit {
   }
 
   onVideoClick(course: CourseDetail): void {
-    this.router.navigate(['/video-player', course.trainingDetailId]);
+    this.router.navigate(['/video-player', course.moduleId]);
   }
 
   getEnrollmentFor(courseId: string): Observable<Enrollment | undefined> {

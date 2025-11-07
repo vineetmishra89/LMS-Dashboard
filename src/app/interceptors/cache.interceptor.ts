@@ -16,7 +16,7 @@ export class CacheInterceptor implements HttpInterceptor {
   
   // Define which endpoints should be cached
   private cacheableEndpoints = [
-    '/api/courses',
+    //'/api/courses',
     '/api/categories',
     '/api/instructors'
   ];

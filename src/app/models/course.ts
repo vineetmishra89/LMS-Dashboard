@@ -1,6 +1,5 @@
 export interface CourseDetail {
-  trainingDetailId: string;
-  trainingId: string;
+  moduleId: string;
   trainersCurrentFeedback?: number;
   currentUserFeedback?: number;
   instructorName?: string;
@@ -23,6 +22,7 @@ export interface CourseMaster {
   reviewComments?: string;
   prerequisite?: string;
   toolsNeeded?: string;
+  lmsTrainingDetails: CourseDetail[];
 }
 
 export interface CourseModule {

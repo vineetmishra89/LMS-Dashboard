@@ -2,15 +2,17 @@ package com.example.lms.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "LMS_EMPLOYEE_DTLS", schema = "lms_schema")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeDetails {
 
   @Id

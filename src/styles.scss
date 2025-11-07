@@ -187,3 +187,14 @@ body {
     margin-right: 20px;
   }
 }
+.ro-form-group {
+  display: flex;
+  .p-dropdown, .p-multiselect {
+    width: 400px !important;
+    margin-right: 20px;
+  }
+  .p-button {
+    width: 180px !important;
+    margin-right: 20px;
+  }
+}

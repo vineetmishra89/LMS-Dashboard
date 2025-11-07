@@ -24,7 +24,7 @@ import { DataSharingService } from '../../services/data-sharing.service';
 })
 export class ViewCourseComponent implements OnInit {
 
-  userId: string = 'test_trainee1@irissoftware.com';
+  userId: string = 'chetna.bhatia@irissoftware.com';
   router = inject(Router);
   liked: boolean = false;
   courseService = inject(CourseService);
@@ -34,6 +34,8 @@ export class ViewCourseComponent implements OnInit {
   dataSharingService = inject(DataSharingService);
   route = inject(ActivatedRoute);
   courseDetail: any = null;
+  totalLearners: number = 0;
+  ratings: number = 0;
   trainingId: string = '0';
   loading: boolean = false;
   visible: boolean = false;
@@ -84,6 +86,7 @@ export class ViewCourseComponent implements OnInit {
     this.enrollmentService.unenroll(data).subscribe({
       next :(res) => {
         this.message = 'Unenrollment Successful.'
+        this.hasEnrolled = false;
         this.visible = true;
         console.log(res);
         this.loading = false;
@@ -106,11 +109,14 @@ export class ViewCourseComponent implements OnInit {
         
         
         this.courseDetail = res;
+        this.totalLearners = res.enrollmentMappings.filter((x: any)=> x.status === 'Completed').length;
+        this.ratings = Math.floor(Number(res.rating));
         
         this.dataSharingService.getData().subscribe({
           next: (res) => {
             this.courseDetail.trainerNames = res.names,
             this.courseDetail.trainerEmails = res.emails.split(',')
+           
           }
         })
      //   this.dataSharingService.sendData(null);
@@ -120,7 +126,10 @@ export class ViewCourseComponent implements OnInit {
       }
     })
   }
-
+  numberToStars(n: number): number[] {
+    return Array.from({ length: n }, (_, i) => i);
+  }
+  
   convertStringToInt(str: string){ 
     var Num = parseInt(str); 
     return Num;
