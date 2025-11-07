@@ -44,30 +44,30 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-   // this.router.navigate(['/home']);
-   // if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      return;
+    }
     
     this.isLoading = true;
     this.errorMessage = '';
     
-    const credentials = this.loginForm.value;
-    this.authService.loginhardcode().subscribe({
-      next: () => {
-       // console.log('Login successful:', user);
-        this.router.navigate(['/home']);
+    const credentials = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
+    
+    this.authService.login(credentials).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        this.isLoading = false;
+        this.router.navigate([this.returnUrl]);
+      },
+      error: (error) => {
+        this.errorMessage = error.userMessage || 'Login failed. Please check your credentials.';
+        this.isLoading = false;
       }
     });
-    
-    // this.authService.login(credentials).subscribe({
-    //   next: (user) => {
-    //     console.log('Login successful:', user);
-    //     this.router.navigate(['/home']);
-    //   },
-    //   error: (error) => {
-    //     this.errorMessage = error.userMessage || 'Login failed. Please check your credentials.';
-    //     this.isLoading = false;
-    //   }
-    // });
   }
 
   togglePasswordVisibility(): void {
