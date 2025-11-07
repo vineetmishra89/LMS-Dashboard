@@ -25,7 +25,7 @@ public class EmployeeDetails {
   @Column(name = "EMP_NAME", length = 200)
   private String empName;
 
-  @Column(name = "PASSWRD", length = 100)
+  @Column(name = "PASSWRD", length = 255)
   private String passwrd;
 
   @Column(name = "EMP_DESIGNATION", length = 200)
