@@ -1,6 +1,6 @@
 .video-player-page {
   padding: 20px;
-  max-width: 1200px;
+  // max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -85,4 +85,10 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+}
+.color-active {
+  color: inherit;
+}
+.color-disabled {
+  color: #8d95a7;
 }

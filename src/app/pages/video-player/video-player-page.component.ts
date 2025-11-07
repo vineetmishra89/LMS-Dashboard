@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CourseMaster } from '../../models/course';
 import { CourseService } from '../../services/course.service';
 import { UserService } from '../../services/user.service';
+import { DataSharingService } from '../../services/data-sharing.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-video-player-page',
@@ -12,6 +14,9 @@ import { UserService } from '../../services/user.service';
 export class VideoPlayerPageComponent implements OnInit {
   course: CourseMaster | null = null;
   isLoading = true;
+   dataSharingService = inject(DataSharingService);
+   playCourseData: any = null;
+   
   
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +49,10 @@ export class VideoPlayerPageComponent implements OnInit {
         }
       });
     }
+
+    this.dataSharingService.getData().subscribe(data => {
+      this.playCourseData = data;
+    });
   }
   
   goBack(): void {
