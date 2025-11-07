@@ -14,5 +14,6 @@ import java.util.List;
 public class TrainingNameDto {
   private String category;
   private String trainingName;
+  private Long trainingId;
 
 }
