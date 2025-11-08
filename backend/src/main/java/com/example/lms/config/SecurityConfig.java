@@ -39,11 +39,10 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/sharepoint/sync-modules-with-user-token").authenticated()
+                        .requestMatchers("/api/sharepoint/list-with-user-token").authenticated()
                         
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
