@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 @Getter
 @Setter
 public class CourseCardDetailDto {
 
-  private long trngId;
+  private Long trngId;
 
   private String courseName;
 
@@ -17,18 +18,18 @@ public class CourseCardDetailDto {
 
   private String trainerEmailIds;
 
-  private long duration;
+  private Long duration;
 
   private String level;
 
-  private long modules;
+  private Long modules;
 
-  private String rating;
+  private BigDecimal rating;
 
   private String category;
 
-  public CourseCardDetailDto(long trngId, String courseName,
-                             String trainerNames, String trainerEmailIds, long duration, String level, long modules, String rating, String category) {
+  public CourseCardDetailDto(Long trngId, String courseName,
+                             String trainerNames, String trainerEmailIds, Long duration, String level, Long modules, BigDecimal rating, String category) {
     this.trngId = trngId;
     this.courseName = courseName;
     this.trainerNames = trainerNames;
