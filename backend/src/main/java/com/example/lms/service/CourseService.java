@@ -112,7 +112,16 @@ public class CourseService {
             return List.of();
         }
         return courseCardDetailList != null ? courseCardDetailList.stream()
-          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (String) row[3],(Long) row[4], (String) row[5], (Long) row[6], (String) row[7], (String) row[8]))
+          .map(row -> new CourseCardDetailDto(
+              toLong(row[0]),
+              (String) row[1], 
+              (String) row[2], 
+              (String) row[3],
+              toLong(row[4]), 
+              (String) row[5], 
+              toLong(row[6]), 
+              (String) row[7], 
+              (String) row[8]))
           .collect(Collectors.toList()): List.of();
       }
       return List.of();
@@ -120,5 +129,12 @@ public class CourseService {
       log.error("Database error while fetching course card list", ex);
       throw new DatabaseException("Failed to fetch course card list", ex);
     }
+  }
+
+  private static long toLong(Object obj) {
+    if (obj == null) {
+      return 0L;
+    }
+    return ((Number) obj).longValue();
   }
 }
