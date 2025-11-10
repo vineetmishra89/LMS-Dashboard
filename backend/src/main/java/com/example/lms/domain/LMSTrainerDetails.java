@@ -29,7 +29,4 @@ public class LMSTrainerDetails {
   @Column(name = "trainer_type")
   private String trainerType;
 
-  @OneToMany(mappedBy = "trainerDetails", cascade = CascadeType.ALL)
-  @JsonManagedReference
-  private List<CourseDetail> modules;
 }

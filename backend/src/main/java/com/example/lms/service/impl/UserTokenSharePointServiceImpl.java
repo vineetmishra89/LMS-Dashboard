@@ -426,6 +426,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             logger.info("Processing first-level folder: {} (driveId={}, folderId={})", folderName, driveId, folderId);
 
             Optional<CourseSummary> courseOpt = matchCourseByFolderPath(folderName, folderWebUrl);
+            logger.info("Completed matchCourseByFolderPath :: courseOpt.isPresent(): {}", courseOpt.isPresent());
 
             if (courseOpt.isPresent()) {
                 CourseSummary course = courseOpt.get();
@@ -462,7 +463,8 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     private void traverseSubtreeForFiles(GraphServiceClient<Request> client, String driveId, String folderId,
                                          CourseSummary matchedCourse, String username,
                                          SharePointSyncResult result, boolean dryRun, java.util.Set<String> visitedFolders) {
-        try {
+      int seqId = 1;
+      try {
             String folderKey = driveId + ":" + folderId;
             if (visitedFolders.contains(folderKey)) {
                 logger.debug("Skipping already visited folder: {}", folderKey);
@@ -487,7 +489,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             do {
                 for (DriveItem item : items.getCurrentPage()) {
                     if (item.folder != null) {
-                        logger.debug("Traversing subfolder: {} (id={})", item.name, item.id);
+                        logger.info("Traversing subfolder: {} (id={})", item.name, item.id);
                         //traverseSubtreeForFiles(client, driveId, item.id, matchedCourse, username, result, dryRun, visitedFolders);
 
                     } else if (item.remoteItem != null && item.remoteItem.folder != null) {
@@ -501,10 +503,10 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
 
                     } else if (item.file != null && item.name != null && item.name.toLowerCase().endsWith(".mp4")) {
                         if (matchedCourse != null) {
-                            logger.debug("Found .mp4 file: {} (webUrl={})", item.name, item.webUrl);
-                            processVideoFile(item, matchedCourse, username, result, dryRun);
+                            logger.info("Found .mp4 file: {} (webUrl={})", item.name, item.webUrl);
+                            processVideoFile(item, matchedCourse, username, result, dryRun, seqId++);
                         } else {
-                            logger.debug("Skipping .mp4 file '{}' - no course matched at first level", item.name);
+                            logger.info("Skipping .mp4 file '{}' - no course matched at first level", item.name);
                         }
                     }
                 }
@@ -529,13 +531,13 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     private Optional<CourseSummary> matchCourseByFolderPath(String folderName, String folderWebUrl) {
         Optional<CourseSummary> courseOpt = courseRepository.findByFolderPath(folderWebUrl);
         if (courseOpt.isPresent()) {
-            logger.debug("Matched by URL: {}", folderWebUrl);
+            logger.info("Matched by URL: {}", folderWebUrl);
             return courseOpt;
         }
 
         courseOpt = courseRepository.findByFolderPathIgnoreCase(folderName);
         if (courseOpt.isPresent()) {
-            logger.debug("Matched by name: {}", folderName);
+            logger.info("Matched by name: {}", folderName);
             return courseOpt;
         }
 
@@ -547,15 +549,15 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
      * The trainingLink (MODULE_PATH) is set to the file's webUrl, which contains the full path to the video file.
      */
     private void processVideoFile(DriveItem item, CourseSummary course, String username,
-                                   SharePointSyncResult result, boolean dryRun) {
+                                   SharePointSyncResult result, boolean dryRun, int seqId) {
         try {
             String filename = item.name;
             String webUrl = item.webUrl;
 
             String moduleName = SessionSequenceParser.removeExtension(filename);
-            Integer seqId = SessionSequenceParser.extractSessionNumber(filename);
+          //Integer seqId = SessionSequenceParser.extractSessionNumber(filename);
 
-            logger.debug("Processing file: {} -> moduleName={}, seqId={}, webUrl={}", filename, moduleName, seqId, webUrl);
+            logger.info("Processing file: {} -> moduleName={}, seqId={}, webUrl={}", filename, moduleName, seqId, webUrl);
 
             Optional<CourseDetail> existingModuleOpt = courseDetailRepository
                     .findByCourseTrainingIdAndTrainingLink(course.getTrainingId(), webUrl);
@@ -574,8 +576,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     updated = true;
                 }
 
-                if ((seqId == null && existingModule.getSeqId() != null) ||
-                    (seqId != null && !seqId.equals(existingModule.getSeqId()))) {
+                if (!Integer.valueOf(seqId).equals(existingModule.getSeqId())) {
                     existingModule.setSeqId(seqId);
                     updated = true;
                 }
