@@ -11,9 +11,6 @@ import { AnalyticsService } from './analytics.service';
 export interface EnrollmentRequest {
   userId: string;
   courseId: string;
-  paymentMethod?: 'free' | 'stripe' | 'paypal';
-  paymentToken?: string;
-  discountCode?: string;
 }
 
 export interface LessonProgress {
@@ -592,10 +589,6 @@ export class EnrollmentService {
   }
 
   unenroll(data: any) {
-    return this.apiService.post<any>(`enrollments/unenroll`, data);
-  }
-
-  bulkEnroll(data: any) {
-    return this.apiService.post<any>(`enrollments/bulk-enroll`, data);
+  return this.apiService.post<any>(`enrollments/unenroll`, data);
   }
 }

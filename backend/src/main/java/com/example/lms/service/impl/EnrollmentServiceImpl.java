@@ -1,5 +1,6 @@
 package com.example.lms.service.impl;
 
+import com.example.lms.constant.EnrollmentStatus;
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.EnrollmentDetails;
 import com.example.lms.domain.EnrollmentMapping;
@@ -44,7 +45,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     EnrollmentMapping e = new EnrollmentMapping();
     e.setUserId(userId);
     e.setCourseSummary(courseSummary);
-    e.setStatus("Enrolled");
+    e.setStatus(EnrollmentStatus.ENROLLED.getStatus());
     e.setEnrolledTs(OffsetDateTime.now());
     e.setEnrollmentType(enrollmentType.toUpperCase());
     e.setProgressPercent(0L);
@@ -58,7 +59,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
       for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
         EnrollmentDetails details = new EnrollmentDetails();
         details.setModuleId(courseDetail.getModuleId());
-        details.setStatus("Enrolled");
+        details.setStatus(EnrollmentStatus.ENROLLED.getStatus());
         details.setEnrollmentMapping(e);
         details.setCourseDetail(courseDetail);
         details.setCreatedTs(OffsetDateTime.now());
