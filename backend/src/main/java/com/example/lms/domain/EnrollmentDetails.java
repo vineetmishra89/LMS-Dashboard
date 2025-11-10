@@ -25,14 +25,8 @@ public class EnrollmentDetails implements Serializable {
   @Column(name = "module_id")
   private Long moduleId;
 
-  @Column(name = "trng_enrl_id")
-  private Long trainingEmrollmentId;
-
   @Column(name = "status")
   private String status;
-
-  @Column(name = "current_learning_ts")
-  private Integer currentLearningTs;
 
   @Column(name = "created_ts")
   private OffsetDateTime createdTs;
@@ -47,9 +41,8 @@ public class EnrollmentDetails implements Serializable {
   private String updatedBy;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @MapsId("trainingEmrollmentId")
-  @JoinColumn(name = "trng_enrl_id")
-  @JsonBackReference
+  @JoinColumn(naml\e = "trng_enrl_id")
+  @JsonBackReference("LMS_USER_TRNG_ENROLLMENT_DTLS")
   private EnrollmentMapping enrollmentMapping;
 
   @ManyToOne(fetch = FetchType.EAGER)
