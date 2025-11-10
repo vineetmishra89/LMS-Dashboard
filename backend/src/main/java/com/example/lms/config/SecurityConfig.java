@@ -15,38 +15,36 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * Security configuration for the application.
  * Configures JWT-based stateless authentication.
- * 
+ *
  * CORS configuration is handled by CorsConfig class to avoid duplication.
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    
+
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                
+
                 .cors(Customizer.withDefaults())
-                
-                .sessionManagement(session -> 
+
+                .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/sharepoint/sync-modules-with-user-token").authenticated()
-                        .requestMatchers("/api/sharepoint/list-with-user-token").authenticated()
-                        
+
                         .anyRequest().permitAll()
                 )
-                
+
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        
+
         return http.build();
     }
 }

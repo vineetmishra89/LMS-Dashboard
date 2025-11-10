@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,9 +31,22 @@ public class SearchDto {
 
   private String trainerName;
 
-  private String rating;
+  private Integer rating;
 
   private List<CourseDetail> courseDetailList;
 
   private Set<TrainerDto> trainerDetailList;
+
+  public void addTrainerDto(TrainerDto trainerDto){
+    if(null == this.trainerDetailList){
+      this.trainerDetailList = new HashSet<>();
+      trainerDetailList.add(trainerDto);
+    }
+  }
+  public void addTrainerDtoList(Set<TrainerDto> trainerDtoSet) {
+    if (null == this.trainerDetailList) {
+      this.trainerDetailList = new HashSet<>();
+      trainerDetailList.addAll(trainerDtoSet);
+    }
+  }
 }

@@ -1,24 +1,41 @@
 package com.example.lms.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+
 @Entity
-@Table(name = "video_progress")
+@Table(name = "lms_video_progress")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class VideoProgress {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lms_video_progress_id_generator")
+    @SequenceGenerator(name = "lms_video_progress_id_generator", sequenceName = "lms_schema.video_progress_id_seq", allocationSize = 1)
+    @Column(name = "VIDEO_PROGRESS_ID")
     private Long id;
 
     @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "course_id")
+    @Column(name = "TRNG_ENRL_DTL_ID")
+    private Long trainingEnrollmentDtlId;
+
+    @Column(name = "TRNG_ID")
     private String courseId;
 
-    @Column(name = "lesson_id")
+    @Column(name = "module_id")
     private String lessonId;
+
+    @Column(name = "progress_percent")
+    private Long progressPercent;
 
     @Column(name = "current_ts")
     private BigDecimal currentTime;
@@ -29,6 +46,7 @@ public class VideoProgress {
     @Column(name = "watch_time")
     private BigDecimal watchTime;
 
+    @Column(name = "COMPLETED_FLAG")
     private Boolean completed;
 
     @Column(name = "last_watched_at")
@@ -39,37 +57,4 @@ public class VideoProgress {
 
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-
-    public String getCourseId() { return courseId; }
-    public void setCourseId(String courseId) { this.courseId = courseId; }
-
-    public String getLessonId() { return lessonId; }
-    public void setLessonId(String lessonId) { this.lessonId = lessonId; }
-
-    public BigDecimal getCurrentTime() { return currentTime; }
-    public void setCurrentTime(BigDecimal currentTime) { this.currentTime = currentTime; }
-
-    public BigDecimal getDuration() { return duration; }
-    public void setDuration(BigDecimal duration) { this.duration = duration; }
-
-    public BigDecimal getWatchTime() { return watchTime; }
-    public void setWatchTime(BigDecimal watchTime) { this.watchTime = watchTime; }
-
-    public Boolean getCompleted() { return completed; }
-    public void setCompleted(Boolean completed) { this.completed = completed; }
-
-    public OffsetDateTime getLastWatchedAt() { return lastWatchedAt; }
-    public void setLastWatchedAt(OffsetDateTime lastWatchedAt) { this.lastWatchedAt = lastWatchedAt; }
-
-    public OffsetDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-
-    public OffsetDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
