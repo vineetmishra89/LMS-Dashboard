@@ -65,5 +65,8 @@ public class CourseDetail {
   @JsonManagedReference
   private List<EnrollmentDetails> enrollmentDetailsList;
 
-  private Long moduleProgressPercentage;
+  @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JsonManagedReference
+  private List<VideoProgress> videoProgressList;
+
 }

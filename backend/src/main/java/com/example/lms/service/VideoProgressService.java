@@ -16,38 +16,34 @@ public class VideoProgressService {
         this.repository = repository;
     }
 
-    public VideoProgress updateProgress(String userId, String courseId, String lessonId,
-                                      BigDecimal currentTime, BigDecimal duration, BigDecimal watchTime) {
-        Optional<VideoProgress> existing = repository.findByUserIdAndCourseIdAndLessonId(userId, courseId, lessonId);
+    public VideoProgress updateProgress(VideoProgress progress) {
+        Optional<VideoProgress> existing = repository.findByUserIdAndCourseIdAndLessonId(progress.getUserId(), progress.getCourseId(), progress.getLessonId());
 
-        VideoProgress progress;
-        if (existing.isPresent()) {
-            progress = existing.get();
-            progress.setWatchTime(progress.getWatchTime().add(watchTime));
+      VideoProgress existingProgress = null;
+        if (existing.isPresent() && !existing.get().getCompleted()) {
+            existingProgress = existing.get();
+            existingProgress.setWatchTime(existingProgress.getWatchTime().add(progress.getWatchTime()));
         } else {
-            progress = new VideoProgress();
-            progress.setUserId(userId);
-            progress.setCourseId(courseId);
-            progress.setLessonId(lessonId);
-            progress.setWatchTime(watchTime);
-            progress.setCreatedAt(OffsetDateTime.now());
+          existingProgress = new VideoProgress();
+          existingProgress.setUserId(progress.getUserId());
+          existingProgress.setCourseId(progress.getCourseId());
+          existingProgress.setLessonId(progress.getLessonId());
+          existingProgress.setWatchTime(progress.getWatchTime());
+          existingProgress.setCreatedAt(OffsetDateTime.now());
         }
 
-        progress.setCurrentTime(currentTime);
-        progress.setDuration(duration);
-        progress.setCompleted(currentTime.compareTo(duration.multiply(BigDecimal.valueOf(0.9))) >= 0);
-        progress.setLastWatchedAt(OffsetDateTime.now());
-        progress.setUpdatedAt(OffsetDateTime.now());
+      existingProgress.setCurrentTime(progress.getCurrentTime());
+      existingProgress.setDuration(progress.getDuration());
+        //progress.setCompleted(progress.getCurrentTime().compareTo(progress.getDuration().multiply(BigDecimal.valueOf(0.9))) >= 0);
+      existingProgress.setCompleted(progress.getCompleted());
+      existingProgress.setLastWatchedAt(OffsetDateTime.now());
+      existingProgress.setUpdatedAt(OffsetDateTime.now());
 
-        return repository.save(progress);
+        return repository.save(existingProgress);
     }
 
     public Optional<VideoProgress> getProgress(String userId, String courseId, String lessonId) {
-        return repository.findByUserIdAndCourseIdAndLessonId(userId, courseId, lessonId);
-    }
-
-    public List<VideoProgress> getCourseProgress(String userId, String courseId) {
-        return repository.findByUserIdAndCourseId(userId, courseId);
+        return repository.findByUserIdAndCourseIdAndLessonIdAndCompleted(userId, courseId, lessonId,false);
     }
 
     public Double getTotalLearningHours(String userId) {

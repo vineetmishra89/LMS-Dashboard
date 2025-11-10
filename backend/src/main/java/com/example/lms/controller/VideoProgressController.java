@@ -20,14 +20,20 @@ public class VideoProgressController {
 
     @PostMapping("/update")
     public VideoProgress updateProgress(@RequestBody Map<String, Object> request) {
-        String userId = (String) request.get("userId");
-        String courseId = String.valueOf((Integer) request.get("courseId"));
-        String lessonId = String.valueOf((Integer) request.get("lessonId"));
-        BigDecimal currentTime = new BigDecimal(request.get("currentTime").toString());
-        BigDecimal duration = new BigDecimal(request.get("duration").toString());
-        BigDecimal watchTime = new BigDecimal(request.get("watchTime").toString());
+      VideoProgress progress = prepareVideoProgress(request);
+        return service.updateProgress(progress);
+    }
 
-        return service.updateProgress(userId, courseId, lessonId, currentTime, duration, watchTime);
+    private VideoProgress prepareVideoProgress(Map<String, Object> request){
+      VideoProgress progress = new VideoProgress();
+      progress.setUserId((String) request.get("userId"));
+      progress.setCourseId(String.valueOf((Integer) request.get("courseId")));
+      progress.setLessonId(String.valueOf((Integer) request.get("lessonId")));
+      progress.setCurrentTime(new BigDecimal(request.get("currentTime").toString()));
+      progress.setDuration(new BigDecimal(request.get("duration").toString()));
+      progress.setWatchTime(new BigDecimal(request.get("watchTime").toString()));
+      progress.setCompleted((Boolean) request.get("completed"));
+      return progress;
     }
 
     @GetMapping("/{userId}/{courseId}/{lessonId}")
