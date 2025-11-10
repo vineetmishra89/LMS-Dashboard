@@ -23,7 +23,7 @@ public interface CourseRepository extends JpaRepository<CourseSummary, Long>, Jp
   @Query("select distinct cm from CourseSummary cm left join fetch cm.details")
   List<CourseSummary> findAllWithDetailsFetchJoin();
 
-  @Query(value = "select distinct category,trng_topic from lms_schema.lms_trng_summary order by category,trng_topic", nativeQuery = true)
+  @Query(value = "select distinct category,trng_topic,trng_id from lms_schema.lms_trng_summary order by category,trng_topic", nativeQuery = true)
   List<Object[]> getAllTrainings();
 
   @Query(value = "select distinct category from lms_schema.lms_trng_summary order by category", nativeQuery = true)
@@ -32,5 +32,16 @@ public interface CourseRepository extends JpaRepository<CourseSummary, Long>, Jp
   @Query(value = "select distinct level_code from lms_schema.lms_trng_summary order by level_code", nativeQuery = true)
   List<Object> getAllLevels();
 
+  /**
+   * Find CourseSummary by folder_path (case-insensitive).
+   * Used for matching folders by name.
+   */
+  Optional<CourseSummary> findByFolderPathIgnoreCase(String folderPath);
+
+  /**
+   * Find CourseSummary by exact folder_path.
+   * Used for matching folders by URL.
+   */
+  Optional<CourseSummary> findByFolderPath(String folderPath);
 
 }
