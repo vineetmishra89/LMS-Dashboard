@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
@@ -52,8 +55,8 @@ public class VideoProgress {
     @Column(name = "last_watched_at")
     private OffsetDateTime lastWatchedAt;
 
-    @Column(name = "created_at")
-    private OffsetDateTime createdAt;
+  @Column(name = "user_id")
+  private String userId;
 
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;

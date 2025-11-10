@@ -15,6 +15,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   @Input() courseId!: string;
   @Input() lessonId: string = 'default';
   @Input() course!: CourseMaster;
+  completed: boolean = false;
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
   
@@ -116,13 +117,18 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     
     if (watchTimeDelta > 0) {
       console.log('Storing session watch time : '+ watchTimeDelta);
+      if(this.currentTime >= this.duration) {
+        this.completed = true;
+      }
       this.videoProgressService.updateProgress({
         userId: user.id,
         courseId: this.courseId,
         lessonId: this.lessonId,
         currentTime: this.currentTime,
         duration: this.duration,
-        watchTime: watchTimeDelta / 60
+        watchTime: watchTimeDelta / 60,
+        completed: this.completed,
+        progress: (this.currentTime / this.duration) * 100
       }).subscribe({
         next: () => {
           console.log('Video progress saved successfully');
