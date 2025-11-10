@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -112,7 +113,13 @@ public class CourseService {
             return List.of();
         }
         return courseCardDetailList != null ? courseCardDetailList.stream()
-          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (String) row[3],(Long) row[4], (String) row[5], (Long) row[6], (String) row[7], (String) row[8]))
+          .map(row -> {
+            int duration = (Integer) row[4] == null?0 : (Integer) row[4];
+            int rating = (Integer) row[6] == null?0 : (Integer) row[6];
+            Integer trainingId = (Integer) row[0];
+            int modules = (Integer) row[6]== null?0 : (Integer) row[6];
+            return new CourseCardDetailDto(Long.valueOf(trainingId),(String) row[1], (String) row[2], (String) row[3], (long) duration, (String) row[5], modules, String.valueOf(rating), (String) row[8]);
+          })
           .collect(Collectors.toList()): List.of();
       }
       return List.of();
