@@ -14,7 +14,7 @@ public interface EnrollmentService {
 
   EnrollmentMapping getById(Long enrollmentId);
 
-  EnrollmentDetails updateProgress(Long enrollmentId, Long moduleId, Map<String, Object> progressData);
+  EnrollmentDetails updateProgress(Long enrollmentDetailsId, Map<String, Object> progressData);
 
   List<EnrollmentMapping> bulkEnroll(List<String> emailIdList, List<Long> courseIdList, String enrollmentType, String userId);
 

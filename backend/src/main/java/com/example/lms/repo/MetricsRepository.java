@@ -90,12 +90,12 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "c.rating, " +
     "COUNT(*) as enrollmentCount, " +
     "0 as completedCount, " +
-    "COUNT(e.last_accessed_ts) as viewCount " +
+    "COUNT(e.updated_ts) as viewCount " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +
-    "AND ( e.last_accessed_ts >= :startDate) " +
-    "AND (e.last_accessed_ts <= :endDate) " +
+    "AND ( e.updated_ts >= :startDate) " +
+    "AND (e.updated_ts <= :endDate) " +
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_code = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
@@ -144,7 +144,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "e.progress_percent as progressPercent, " +
     "e.enrolled_ts as enrolledTs, " +
     "e.started_ts as startedTs, " +
-    "e.last_accessed_ts as lastAccessedTs " +
+    "e.updated_ts as lastAccessedTs " +
     "FROM lms_schema.lms_user_trng_enrollment_mapping e " +
     "JOIN lms_schema.lms_trng_summary c ON e.trng_id = c.trng_id " +
     "WHERE upper(e.status) = 'COMPLETED' " +

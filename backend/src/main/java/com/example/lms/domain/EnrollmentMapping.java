@@ -46,9 +46,6 @@ public class EnrollmentMapping {
   @Column(name = "progress_percent")
   private Long progressPercent;
 
-  @Column(name = "last_accessed_ts")
-  private OffsetDateTime lastAccessedAt;
-
   @Column(name = "created_ts")
   private OffsetDateTime createdTs;
 

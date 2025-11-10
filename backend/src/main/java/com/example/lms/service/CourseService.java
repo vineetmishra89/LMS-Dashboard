@@ -73,7 +73,7 @@ public class CourseService {
   public Optional<CourseSummary> getContinueCourse(String userId) {
     return enrollmentRepository.findByUserId(userId).stream()
       .filter(e -> "ACTIVE".equalsIgnoreCase(e.getStatus()) && e.getProgressPercent() != null && e.getProgressPercent() < 100)
-      .sorted(Comparator.comparing(EnrollmentMapping::getLastAccessedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+      .sorted(Comparator.comparing(EnrollmentMapping::getUpdatedTs, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
       .map(enrollmentMapping -> enrollmentMapping.getCourseSummary().getTrainingId())
       .findFirst()
       .flatMap(courseRepository::findById);

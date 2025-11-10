@@ -2,7 +2,6 @@ package com.example.lms.service.impl;
 
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.EnrollmentDetails;
-import com.example.lms.domain.EnrollmentDetailsId;
 import com.example.lms.domain.EnrollmentMapping;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.exception.ValidationException;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,11 +56,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
     if (courseSummary.getLmsTrainingDetails() != null) {
       for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
-        EnrollmentDetailsId detailsId = new EnrollmentDetailsId();
-        detailsId.setModuleId(courseDetail.getModuleId());
-
         EnrollmentDetails details = new EnrollmentDetails();
-        details.setEnrollmentDetailsId(detailsId);
+        details.setModuleId(courseDetail.getModuleId());
         details.setStatus("Enrolled");
         details.setEnrollmentMapping(e);
         details.setCourseDetail(courseDetail);
@@ -88,19 +83,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
   }
 
   @Override
-  public EnrollmentDetails updateProgress(Long enrollmentId, Long moduleId, Map<String, Object> progressData) {
-    EnrollmentDetailsId enrollmentDetailsId = new EnrollmentDetailsId();
-    enrollmentDetailsId.setTrainingEmrollmentId(enrollmentId);
-    enrollmentDetailsId.setModuleId(moduleId);
+  public EnrollmentDetails updateProgress(Long enrollmentDetailsId, Map<String, Object> progressData) {
     EnrollmentDetails enrollmentDetails = enrollmentDetailsRepository.findById(enrollmentDetailsId)
-      .orElseThrow(() -> new ResourceNotFoundException("EnrollmentDetails", "enrollmentId-moduleId", enrollmentId + "-" + moduleId));
+      .orElseThrow(() -> new ResourceNotFoundException("enrollmentDetailsId", "enrollmentDetailsId", enrollmentDetailsId));
 
     if (progressData.containsKey("overallProgress")) {
       Integer progress = ((Number) progressData.get("overallProgress")).intValue();
       enrollmentDetails.setCurrentLearningTs(progress);
     }
 
-    enrollmentDetails.setLastAccessedAt(OffsetDateTime.now());
+    //enrollmentDetails.setLastAccessedAt(OffsetDateTime.now());
     return enrollmentDetailsRepository.save(enrollmentDetails);
   }
 
@@ -162,11 +154,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         List<EnrollmentDetails> detailsList = new ArrayList<>();
         if (courseSummary.getLmsTrainingDetails() != null) {
           for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
-            EnrollmentDetailsId detailsId = new EnrollmentDetailsId();
-            detailsId.setModuleId(courseDetail.getModuleId());
 
             EnrollmentDetails details = new EnrollmentDetails();
-            details.setEnrollmentDetailsId(detailsId);
+            details.setModuleId(courseDetail.getModuleId());
             details.setStatus("Enrolled");
             details.setEnrollmentMapping(enrollment);
             details.setCourseDetail(courseDetail);

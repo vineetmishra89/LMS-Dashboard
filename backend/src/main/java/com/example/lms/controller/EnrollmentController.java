@@ -35,9 +35,9 @@ public class EnrollmentController {
     return enrollmentService.getById(enrollmentId);
   }
 
-  @PutMapping("/{enrollmentId}/module/{moduleId}/progress")
-  public EnrollmentDetails updateProgress(@PathVariable Long enrollmentId, @PathVariable Long moduleId, @RequestBody Map<String, Object> progressData) {
-    return enrollmentService.updateProgress(enrollmentId, moduleId, progressData);
+  @PutMapping("/{enrollmentDetailsId}/module/{moduleId}/progress")
+  public EnrollmentDetails updateProgress(@PathVariable Long enrollmentDetailsId, @PathVariable Long moduleId, @RequestBody Map<String, Object> progressData) {
+    return enrollmentService.updateProgress(enrollmentDetailsId, progressData);
   }
 
   @PostMapping("/{enrollmentId}/complete")

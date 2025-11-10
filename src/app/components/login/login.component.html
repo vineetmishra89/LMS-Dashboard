@@ -4,20 +4,31 @@
       <header>
         <h1>Welcome</h1>
       </header>
-      <form class="login-form" (ngSubmit)="onSubmit()">
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        @if(errorMessage) {
+          <div class="error-message" style="color: red; margin-bottom: 10px; padding: 10px; background: #ffebee; border-radius: 4px;">
+            {{ errorMessage }}
+          </div>
+        }
         <div class="input-group">
-          <label for="username">Empcode or Email</label>
-          <input type="text" id="username" name="username" formControlName="email" required />
+          <label for="username">Email</label>
+          <input type="email" id="username" name="username" formControlName="email" required />
+          @if(loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <small style="color: red;">Please enter a valid email address</small>
+          }
         </div>
         <div class="input-group">
           <label for="password">Password</label>
           <input type="password" id="password" name="password" formControlName="password" required />
+          @if(loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <small style="color: red;">Password is required (min 6 characters)</small>
+          }
         </div>
-        <button type="submit" class="login-button">Log In</button>
+        <button type="submit" class="login-button" [disabled]="isLoading">
+          {{ isLoading ? 'Logging in...' : 'Log In' }}
+        </button>
         <div class="footer-links">
           <a href="#">Forgot Password?</a>
-          <span>|</span>
-          <a href="#">Create Account</a>
         </div>
       </form>
     </div>
