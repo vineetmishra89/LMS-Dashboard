@@ -83,7 +83,7 @@ public class CourseService {
   public CourseSummary search(Long courseId) {
     try{
       return courseRepository.findById(courseId)
-          .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
+        .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
     }catch(ResourceNotFoundException ex){
       throw ex;
     }catch(Exception ex){
@@ -122,5 +122,12 @@ public class CourseService {
       log.error("Database error while fetching course card list", ex);
       throw new DatabaseException("Failed to fetch course card list", ex);
     }
+  }
+
+  private static long toLong(Object obj) {
+    if (obj == null) {
+      return 0L;
+    }
+    return ((Number) obj).longValue();
   }
 }

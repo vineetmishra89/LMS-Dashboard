@@ -10,7 +10,7 @@ import java.util.Date;
 @Setter
 public class CourseCardDetailDto {
 
-  private long trngId;
+  private Long trngId;
 
   private String courseName;
 
@@ -18,11 +18,11 @@ public class CourseCardDetailDto {
 
   private String trainerEmailIds;
 
-  private long duration;
+  private Long duration;
 
   private String level;
 
-  private long modules;
+  private Long modules;
 
   private BigDecimal rating;
 
