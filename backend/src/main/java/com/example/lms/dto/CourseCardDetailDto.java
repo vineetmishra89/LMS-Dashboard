@@ -28,8 +28,8 @@ public class CourseCardDetailDto {
 
   private String category;
 
-  public CourseCardDetailDto(long trngId, String courseName,
-                             String trainerNames, String trainerEmailIds, long duration, String level, long modules, BigDecimal rating, String category) {
+  public CourseCardDetailDto(Long trngId, String courseName,
+                             String trainerNames, String trainerEmailIds, Long duration, String level, Long modules, BigDecimal rating, String category) {
     this.trngId = trngId;
     this.courseName = courseName;
     this.trainerNames = trainerNames;
