@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,6 +96,7 @@ public class CourseService {
     try{
       if(StringUtils.isNotBlank(viewType)){
         List<Object[]> courseCardDetailList = null;
+        log.info("viewType :: {}",viewType);
         switch(viewType) {
           case "View":
             courseCardDetailList = courseCardRepository.findCourceCardDetailsByView(getCourseInterval());
@@ -112,7 +114,7 @@ public class CourseService {
             return List.of();
         }
         return courseCardDetailList != null ? courseCardDetailList.stream()
-          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (String) row[3],(Long) row[4], (String) row[5], (Long) row[6], (String) row[7], (String) row[8]))
+          .map(row -> new CourseCardDetailDto((Long) row[0],(String) row[1], (String) row[2], (String) row[3],(Long) row[4], (String) row[5], (Long) row[6], (BigDecimal) row[7], (String) row[8]))
           .collect(Collectors.toList()): List.of();
       }
       return List.of();

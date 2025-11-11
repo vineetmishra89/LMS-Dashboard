@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 @Getter
 @Setter
@@ -23,12 +24,12 @@ public class CourseCardDetailDto {
 
   private long modules;
 
-  private String rating;
+  private BigDecimal rating;
 
   private String category;
 
   public CourseCardDetailDto(long trngId, String courseName,
-                             String trainerNames, String trainerEmailIds, long duration, String level, long modules, String rating, String category) {
+                             String trainerNames, String trainerEmailIds, long duration, String level, long modules, BigDecimal rating, String category) {
     this.trngId = trngId;
     this.courseName = courseName;
     this.trainerNames = trainerNames;
