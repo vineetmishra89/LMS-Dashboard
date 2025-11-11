@@ -25,9 +25,6 @@ public class EnrollmentDetails implements Serializable {
   @Column(name = "module_id")
   private Long moduleId;
 
-  @Column(name = "trng_enrl_id")
-  private Long trainingEnrollmentId;
-
   @Column(name = "status")
   private String status;
 
@@ -44,8 +41,7 @@ public class EnrollmentDetails implements Serializable {
   private String updatedBy;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @MapsId("trainingEnrollmentId")
-  @JoinColumn(name = "trng_enrl_id")
+  @JoinColumn(name = "trng_enrl_id", nullable = false)
   @JsonBackReference
   private EnrollmentMapping enrollmentMapping;
 

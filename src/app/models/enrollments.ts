@@ -31,3 +31,11 @@ export interface EnrollmentDetails {
   updatedBy: string;
   courseDetail: CourseDetail;
 }
+
+export interface EnrollmentProgress {
+  completedLessons: string[];
+  completedModules: string[];
+  currentModule: string;
+  currentLesson: string;
+  overallProgress: number; // 0-100
+}

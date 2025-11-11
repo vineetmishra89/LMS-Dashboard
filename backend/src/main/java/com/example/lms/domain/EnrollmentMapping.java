@@ -7,8 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.util.CollectionUtils;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -60,10 +62,25 @@ public class EnrollmentMapping {
 
   @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
-  private List<EnrollmentDetails> enrollmentDetailsList;
+  private List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
 
   @ManyToOne(fetch=FetchType.EAGER)
   @JoinColumn(name="trng_id")
   @JsonBackReference
   private CourseSummary courseSummary;
+
+  public void addEnrollmentDetail(EnrollmentDetails enrollmentDetails){
+    if(this.enrollmentDetailsList == null){
+      this.enrollmentDetailsList = new ArrayList<>();
+    }
+    enrollmentDetails.setEnrollmentMapping(this);
+    this.enrollmentDetailsList.add(enrollmentDetails);
+
+  }
+
+  public void removeEnrollmentDetail(EnrollmentDetails enrollmentDetails){
+    this.enrollmentDetailsList.remove(enrollmentDetails);
+    enrollmentDetails.setEnrollmentMapping(null);
+
+  }
 }

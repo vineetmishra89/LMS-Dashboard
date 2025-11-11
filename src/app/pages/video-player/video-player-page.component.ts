@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CourseMaster } from '../../models/course';
+import { CourseDetail, CourseMaster } from '../../models/course';
 import { CourseService } from '../../services/course.service';
 import { UserService } from '../../services/user.service';
 import { DataSharingService } from '../../services/data-sharing.service';
@@ -14,11 +14,12 @@ import { EnrollmentMapping } from '../../models/enrollments';
   styleUrls: ['./video-player-page.component.scss']
 })
 export class VideoPlayerPageComponent implements OnInit {
-  enrollmentMapping: EnrollmentMapping | null = null;
-  isLoading = true;
-  dataSharingService = inject(DataSharingService);
-  playCourseData: CourseMaster | null = null;
-  selectedModule: any = null;
+   course: CourseMaster | null = null;
+   isLoading = true;
+   dataSharingService = inject(DataSharingService);
+   playCourseData: CourseMaster | null = null;
+   selectedModule: CourseDetail | null = null;
+   enrollmentMapping: EnrollmentMapping | null = null;
    
   
   constructor(
@@ -30,32 +31,26 @@ export class VideoPlayerPageComponent implements OnInit {
   
   ngOnInit(): void {
     const courseId = this.route.snapshot.params['trainingId'];
+    const trngEnrollmentId = this.route.snapshot.params['trngEnrollmentId'];
     const userId = 'test_trainee1@irissoftware.com';
     
-    const navigationState = this.router.getCurrentNavigation()?.extras?.state || 
-                           (history.state && history.state.courseData ? history.state : null);
-    
-    if (navigationState && navigationState.enrollmentMapping) {
-      console.log('Using Enrollment data from navigation state:', navigationState.enrollmentMapping);
-      this.enrollmentMapping = navigationState.enrollmentMapping;
-      this.isLoading = false;
-    } else {
       this.courseService.getCourseById(courseId,userId).subscribe({
-        next: (enrollmentMapping) => {
-          this.enrollmentMapping = enrollmentMapping;
+        next: (course) => {
           this.isLoading = false;
-          this.selectedModule = enrollmentMapping.enrollmentDetailsList[0].courseDetail;
+          this.playCourseData = course;
+          this.selectedModule = course.lmsTrainingDetails[0];
         },
         error: (error) => {
           console.error('Failed to load course:', error);
           this.router.navigate(['/dashboard']);
         }
       });
-    }
 
-    this.dataSharingService.getData().subscribe(data => {
-      this.playCourseData = data;
-    });
+      this.enrollmentService.getEnrollmentById(trngEnrollmentId).subscribe({
+        next: (enrollmentMapping) => {
+          this.enrollmentMapping = enrollmentMapping;
+        }
+      })
   }
 
   moduleSelected(selectedModule: any, index: number) {

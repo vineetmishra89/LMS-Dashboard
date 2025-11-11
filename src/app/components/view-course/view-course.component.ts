@@ -13,6 +13,8 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { DataSharingService } from '../../services/data-sharing.service';
+import { CourseMaster } from '../../models/course';
+import { EnrollmentMapping } from '../../models/enrollments';
 
 @Component({
   selector: 'app-view-course',
@@ -33,7 +35,7 @@ export class ViewCourseComponent implements OnInit {
   confirmationService = inject(ConfirmationService);
   dataSharingService = inject(DataSharingService);
   route = inject(ActivatedRoute);
-  courseDetail: any = null;
+  courseDetail: CourseMaster | undefined;
   totalLearners: number = 0;
   ratings: number = 0;
   trainingId: string = '0';
@@ -41,6 +43,7 @@ export class ViewCourseComponent implements OnInit {
   visible: boolean = false;
   message: string = '';
   progress: number = 0;
+  enrollment!: EnrollmentMapping;
 
   hasEnrolled: boolean = false;
   courseRatings: any[] = [{user: 'Ankit Bansal', ratings: 3, when: '3 weeks ago', comments: 'This course is good for intermediate level. Instructor explained topics very well'},
@@ -51,7 +54,6 @@ export class ViewCourseComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCourseDetailsById();
-    
   }
 
   enroll(event: Event) {
@@ -68,6 +70,7 @@ export class ViewCourseComponent implements OnInit {
         this.message = 'Enrollment Successful.'
         this.visible = true;
         this.hasEnrolled = true;
+        this.enrollment = res;
         console.log(res);
         this.loading = false;
       }
@@ -75,19 +78,14 @@ export class ViewCourseComponent implements OnInit {
   }
 
   unenroll(event: Event) {
-   // this.hasEnrolled = true;
     this.loading = true;
     
-    const data = {
-      userId: this.userId,
-      courseId: Number(this.trainingId),
-      enrollmentType: 'VOLUNTARY'
-    }
-    this.enrollmentService.unenroll(data).subscribe({
+    this.enrollmentService.unenroll(this.enrollment.trainingEnrollmentId).subscribe({
       next :(res) => {
         this.message = 'Unenrollment Successful.'
         this.hasEnrolled = false;
         this.visible = true;
+        this.enrollment = res;
         console.log(res);
         this.loading = false;
       }
@@ -97,8 +95,7 @@ export class ViewCourseComponent implements OnInit {
 
   resume() {
     this.dataSharingService.sendData(this.courseDetail);
-
-    this.router.navigate(['runningCourse', this.trainingId]);
+    this.router.navigate(['runningCourse', this.trainingId, this.enrollment.trainingEnrollmentId]);
   }
 
   getCourseDetailsById() {
@@ -109,16 +106,17 @@ export class ViewCourseComponent implements OnInit {
         
         
         this.courseDetail = res;
+        this.enrollment = res.enrollmentMappings[0];
         this.totalLearners = res.enrollmentMappings.filter((x: any)=> x.status === 'Completed').length;
         this.ratings = Math.floor(Number(res.rating));
         
-        this.dataSharingService.getData().subscribe({
-          next: (res) => {
-            this.courseDetail.trainerNames = res.names,
-            this.courseDetail.trainerEmails = res.emails.split(',')
+        //this.dataSharingService.getData().subscribe({
+          //next: (res) => {
+            //this.courseDetail.trainerNames = res.names,
+            //this.courseDetail.trainerEmails = res.emails.split(',')
            
-          }
-        })
+          //}
+        //})
      //   this.dataSharingService.sendData(null);
         this.hasEnrolled = res.enrollmentMappings.find((x: any) => x.userId === this.userId) || false;
         this.progress = res.lmsTrainingDetails.every((x: any) => x.moduleProgressPercentage === null);

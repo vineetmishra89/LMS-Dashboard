@@ -10,6 +10,9 @@ import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentDetailsRepository;
 import com.example.lms.repo.EnrollmentRepository;
 import com.example.lms.service.EnrollmentService;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -26,10 +29,19 @@ public class EnrollmentServiceImpl implements EnrollmentService {
   private final EnrollmentDetailsRepository enrollmentDetailsRepository;
   private final CourseRepository courseRepository;
 
+  @Autowired
+  private EntityManager entityManager;
+
+  @Autowired
   public EnrollmentServiceImpl(EnrollmentRepository enrollmentRepository,EnrollmentDetailsRepository enrollmentDetailsRepository, CourseRepository courseRepository) {
     this.enrollmentRepository = enrollmentRepository;
     this.enrollmentDetailsRepository = enrollmentDetailsRepository;
     this.courseRepository = courseRepository;
+  }
+
+  @PostConstruct
+  public void checkProxy(){
+    System.out.println(">>> EnrollmentServiceImpl class: "+ this.getClass());
   }
 
   @Override
@@ -53,8 +65,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     e.setUpdatedTs(OffsetDateTime.now());
     e.setCreatedBy(userId);
     e.setUpdatedBy(userId);
+    e.setEnrollmentDetailsList(new ArrayList<>());
 
-    List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
     if (courseSummary.getLmsTrainingDetails() != null) {
       for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
         EnrollmentDetails details = new EnrollmentDetails();
@@ -66,12 +78,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         details.setUpdatedTs(OffsetDateTime.now());
         details.setCreatedBy(userId);
         details.setUpdatedBy(userId);
-
-        enrollmentDetailsList.add(details);
+        e.addEnrollmentDetail(details);
       }
     }
-
-    e.setEnrollmentDetailsList(enrollmentDetailsList);
 
     return enrollmentRepository.save(e);
   }
@@ -189,7 +198,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
   @Override
   @Transactional
-  public void unEnroll(String userId, Long courseId) {
-     enrollmentRepository.deleteNativeByUserIdAndTrainingId(userId,courseId);
+  public void unEnroll(Long enrollmentId) {
+    enrollmentRepository.deleteEnrollDetailByEnrollmentId(enrollmentId);
+    enrollmentRepository.deleteEnrollMappingByEnrollmentId(enrollmentId);
   }
 }

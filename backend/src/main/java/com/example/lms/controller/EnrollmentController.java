@@ -4,6 +4,7 @@ import com.example.lms.domain.EnrollmentDetails;
 import com.example.lms.domain.EnrollmentMapping;
 import com.example.lms.dto.EnrollmentRequest;
 import com.example.lms.service.EnrollmentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,8 @@ import java.util.Map;
 @CrossOrigin
 public class EnrollmentController {
   private final EnrollmentService enrollmentService;
+
+  @Autowired
   public EnrollmentController(EnrollmentService enrollmentService) { this.enrollmentService = enrollmentService; }
 
   @PostMapping("enroll")
@@ -23,9 +26,9 @@ public class EnrollmentController {
     return enrollmentService.enroll(enrollmentRequest.getUserId(), enrollmentRequest.getCourseId(),enrollmentType);
   }
 
-  @PostMapping("unenroll")
-  public ResponseEntity<Map<String,String>> unenroll(@RequestBody Map<String, Object> body) {
-    enrollmentService.unEnroll((String)body.get("userId"), Long.valueOf((Integer)body.get("courseId")));
+  @PostMapping("unenroll/{enrollmentId}")
+  public ResponseEntity<Map<String,String>> unenroll(@PathVariable Long enrollmentId) {
+    enrollmentService.unEnroll(enrollmentId);
     return ResponseEntity.ok(Map.of("Status","SUCCESS"));
   }
 
