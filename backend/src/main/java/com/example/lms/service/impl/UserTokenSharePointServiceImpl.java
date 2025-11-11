@@ -303,6 +303,79 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         }
     }
 
+    @Override
+    public java.util.List<String> fetchAllFilePathsFromWebUrl(String bearerToken, String webUrl) {
+        try {
+            validateConfiguration();
+
+            logger.info("Fetching all file paths from webUrl: {}", webUrl);
+
+            if (webUrl == null || webUrl.trim().isEmpty()) {
+                throw new IllegalArgumentException("WebUrl cannot be null or empty");
+            }
+
+            GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
+
+            String relativePath = parseFolderUrl(webUrl);
+            logger.info("Parsed relative path from webUrl: {}", relativePath);
+
+            String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, relativePath);
+            logger.info("Resolved folder ID: {} for webUrl: {}", targetFolderId, webUrl);
+
+            java.util.List<String> filePaths = new java.util.ArrayList<>();
+            collectFilePathsRecursively(client, driveId, targetFolderId, filePaths);
+
+            logger.info("Successfully fetched {} file paths from webUrl: {}", filePaths.size(), webUrl);
+            return filePaths;
+
+        } catch (Exception e) {
+            logger.error("Error fetching file paths from webUrl '{}': {}", webUrl, e.getMessage(), e);
+            throw new RuntimeException("Failed to fetch file paths from webUrl: " + webUrl, e);
+        }
+    }
+
+    private void collectFilePathsRecursively(GraphServiceClient<Request> client, String driveId, String folderId, java.util.List<String> filePaths) {
+        try {
+            logger.debug("Collecting file paths from folder ID: {}", folderId);
+
+            DriveItemCollectionPage items = client
+                    .drives()
+                    .byId(driveId)
+                    .items()
+                    .byId(folderId)
+                    .children()
+                    .buildRequest()
+                    .get();
+
+            if (items == null || items.getCurrentPage() == null) {
+                logger.debug("No items found in folder ID: {}", folderId);
+                return;
+            }
+
+            do {
+                for (DriveItem item : items.getCurrentPage()) {
+                    if (item.folder != null) {
+                        logger.debug("Recursing into subfolder: {} (id={})", item.name, item.id);
+                        collectFilePathsRecursively(client, driveId, item.id, filePaths);
+                    } else if (item.file != null) {
+                        logger.debug("Found file: {} with webUrl: {}", item.name, item.webUrl);
+                        filePaths.add(item.webUrl);
+                    }
+                }
+
+                if (items.getNextPage() != null) {
+                    items = items.getNextPage().buildRequest().get();
+                } else {
+                    break;
+                }
+            } while (items != null && items.getCurrentPage() != null);
+
+        } catch (Exception e) {
+            logger.error("Error collecting file paths from folder ID '{}': {}", folderId, e.getMessage(), e);
+            throw new RuntimeException("Failed to collect file paths from folder: " + folderId, e);
+        }
+    }
+
     private void validateConfiguration() {
         if (driveId == null || driveId.trim().isEmpty()) {
             throw new IllegalStateException("graph.user.drive-id is not configured");

@@ -3,6 +3,8 @@ package com.example.lms.service;
 import com.example.lms.dto.FolderNode;
 import com.example.lms.dto.SharePointSyncResult;
 
+import java.util.List;
+
 /**
  * Service for accessing SharePoint/OneDrive using user-provided bearer tokens.
  * This service uses delegated permissions (user context) rather than application permissions.
@@ -51,4 +53,15 @@ public interface UserTokenSharePointService {
      * @throws RuntimeException if folder access fails or token is invalid
      */
     FolderNode listFoldersAndFilesRecursivelyByPath(String bearerToken, String folderPath);
+    
+    /**
+     * Fetches all file paths from a SharePoint/OneDrive folder using webUrl.
+     * Uses the provided bearer token for authentication.
+     * 
+     * @param bearerToken User's access token (from Authorization header, without "Bearer " prefix)
+     * @param webUrl SharePoint/OneDrive folder webUrl from lms_trng_summary.folder_path column
+     * @return List of file paths (webUrls) for all files in the folder and subfolders
+     * @throws RuntimeException if folder access fails or token is invalid
+     */
+    List<String> fetchAllFilePathsFromWebUrl(String bearerToken, String webUrl);
 }

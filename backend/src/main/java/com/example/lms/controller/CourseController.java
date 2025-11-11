@@ -81,19 +81,19 @@ public class CourseController {
       
       logger.info("Found folder path (webUrl): {} for trngId: {}", folderPath, trngId);
       
-      FolderNode folderStructure = userTokenSharePointService.listFoldersAndFilesRecursively(bearerToken, folderPath);
+      List<String> allFilePaths = userTokenSharePointService.fetchAllFilePathsFromWebUrl(bearerToken, folderPath);
       
-      List<FileNode> nonVideoFiles = filterNonVideoFiles(folderStructure);
+      List<String> nonVideoFilePaths = filterNonVideoFilePaths(allFilePaths);
       
       Map<String, Object> response = new HashMap<>();
       response.put("success", true);
       response.put("trngId", trngId);
       response.put("userId", userId);
       response.put("folderPath", folderPath);
-      response.put("fileCount", nonVideoFiles.size());
-      response.put("files", nonVideoFiles);
+      response.put("fileCount", nonVideoFilePaths.size());
+      response.put("filePaths", nonVideoFilePaths);
       
-      logger.info("Successfully retrieved {} non-video files for trngId: {}", nonVideoFiles.size(), trngId);
+      logger.info("Successfully retrieved {} non-video file paths for trngId: {}", nonVideoFilePaths.size(), trngId);
       return ResponseEntity.ok(response);
       
     } catch (Exception e) {
@@ -114,51 +114,43 @@ public class CourseController {
   }
   
   /**
-   * Recursively filters non-video files from the folder structure.
-   * Video files are identified by extensions: .mp4, .avi, .mov, .wmv, .flv, .mkv, .webm
+   * Filters non-video file paths from the list of file paths.
+   * Video files are identified by extensions in the file path.
    */
-  private List<FileNode> filterNonVideoFiles(FolderNode folderNode) {
-    List<FileNode> nonVideoFiles = new ArrayList<>();
+  private List<String> filterNonVideoFilePaths(List<String> filePaths) {
+    List<String> nonVideoFilePaths = new ArrayList<>();
     
-    if (folderNode == null) {
-      return nonVideoFiles;
+    if (filePaths == null) {
+      return nonVideoFilePaths;
     }
     
-    if (folderNode.getFiles() != null) {
-      for (FileNode file : folderNode.getFiles()) {
-        if (!isVideoFile(file.getName())) {
-          nonVideoFiles.add(file);
-        }
+    for (String filePath : filePaths) {
+      if (!isVideoFilePath(filePath)) {
+        nonVideoFilePaths.add(filePath);
       }
     }
     
-    if (folderNode.getFolders() != null) {
-      for (FolderNode subFolder : folderNode.getFolders()) {
-        nonVideoFiles.addAll(filterNonVideoFiles(subFolder));
-      }
-    }
-    
-    return nonVideoFiles;
+    return nonVideoFilePaths;
   }
   
   /**
-   * Checks if a file is a video file based on its extension.
+   * Checks if a file path is a video file based on its extension.
    */
-  private boolean isVideoFile(String fileName) {
-    if (fileName == null || fileName.isEmpty()) {
+  private boolean isVideoFilePath(String filePath) {
+    if (filePath == null || filePath.isEmpty()) {
       return false;
     }
     
-    String lowerCaseFileName = fileName.toLowerCase();
-    return lowerCaseFileName.endsWith(".mp4") ||
-           lowerCaseFileName.endsWith(".avi") ||
-           lowerCaseFileName.endsWith(".mov") ||
-           lowerCaseFileName.endsWith(".wmv") ||
-           lowerCaseFileName.endsWith(".flv") ||
-           lowerCaseFileName.endsWith(".mkv") ||
-           lowerCaseFileName.endsWith(".webm") ||
-           lowerCaseFileName.endsWith(".m4v") ||
-           lowerCaseFileName.endsWith(".mpg") ||
-           lowerCaseFileName.endsWith(".mpeg");
+    String lowerCaseFilePath = filePath.toLowerCase();
+    return lowerCaseFilePath.endsWith(".mp4") ||
+           lowerCaseFilePath.endsWith(".avi") ||
+           lowerCaseFilePath.endsWith(".mov") ||
+           lowerCaseFilePath.endsWith(".wmv") ||
+           lowerCaseFilePath.endsWith(".flv") ||
+           lowerCaseFilePath.endsWith(".mkv") ||
+           lowerCaseFilePath.endsWith(".webm") ||
+           lowerCaseFilePath.endsWith(".m4v") ||
+           lowerCaseFilePath.endsWith(".mpg") ||
+           lowerCaseFilePath.endsWith(".mpeg");
   }
 }
