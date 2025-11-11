@@ -84,6 +84,49 @@
     }
 
     .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #3b82f6;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .user-name {
+        color: var(--text-color);
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .logout-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #dc2626;
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
       .profile-image {
         width: 32px;
         height: 32px;

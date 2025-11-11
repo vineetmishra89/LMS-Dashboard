@@ -21,8 +21,12 @@
     <div class="notifications">
       <i class="notification-icon">🔔</i>
     </div> -->
-    <div class="profile">
-      <!-- <img src="assets/images/profile.jpg" alt="Profile" class="profile-image"> -->
+    <div class="profile" *ngIf="user">
+      <div class="user-avatar">
+        {{ (user?.userName || user?.name || user?.email || '') | slice:0:1 | uppercase }}
+      </div>
+      <span class="user-name">{{ user?.userName || user?.name || user?.email }}</span>
+      <button class="logout-btn" (click)="logout.emit()">Logout</button>
     </div>
   </div>
 </header>
