@@ -2,6 +2,7 @@ package com.example.lms.controller;
 
 import com.example.lms.domain.EnrollmentDetails;
 import com.example.lms.domain.EnrollmentMapping;
+import com.example.lms.dto.EnrollmentRequest;
 import com.example.lms.service.EnrollmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +18,9 @@ public class EnrollmentController {
   public EnrollmentController(EnrollmentService enrollmentService) { this.enrollmentService = enrollmentService; }
 
   @PostMapping("enroll")
-  public EnrollmentMapping enroll(@RequestBody Map<String, Object> body) {
-    String enrollmentType = (null == body.get("enrollmentType") ? "Voluntary" : (String)body.get("enrollmentType"));
-    Integer courseIdInt = (Integer)body.get("courseId");
-    Long courseId = Long.valueOf(courseIdInt);
-    return enrollmentService.enroll((String)body.get("userId"), courseId,enrollmentType);
+  public EnrollmentMapping enroll(@RequestBody EnrollmentRequest enrollmentRequest) {
+    String enrollmentType = (null == enrollmentRequest.getEnrollmentType()) ? "Voluntary" : enrollmentRequest.getEnrollmentType();
+    return enrollmentService.enroll(enrollmentRequest.getUserId(), enrollmentRequest.getCourseId(),enrollmentType);
   }
 
   @PostMapping("unenroll")
@@ -59,5 +58,4 @@ public class EnrollmentController {
 
     return enrollmentService.bulkEnroll(emailIdList, courseIdList, enrollmentType, userId);
   }
-
 }
