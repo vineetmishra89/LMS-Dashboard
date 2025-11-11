@@ -40,4 +40,15 @@ public interface UserTokenSharePointService {
      * @throws RuntimeException if sync operation fails
      */
     SharePointSyncResult syncModulesFromSharePoint(String bearerToken, boolean dryRun);
+    
+    /**
+     * Lists all folders and files recursively from a SharePoint/OneDrive folder using folderPath.
+     * Uses the provided bearer token for authentication and resolves the folderPath to fetch files.
+     * 
+     * @param bearerToken User's access token (from Authorization header, without "Bearer " prefix)
+     * @param folderPath Folder path from lms_trng_summary table
+     * @return FolderNode tree structure containing all folders and files
+     * @throws RuntimeException if folder access fails or token is invalid
+     */
+    FolderNode listFoldersAndFilesRecursivelyByPath(String bearerToken, String folderPath);
 }

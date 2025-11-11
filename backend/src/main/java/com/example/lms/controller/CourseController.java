@@ -81,7 +81,7 @@ public class CourseController {
       
       logger.info("Found folder path: {} for trngId: {}", folderPath, trngId);
       
-      FolderNode folderStructure = userTokenSharePointService.listFoldersAndFilesRecursivelyFromIds(bearerToken);
+      FolderNode folderStructure = userTokenSharePointService.listFoldersAndFilesRecursivelyByPath(bearerToken, folderPath);
       
       List<FileNode> nonVideoFiles = filterNonVideoFiles(folderStructure);
       

@@ -263,6 +263,46 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         }
     }
 
+    @Override
+    public FolderNode listFoldersAndFilesRecursivelyByPath(String bearerToken, String folderPath) {
+        try {
+            validateConfiguration();
+
+            logger.info("Listing folders and files recursively using folderPath: {}", folderPath);
+
+            if (folderPath == null || folderPath.trim().isEmpty()) {
+                throw new IllegalArgumentException("Folder path cannot be null or empty");
+            }
+
+            GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
+
+            String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, folderPath);
+            logger.info("Resolved folder ID: {} for folderPath: {}", targetFolderId, folderPath);
+
+            DriveItem targetItem = client
+                    .drives()
+                    .byId(driveId)
+                    .items()
+                    .byId(targetFolderId)
+                    .buildRequest()
+                    .get();
+
+            if (targetItem == null) {
+                throw new RuntimeException("Target folder not found with ID: " + targetFolderId);
+            }
+
+            FolderNode rootNode = new FolderNode(targetItem.name, targetFolderId, targetItem.webUrl);
+            listFolderContentsByIdRecursively(client, driveId, targetFolderId, rootNode);
+
+            logger.info("Successfully listed folders and files for folderPath: {}", folderPath);
+            return rootNode;
+
+        } catch (Exception e) {
+            logger.error("Error listing folders and files by path '{}': {}", folderPath, e.getMessage(), e);
+            throw new RuntimeException("Failed to list folders and files for path: " + folderPath, e);
+        }
+    }
+
     private void validateConfiguration() {
         if (driveId == null || driveId.trim().isEmpty()) {
             throw new IllegalStateException("graph.user.drive-id is not configured");
