@@ -31,9 +31,6 @@ public class EnrollmentDetails implements Serializable {
   @Column(name = "status")
   private String status;
 
-  @Column(name = "current_learning_ts")
-  private Integer currentLearningTs;
-
   @Column(name = "created_ts")
   private OffsetDateTime createdTs;
 

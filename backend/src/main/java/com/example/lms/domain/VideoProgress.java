@@ -55,9 +55,9 @@ public class VideoProgress {
     @Column(name = "last_watched_at")
     private OffsetDateTime lastWatchedAt;
 
-  @Column(name = "user_id")
-  private String userId;
-
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
+
+  @Column(name = "created_at")
+    private OffsetDateTime createdAt;
 }

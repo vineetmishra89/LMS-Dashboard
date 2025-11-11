@@ -65,7 +65,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         details.setUpdatedTs(OffsetDateTime.now());
         details.setCreatedBy(userId);
         details.setUpdatedBy(userId);
-        details.setCurrentLearningTs(0);
 
         enrollmentDetailsList.add(details);
       }
@@ -89,7 +88,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     if (progressData.containsKey("overallProgress")) {
       Integer progress = ((Number) progressData.get("overallProgress")).intValue();
-      enrollmentDetails.setCurrentLearningTs(progress);
+      //enrollmentDetails.setCurrentLearningTs(progress);
     }
 
     //enrollmentDetails.setLastAccessedAt(OffsetDateTime.now());
@@ -164,7 +163,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             details.setUpdatedTs(now);
             details.setCreatedBy(userId);
             details.setUpdatedBy(userId);
-            details.setCurrentLearningTs(0);
+           // details.setCurrentLearningTs(0);
 
             detailsList.add(details);
           }
