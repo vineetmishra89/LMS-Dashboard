@@ -1,6 +1,6 @@
 
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, inject } from '@angular/core';
 import { Observable, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { takeUntil, map, startWith, catchError, switchMap, distinctUntilChanged, debounceTime, take, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -10,10 +10,17 @@ import { UserService } from '../../services/user.service';
 import { CourseService } from '../../services/course.service';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { AnalyticsService } from '../../services/analytics.service';
-import { CertificateService } from '../../services/certificate.service';
-import { NotificationService } from '../../services/notification.service';
 import { VideoProgressService } from '../../services/video-progress.service';
 import { CourseDetail, CourseMaster } from '../../models/course';
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import { ToastModule } from 'primeng/toast';
+import { DataSharingService } from '../../services/data-sharing.service';
+
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { RippleModule } from 'primeng/ripple';
 interface City {
   name: string;
   code: string;
@@ -22,18 +29,21 @@ interface City {
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss']
+  styleUrls: ['./dashboard.scss'],
+  standalone: true,
+  imports: [CommonModule, ButtonModule, RippleModule, DropdownModule, ReactiveFormsModule, FormsModule, ToastModule ],
+  providers: [MessageService]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
+  loading: boolean = false;
   cities: City[] | undefined;
-
   selectedCity: City | undefined;
-
-
   private destroy$ = new Subject<void>();
   isLoading$ = new BehaviorSubject<boolean>(true);
   hasError$ = new BehaviorSubject<string | null>(null);
+   dataSharingService = inject(DataSharingService);
+  messageService = inject(MessageService);
 
   currentUser$: Observable<User | null>;
   dashboardData$!: Observable<any>;
@@ -60,6 +70,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ] as const;
 
   responsiveOptions: any[] | undefined;
+  filterData: any = null;
+  filterFormGroup: FormGroup | undefined;
+  selectedCategory: any = null;
+  selectedTrainingName: any = null;
+  selectedLevel: any = null;
+  selectedTrainerName: any = null;
+  trainingNameList: any = [];
+  searchedCourse: any = [];
 
   constructor(
     private router: Router,
@@ -67,8 +85,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private courseService: CourseService,
     private enrollmentService: EnrollmentService,
     private analyticsService: AnalyticsService,
-    private certificateService: CertificateService,
-    private notificationService: NotificationService,
     private videoProgressService: VideoProgressService
   ) {
     this.currentUser$ = this.userService.currentUser$;
@@ -83,25 +99,71 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.initializeDashboard();
+   
+   
+    this.getCourseSearchList();
+    this.loadForm();
+ }
 
-    this.responsiveOptions = [
-      {
-          breakpoint: '1199px',
-          numVisible: 1,
-          numScroll: 1
-      },
-      {
-          breakpoint: '991px',
-          numVisible: 2,
-          numScroll: 1
-      },
-      {
-          breakpoint: '767px',
-          numVisible: 1,
-          numScroll: 1
+ loadForm() {
+  
+  this.filterFormGroup = new FormGroup({
+    categoryList: new FormControl(null),
+    trainingNameList: new FormControl(null),
+    levelList: new FormControl(null),
+    trainerNameList: new FormControl(null),
+  })
+ }
+
+  getCourseSearchList() {
+    this.courseService.getCourseSearchList().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.filterData = res;
+        //this.filterData.trainingNameList = res.trainingNameList;
+       
+        
       }
-  ];
+    })
+  }
+
+  viewCourse(course: any) {
+    console.log(course);
+    course.trainerDetail = {
+      names: course.trainerDetailList.map((x: any) => x.trainerName).join(','),
+      emails: course.trainerDetailList.map((x: any) => x.emailId).join(',')
+    }
+    this.dataSharingService.sendData(course.trainerDetail);
+    this.router.navigate(['/viewCourse', course.trainingId]);
+    //this.router.navigate(['/viewCourse', course.trainingId]);
+   //this.router.navigate(['viewCourse'])
+  }
+
+  search() {
+    this.loading = true;
+    const data = {
+      category: this.filterFormGroup?.get('categoryList')?.value,
+      topic: this.filterFormGroup?.get('trainingNameList')?.value,
+      instructor: this.filterFormGroup?.get('trainerNameList')?.value,
+      level: this.filterFormGroup?.get('levelList')?.value
+
+    }
+    this.courseService.getCourseDetail(data).subscribe({
+      next: (res) => {
+        this.searchedCourse = res;
+        this.loading = false;
+      }, error: (err: Error) => {
+        this.loading = false;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err['message'] });
+  
+      }
+    })
+  }
+
+  onCategoryChange(e: any) {
+  //  console.log(e);
+    this.trainingNameList = this.filterData.trainingNameList.filter((x: any) => x.category === e.value).map((x: any) => x.trainingName);
+ //   alert(e);
   }
 
   ngOnDestroy(): void {
@@ -109,209 +171,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private initializeDashboard(): void {
-    this.currentUser$.pipe(takeUntil(this.destroy$)).subscribe((u: User | null) => {
-      if (u) this.loadUserDashboardData(u.id);
-    });
-  }
-
-  private loadUserDashboardData(userId: string): void {
-    this.isLoading$.next(true);
-    this.hasError$.next(null);
-
-    const analytics$ = this.analyticsService.getUserAnalytics(userId).pipe(
-      catchError(() => [{
-        userId,
-        totalCoursesEnrolled: 0,
-        totalCoursesCompleted: 0,
-        totalCertificatesEarned: 0,
-        totalHoursLearned: 0
-      } as any])
-    );
-
-    const learningHours$ = this.videoProgressService.getLearningHours(userId).pipe(
-      catchError(() => [{ totalHours: 0 }])
-    );
-
-    const enrolled$ = this.courseService.getEnrolledCourses(userId).pipe(catchError(() => []));
-    const enrollments$ = this.enrollmentService.getUserEnrollments(userId).pipe(catchError(() => []));
-    const continue$ = combineLatest([enrollments$, enrolled$]).pipe(
-      map(([enrollments, courses]: any) => {
-        const active = enrollments
-          .filter((e: any) => e.status === 'active' && e.progress.overallProgress < 100)
-          .sort((a: any, b: any) => new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime())[0];
-        return active ? courses.find((c: any) => c.id === active.courseId) || null : null;
-      }),
-      catchError(() => [null])
-    );
-
-    this.loadCourses();
-
-    this.dashboardData$ = combineLatest([analytics$, enrolled$, enrollments$, continue$, this.catalogCopy$, learningHours$]).pipe(
-      map(([analytics, enrolled, enrollments, continueCourse, catalog, learningHours]: any) => ({
-        stats: {
-          completed: analytics.completedCount || 0,
-          enrolled: analytics.enrolledCount || 0,
-          hours: (learningHours && learningHours.totalHours) || 0
-        },
-        categories: [...new Set(catalog.map((c: any) => c.category))],
-        topics: [...new Set(catalog.map((c: any) => c.topics))],
-        instructors: [...new Set(catalog.map((c: any) => c.instructorName))],
-        //catalog,
-        enrollments,
-        continueCourse
-      })),
-      startWith(null),
-      takeUntil(this.destroy$)
-    );
-
-    this.dashboardData$.subscribe((d: any) => {
-      if (d) {
-        this.latestVm = d;
-        this.isLoading$.next(false);
-      }
-    });
-  }
-
-  private loadCourses() {
-    this.catalog$ = this.appliedFilters$.pipe(
-      // optional: debounce micro-changes if you type in a free-text filter
-      debounceTime(0),
-      //distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-      switchMap(f => this.courseService.getAllCourses(f).pipe(catchError(() => [])).pipe(
-        map(courses => {
-          var out = courses;
-          var category = this.pendingFilters.category;
-          if (category && category !== '') {
-            out = out.filter(function (c) { return c.category === category; });
-          }
-          var topic = this.pendingFilters.topic;
-          if (topic && topic !== '') {
-            out = out.filter(function (c) { return c.topics === topic; });
-          }
-          var instructor = this.pendingFilters.instructor;
-          if (instructor && instructor !== '') {
-            out = out.filter(function (c) { return c.instructorName === instructor; });
-          }
-
-          var level = this.pendingFilters.level;
-          if (level && level !== '') {
-            out = out.filter(function (c) { return c.level === level; });
-          }
-          console.log('Filtered Catalog courses loaded: ', out.length);
-          return out;
-        })
-      ))  // <-- new HTTP per change
-    );
-
-    this.catalogCopy$ = this.catalog$.pipe(
-      take(1),                                      // only first emission
-      map(list => list.map(c => ({ ...c }))),       // clone
-      shareReplay({ bufferSize: 1, refCount: true })// keep that first value forever
-    );
-  }
-
-  applyFilters(): void {
-    this.loadCourses();
-  }
-
-  onCourseEnroll(courseId: string): void {
-    const currentUser = this.userService.getCurrentUser();
-    if (currentUser) {
-      this.enrollmentService.enrollInCourse({ userId: currentUser.id, courseId }).subscribe({
-        next: () => this.loadUserDashboardData(currentUser.id),
-        error: () => this.hasError$.next('Failed to enroll in course. Please try again.')
-      });
-    }
-  }
-
-  onContinueLearning(courseId: string, event?: Event): void {
-    console.log('Continue button clicked, courseId:', courseId);
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    
-    const courseData = this.latestVm?.continueCourse;
-    if (courseData) {
-      console.log('Navigating to video player with course data:', courseData);
-      this.router.navigate(['/video-player', courseId], { 
-        state: { courseData: courseData }
-      }).then(
-        success => console.log('Navigation success:', success),
-        error => console.log('Navigation error:', error)
-      );
-    } else {
-      console.log('No course data available, navigating without state');
-      this.router.navigate(['/video-player', courseId]).then(
-        success => console.log('Navigation success:', success),
-        error => console.log('Navigation error:', error)
-      );
-    }
-  }
-
-  openCompleted(): void { this.router.navigate(['/detail/completed']); }
-  openEnrolled(): void { this.router.navigate(['/detail/enrolled']); }
-  openHours(): void { this.router.navigate(['/detail/hours']); }
-
-  refreshDashboard(): void {
-    const currentUser = this.userService.getCurrentUser();
-    if (currentUser) this.loadUserDashboardData(currentUser.id);
-  }
-
-  getEnrollmentFor(courseId: string) {
-    const vm = this.latestVm;
-    return vm?.enrollments?.find((e: any) => e.courseId === courseId) || null;
-  }
-
-
-  onApplyFilters(): void {
-  // take whatever the user picked and make it live
-  this.appliedFilters$.next({ ...this.pendingFilters });
-  // if your loadCourses() builds streams that depend on filters, you can call it here.
-  // But with the combineLatest approach below, it's not required to rebuild anything.
-}
-
-onClearFilters(): void {
-  this.pendingFilters = { category: '', topic: '', instructor: '', level: '' };
-  this.appliedFilters$.next({ ...this.pendingFilters });
-}
-
- trackByMaster = (_: number, m: CourseMaster) => m.trainingId;
-
-  /** Enroll => mark as enrolled and (optionally) call backend */
-  onEnroll(m: CourseMaster) {
-    // this.enrollmentService.enroll(m.trainingId).subscribe(() => {
-    this.enrolledIds.add(m.trainingId);
-    this.enrolledIds$.next(new Set(this.enrolledIds));
-    // });
-  }
-
-  /** Whether master is enrolled */
-  isEnrolled(trainingId: string): boolean {
-    return this.enrolledIds.has(trainingId);
-  }
-
-  /** Open modal */
-  openDetails(m: CourseMaster) {
-    this.selectedMaster = m;
-    this.showDetails = true;
-  }
-
-  /** Close modal */
-  closeDetails() {
-    this.showDetails = false;
-    this.selectedMaster = null;
-  }
-
-  /** Watch a detail video */
-  onWatch(detail: CourseDetail) {
-    if (!detail.trainingLink) return;
-    // If you have a player route, navigate there instead:
-    // this.router.navigate(['/player', detail.trainingId, detail.trainingDetailId]);
-    console.log('opening video');
-    window.open(detail.trainingLink, '_blank', 'noopener');
-  }
 
 
 }

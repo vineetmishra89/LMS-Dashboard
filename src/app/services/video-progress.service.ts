@@ -9,6 +9,8 @@ export interface VideoProgressData {
   currentTime: number;
   duration: number;
   watchTime: number;
+  completed: boolean;
+  progress: number;
 }
 
 export interface VideoProgress {

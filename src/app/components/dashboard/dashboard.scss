@@ -466,3 +466,13 @@ app-course-card { display: contents; }
 .modal-body{ padding:12px 16px; overflow:auto; }
 .icon-btn{ border:0; background:transparent; font-size:20px; cursor:pointer; }
 .muted{ color:#64748b; }
+
+.card-flex {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  .course {
+    width: 275px;
+  }
+}

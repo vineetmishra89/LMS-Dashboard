@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../models/user';
@@ -58,7 +58,7 @@ export class AuthService {
     
     if (token && user && !this.isTokenExpired(token)) {
       this.currentUserSubject.next(user);
-      this.isAuthenticatedSubject.next(true);
+      this.isAuthenticatedSubject.next(false);
       return;
     } /*else {
       this.logout();
@@ -82,19 +82,37 @@ export class AuthService {
   this.isAuthenticatedSubject.next(false);
   }
 
+  loginhardcode() {
+     this.isAuthenticatedSubject.next(true);
+     return of(null);
+  }
+
   login(credentials: LoginCredentials): Observable<User> {
-    return this.http.post<AuthResponse>(`${environment.authUrl}/login`, credentials).pipe(
+    const loginRequest = { 
+      emailId: credentials.email, 
+      password: credentials.password 
+    };
+    
+    return this.http.post<any>('http://localhost:5000/api/auth/login', loginRequest).pipe(
       tap(response => {
-        if (response.success) {
-          this.setAuthData(response.data);
-          this.currentUserSubject.next(response.data.user);
+        if (response.token) {
+          sessionStorage.setItem(this.tokenKey, response.token);
+          sessionStorage.setItem('tokenType', response.tokenType);
+          sessionStorage.setItem('expiresAt', response.expiresAt);
+          sessionStorage.setItem(this.userKey, JSON.stringify(response.user));
+          localStorage.setItem('userId', response.user.emailId);
+          
+          this.currentUserSubject.next(response.user as any);
           this.isAuthenticatedSubject.next(true);
+          
+          console.log('Login successful:', response.user);
         }
       }),
-      map(response => response.data.user),
+      map(response => response.user as any),
       catchError(error => {
         console.error('Login failed:', error);
-        return throwError(() => error);
+        const errorMessage = error.error?.message || 'Login failed. Please check your credentials.';
+        return throwError(() => ({ userMessage: errorMessage, error }));
       })
     );
   }
@@ -118,9 +136,23 @@ export class AuthService {
   }
 
   logout(): void {
+    const token = this.getToken();
+    
+    if (token) {
+      this.http.post('http://localhost:5000/api/auth/logout', {}).subscribe({
+        next: () => console.log('Logout successful'),
+        error: (error) => console.error('Logout error:', error)
+      });
+    }
+    
+    sessionStorage.removeItem(this.tokenKey);
+    sessionStorage.removeItem('tokenType');
+    sessionStorage.removeItem('expiresAt');
+    sessionStorage.removeItem(this.userKey);
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.userKey);
+    localStorage.removeItem('userId');
     
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
@@ -159,10 +191,19 @@ export class AuthService {
   }
 
   changePassword(currentPassword: string, newPassword: string): Observable<any> {
-    return this.http.post(`${environment.authUrl}/change-password`, {
+    return this.http.post('http://localhost:5000/api/auth/change-password', {
       currentPassword,
       newPassword
-    });
+    }).pipe(
+      tap(response => {
+        console.log('Password changed successfully');
+      }),
+      catchError(error => {
+        console.error('Password change error:', error);
+        const errorMessage = error.error?.message || 'Password change failed.';
+        return throwError(() => ({ userMessage: errorMessage, error }));
+      })
+    );
   }
 
   verifyEmail(token: string): Observable<any> {
@@ -182,7 +223,7 @@ export class AuthService {
 
   // Token Management
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    return sessionStorage.getItem(this.tokenKey) || localStorage.getItem(this.tokenKey);
   }
 
   private setAuthData(data: AuthResponse['data']): void {
@@ -193,7 +234,7 @@ export class AuthService {
   }
 
   private getCurrentUserFromStorage(): User | null {
-    const userStr = localStorage.getItem(this.userKey);
+    const userStr = sessionStorage.getItem(this.userKey) || localStorage.getItem(this.userKey);
     return userStr ? JSON.parse(userStr) : null;
   }
 

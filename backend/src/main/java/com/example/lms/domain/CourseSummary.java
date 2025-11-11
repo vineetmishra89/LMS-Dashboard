@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigInteger;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,19 +22,21 @@ import java.util.List;
 public class CourseSummary {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lms_trng_summary_id_generator")
+  @SequenceGenerator(name = "lms_trng_summary_id_generator", sequenceName = "lms_schema.lms_trng_id_seq", allocationSize = 1)
   @Column(name = "trng_id")
   private Long trainingId;
 
-  @Column(name = "trng_topic")
+  @Column(name = "trng_topic", length = 4000)
   private String topics;
 
-  @Column(name = "trng_details")
+  @Column(name = "trng_details", length = 4000)
   private String details;
 
-  @Column(name = "pre_requisites")
+  @Column(name = "pre_requisites", length = 4000)
   private String prerequisite;
 
-  @Column(name = "level_id")
+  @Column(name = "level_code")
   private String level;
 
   @Column(name = "trng_duration")
@@ -42,16 +46,34 @@ public class CourseSummary {
   private String type;
 
   @Column(name = "rating")
-  private String rating;
+  private Integer rating;
 
   @Column(name = "category")
   private String category;
 
-  @Column(name = "tools_needed")
+  @Column(name = "tools_needed", length = 4000)
   private String toolsNeeded;
+
+  @Column(name = "folder_path", length = 4000)
+  private String folderPath;
 
   @Column(name = "course_progress")
   private Long courseProgressPercentage;
+
+  @Column(name = "trainer_emails")
+  private String trainerEmailIds;
+
+  @Column(name = "CREATED_BY", length = 100)
+  private String createdBy;
+
+  @Column(name = "CREATED_TS")
+  private OffsetDateTime createdTs;
+
+  @Column(name = "UPDATED_BY", length = 100)
+  private String updatedBy;
+
+  @Column(name = "UPDATED_TS")
+  private OffsetDateTime updatedTs;
 
   @OneToMany(
     mappedBy = "course",

@@ -1,10 +1,9 @@
 package com.example.lms.repo;
 
 import com.example.lms.domain.EnrollmentDetails;
-import com.example.lms.domain.EnrollmentDetailsId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EnrollmentDetailsRepository extends JpaRepository<EnrollmentDetails, EnrollmentDetailsId> {
+public interface EnrollmentDetailsRepository extends JpaRepository<EnrollmentDetails, Long> {
 
-  EnrollmentDetails findByEnrollmentDetailsId(EnrollmentDetailsId enrollmentDetailsId);
+
 }

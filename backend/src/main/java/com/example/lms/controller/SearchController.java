@@ -1,0 +1,37 @@
+package com.example.lms.controller;
+
+
+import com.example.lms.domain.CourseSummary;
+import com.example.lms.domain.EnrollmentMapping;
+import com.example.lms.dto.SearchDto;
+import com.example.lms.dto.SearchFilterDto;
+import com.example.lms.service.SearchService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/searchCourse")
+@CrossOrigin
+public class SearchController {
+
+    private final SearchService searchService;
+    public SearchController(SearchService searchService) { this.searchService = searchService; }
+
+    @PostMapping("getCourseDetail")
+    public List<SearchDto> getCourseDetail(@RequestBody Map<String, Object> body){
+      String category = (String)body.get("category");
+      String level = (String)body.get("level");
+      String instructor = (String)body.get("instructor");
+      String topic = (String)body.get("topic");
+
+        return searchService.search(category, topic, instructor, level);
+    }
+
+
+  @GetMapping("/getSearchList")
+  public SearchFilterDto getSearchList(){
+    return searchService.getSearchList();
+  }
+}

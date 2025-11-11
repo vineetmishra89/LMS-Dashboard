@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CourseMaster } from '../../models/course';
 import { CourseService } from '../../services/course.service';
+import { UserService } from '../../services/user.service';
+import { DataSharingService } from '../../services/data-sharing.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-video-player-page',
@@ -11,15 +14,21 @@ import { CourseService } from '../../services/course.service';
 export class VideoPlayerPageComponent implements OnInit {
   course: CourseMaster | null = null;
   isLoading = true;
+   dataSharingService = inject(DataSharingService);
+   playCourseData: any = null;
+   selectedModule: any = null;
+   
   
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private courseService: CourseService
+    private courseService: CourseService,
+    private userService: UserService
   ) {}
   
   ngOnInit(): void {
-    const courseId = this.route.snapshot.params['courseId'];
+    const courseId = this.route.snapshot.params['trainingId'];
+    const userId = 'test_trainee1@irissoftware.com';
     
     const navigationState = this.router.getCurrentNavigation()?.extras?.state || 
                            (history.state && history.state.courseData ? history.state : null);
@@ -29,10 +38,12 @@ export class VideoPlayerPageComponent implements OnInit {
       this.course = navigationState.courseData;
       this.isLoading = false;
     } else {
-      this.courseService.getCourseById(courseId).subscribe({
+      this.courseService.getCourseById(courseId,userId).subscribe({
         next: (course) => {
           this.course = course;
+          console.log('First course lession id- '+ this.course.lmsTrainingDetails[0].moduleId);
           this.isLoading = false;
+          this.selectedModule = course.lmsTrainingDetails[0];
         },
         error: (error) => {
           console.error('Failed to load course:', error);
@@ -40,6 +51,15 @@ export class VideoPlayerPageComponent implements OnInit {
         }
       });
     }
+
+    this.dataSharingService.getData().subscribe(data => {
+      this.playCourseData = data;
+    });
+  }
+
+  moduleSelected(selectedModule: any, index: number) {
+    this.selectedModule = selectedModule
+
   }
   
   goBack(): void {

@@ -3,6 +3,7 @@ import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoProgressService } from '../../services/video-progress.service';
 import { UserService } from '../../services/user.service';
+import { CourseMaster } from '../../models/course';
 
 @Component({
   selector: 'app-video-player',
@@ -13,6 +14,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   @Input() videoUrl!: string;
   @Input() courseId!: string;
   @Input() lessonId: string = 'default';
+  @Input() course!: CourseMaster;
+  completed: boolean = false;
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
   
@@ -46,6 +49,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   
   private loadVideoProgress(): void {
     const user = this.userService.getCurrentUser();
+    console.log('Course ID recieved : '+this.courseId);
+    console.log('Lesson ID recieved : '+this.lessonId);
+    console.log('Url recieved : '+this.videoUrl);
     if (!user) return;
     
     this.videoProgressService.getProgress(user.id, this.courseId, this.lessonId)
@@ -64,7 +70,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   
   private setupProgressTracking(): void {
     this.progressTimer$.pipe(
-      takeUntil(this.destroy$)
+      //takeUntil(this.destroy$)
     ).subscribe(() => {
       if (this.isPlaying) {
         this.saveCurrentProgress();
@@ -83,6 +89,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   }
   
   onPause(): void {
+    console.log('Pausing the video');
     this.isPlaying = false;
     this.updateSessionWatchTime();
     this.saveCurrentProgress();
@@ -109,13 +116,19 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     const watchTimeDelta = Math.max(0, this.sessionWatchTime);
     
     if (watchTimeDelta > 0) {
+      console.log('Storing session watch time : '+ watchTimeDelta);
+      if(this.currentTime >= this.duration) {
+        this.completed = true;
+      }
       this.videoProgressService.updateProgress({
         userId: user.id,
         courseId: this.courseId,
         lessonId: this.lessonId,
         currentTime: this.currentTime,
         duration: this.duration,
-        watchTime: watchTimeDelta / 60
+        watchTime: watchTimeDelta / 60,
+        completed: this.completed,
+        progress: (this.currentTime / this.duration) * 100
       }).subscribe({
         next: () => {
           console.log('Video progress saved successfully');

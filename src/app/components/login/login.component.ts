@@ -1,12 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { CommonModule } from '@angular/common';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  imports: [InputTextModule, ButtonModule, FloatLabelModule ,CommonModule, FormsModule, ReactiveFormsModule ],
+  standalone: true
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
@@ -14,16 +20,18 @@ export class LoginComponent implements OnInit {
   errorMessage = '';
   returnUrl = '';
   showPassword = false;
+  route =  inject(ActivatedRoute);
 
   constructor(
     private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute
+    public authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    const x = this.authService.isLoggedIn();
+    console.log(x);
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
     const registered = this.route.snapshot.queryParams['registered'] === '1';
     if (registered) {
       this.errorMessage = '';
@@ -36,16 +44,23 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      return;
+    }
     
     this.isLoading = true;
     this.errorMessage = '';
     
-    const credentials = this.loginForm.value;
+    const credentials = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
     
     this.authService.login(credentials).subscribe({
-      next: (user) => {
-        console.log('Login successful:', user);
+      next: (response) => {
+        console.log('Login successful:', response);
+        this.isLoading = false;
         this.router.navigate([this.returnUrl]);
       },
       error: (error) => {
@@ -59,29 +74,5 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  loginWithGoogle(): void {
-    this.isLoading = true;
-    this.authService.googleLogin().subscribe({
-      next: (user) => {
-        this.router.navigate([this.returnUrl]);
-      },
-      error: (error) => {
-        this.errorMessage = 'Google login failed. Please try again.';
-        this.isLoading = false;
-      }
-    });
-  }
-
-  loginWithFacebook(): void {
-    this.isLoading = true;
-    this.authService.facebookLogin().subscribe({
-      next: (user) => {
-        this.router.navigate([this.returnUrl]);
-      },
-      error: (error) => {
-        this.errorMessage = 'Facebook login failed. Please try again.';
-        this.isLoading = false;
-      }
-    });
-  }
+  
 }

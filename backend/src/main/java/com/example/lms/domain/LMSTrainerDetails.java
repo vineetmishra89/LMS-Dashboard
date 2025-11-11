@@ -2,10 +2,14 @@ package com.example.lms.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "LMS_TRAINER_DTLS")
 public class LMSTrainerDetails {
 
@@ -25,7 +29,4 @@ public class LMSTrainerDetails {
   @Column(name = "trainer_type")
   private String trainerType;
 
-  @OneToMany(mappedBy = "trainerDetails", cascade = CascadeType.ALL)
-  @JsonManagedReference
-  private List<CourseDetail> modules;
 }

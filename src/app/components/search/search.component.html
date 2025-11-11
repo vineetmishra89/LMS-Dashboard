@@ -16,7 +16,7 @@
         style="display: flex; flex-direction: column; justify-content: space-around; height: 60px"
       >
         <div style="font-size: 14px">Completed Course</div>
-        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">3</div>
+        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">{{summary.completedCourse}}</div>
       </div>
     </div>
   </p-card>
@@ -29,7 +29,7 @@
         style="display: flex; flex-direction: column; justify-content: space-around; height: 60px"
       >
         <div style="font-size: 14px">Enrolled Course</div>
-        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">2</div>
+        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">{{summary.enrolledCourse}}</div>
       </div>
     </div>
   </p-card>
@@ -42,7 +42,7 @@
         style="display: flex; flex-direction: column; justify-content: space-around; height: 60px"
       >
         <div style="font-size: 14px">Pending Course</div>
-        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">2</div>
+        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">{{summary.pendingCourse}}</div>
       </div>
     </div>
   </p-card>
@@ -55,7 +55,7 @@
         style="display: flex; flex-direction: column; justify-content: space-around; height: 60px"
       >
         <div style="font-size: 14px">Hours Spent</div>
-        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">8</div>
+        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">{{summary.hoursSpent}}</div>
       </div>
     </div>
   </p-card>
@@ -68,20 +68,20 @@
         style="display: flex; flex-direction: column; justify-content: space-around; height: 60px"
       >
         <div style="font-size: 14px">Learning Hours Achieved</div>
-        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">8</div>
+        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">{{summary.hoursArchived}}</div>
       </div>
     </div>
   </p-card>
   <p-card class="card-content-margin-0 card-1">
     <div style="display: flex; align-items: center">
       <div style="padding: 15px 15px 15px 0px">
-        <i class="pi pi-thumbs-up" style="font-size: 20px; color: var(--primary-color)"></i>
+        <i class="pi pi-heart" style="font-size: 20px; color: var(--red-600)"></i>
       </div>
       <div
         style="display: flex; flex-direction: column; justify-content: space-around; height: 60px"
       >
         <div style="font-size: 14px">Liked Course</div>
-        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">8</div>
+        <div style="font-size: 24px; color: var(--text-color); font-weight: bold">{{summary.likedCourses}}</div>
       </div>
     </div>
   </p-card>
@@ -91,101 +91,139 @@
   <div style="display: flex; flex-wrap: wrap;">
     <div style="width: 50%; padding: 20px">
       <p-card header="Enrolled">
-        @for(item of enrolled; track item) {
-        <div style="margin: 20px">
-          <div style="font-size: 16px; font-weight: bold; margin: 10px;     display: flex
-          ;
-              justify-content: space-between;
-              align-content: center;
-              align-items: center;
-          ">
-           <div> {{ item.trainingName }}</div>
-           <div>
-            <p-button severity="Primary"  label="Start"   size="small"/>
-           </div>
-          </div>
-          <div>
-            <p-progressBar [value]="item.progress" color="var(red-300)" [style]="{ height: '6px', color: 'var(red-400)' }">
-              <ng-template pTemplate="content" let-value>
-                <span></span>
-              </ng-template>
-            </p-progressBar>
-          </div>
-        </div>
+        @if(enrolledCourse === null) {
+          <p-skeleton width="60%" styleClass="skeleton" borderRadius="16px" />
+          <p-skeleton width="80%" styleClass="skeleton" borderRadius="16px" />
+        } @else {
+          @for(item of enrolledCourse; track item) {
+            <div style="margin: 20px">
+              <div style="font-size: 16px; font-weight: bold; margin: 10px;     display: flex
+              ;
+                  justify-content: space-between;
+                  align-content: center;
+                  align-items: center;
+              ">
+               <div> {{ item.trainingName }}</div>
+               <div>
+                <p-button class="same-button-width" severity="Primary"  label="Start"   size="small" (click)="start(item)"/>
+               </div>
+              </div>
+              <div>
+                <p-progressBar [value]="item.progress" color="var(red-300)" [style]="{ height: '6px', color: 'var(red-400)' }">
+                  <ng-template pTemplate="content" let-value>
+                    <span></span>
+                  </ng-template>
+                </p-progressBar>
+              </div>
+            </div>
+            } @empty {
+              <div style="text-align: center">No data available</div>
+            }
         }
+        
       </p-card>
     </div>
     <div style="width: 50%; padding: 20px">
       <p-card header="Pending">
-        @for(item of pending; track item) {
-        <div style="margin: 20px">
-          <div style="font-size: 16px; font-weight: bold; margin: 10px;     display: flex
-          ;
-              justify-content: space-between;
-              align-content: center;
-              align-items: center;
-          ">
-           <div> {{ item.trainingName }}</div>
-           <div>
-           <span style="font-size: 13px; margin-right: 15px; font-weight: normal"> {{item.progress / 100}}%</span>
-            <p-button severity="warning"  label="Continue"   size="small"/>
-           </div>
-          </div>
-          <div>
-            <p-progressBar [value]="item.progress" color="red" [style]="{ height: '6px', color: 'red' }">
-              <ng-template pTemplate="content" let-value>
-                <span></span>
-              </ng-template>
-            </p-progressBar>
-          </div>
-        </div>
+        @if(pendingCourse === null) {
+          <p-skeleton width="60%" styleClass="skeleton" borderRadius="16px" />
+          <p-skeleton width="80%" styleClass="skeleton" borderRadius="16px" />
+        } @else {
+          @for(item of pendingCourse; track item) {
+            <div style="margin: 20px">
+              <div style="font-size: 16px; font-weight: bold; margin: 10px;     display: flex
+              ;
+                  justify-content: space-between;
+                  align-content: center;
+                  align-items: center;
+              ">
+               <div> {{ item.trainingName }}</div>
+               <div>
+               
+                <p-button class="same-button-width" severity="warning"  label="Continue"   size="small"/>
+               </div>
+              </div>
+              <div style="position: relative">
+                <span style="font-size: 14px;
+                margin-right: 15px;
+                font-weight: normal;
+                position: absolute;
+                top: -35px;
+                right: 150px;"> {{item.progress / 100}}%</span>
+                <p-progressBar [value]="item.progress" color="red" [style]="{ height: '6px', color: 'red' }">
+                  <ng-template pTemplate="content" let-value>
+                    <span></span>
+                  </ng-template>
+                </p-progressBar>
+              </div>
+            </div>
+            }@empty {
+              <div style="text-align: center">No data available</div>
+            }
         }
+       
       </p-card>
     </div>
     <div style="width: 50%; padding: 20px">
       <p-card header="Completed">
-        @for(item of completed; track item) {
-        <div style="margin: 20px">
-          <div style="font-size: 16px; font-weight: bold; margin: 10px;     display: flex
-          ;
-              justify-content: space-between;
-              align-content: center;
-              align-items: center;
-          ">
-           <div> {{ item.trainingName }}</div>
-           <div>
-            <p-button severity="success"  label="View Certificate"   size="small"/>
-           </div>
-          </div>
-          <div>
-            <p-progressBar [value]="item.progress" color="green" [style]="{ height: '6px', color: 'red' }">
-              <ng-template pTemplate="content" let-value>
-                <span></span>
-              </ng-template>
-            </p-progressBar>
-          </div>
-        </div>
+        @if(completedCourse === null) {
+          <p-skeleton width="60%" styleClass="skeleton" borderRadius="16px" />
+          <p-skeleton width="80%" styleClass="skeleton" borderRadius="16px" />
+        } @else {
+          @for(item of completedCourse; track item) {
+            <div style="margin: 20px">
+              <div style="font-size: 16px; font-weight: bold; margin: 10px;     display: flex
+              ;
+                  justify-content: space-between;
+                  align-content: center;
+                  align-items: center;
+              ">
+               <div> {{ item.trainingName }}</div>
+               <div>
+                <p-button class="same-button-width" severity="success"  label="View Certificate"   size="small"/>
+               </div>
+              </div>
+              <div>
+                <p-progressBar [value]="item.progress" color="green" [style]="{ height: '6px', color: 'red' }">
+                  <ng-template pTemplate="content" let-value>
+                    <span></span>
+                  </ng-template>
+                </p-progressBar>
+              </div>
+            </div>
+            }@empty {
+              <div style="text-align: center">No data available</div>
+            }
         }
+        
       </p-card>
     </div>
     <div style="width: 50%; padding: 20px">
       <p-card header="Liked">
-        @for(item of completed; track item) {
-        <div style="margin: 20px">
-          <div style="font-size: 16px; font-weight: bold; margin: 10px;     display: flex
-          ;
-              justify-content: space-between;
-              align-content: center;
-              align-items: center;
-          ">
-           <div> {{ item.trainingName }}</div>
-           <div>
-            <p-button severity="primary"  label="View Course"   size="small"/>
-           </div>
-          </div>
-          
-        </div>
+        @if(completedCourse === null) {
+          <p-skeleton width="60%" styleClass="skeleton" borderRadius="16px" />
+          <p-skeleton width="80%" styleClass="skeleton" borderRadius="16px" />
+        } @else {
+          @for(item of likedCourse; track item) {
+            <div style="margin: 20px">
+              <div style="font-size: 16px; font-weight: bold; margin: 10px;     display: flex
+              ;
+                  justify-content: space-between;
+                  align-content: center;
+                  align-items: center;
+              ">
+               <div> {{ item.trainingName }}</div>
+               <div>
+                <p-button class="same-button-width" severity="primary"  label="View Course"   size="small"/>
+               </div>
+              </div>
+              
+            </div>
+            }@empty {
+              <div style="text-align: center">No data available</div>
+            }
         }
+        
       </p-card>
     </div>
   </div>

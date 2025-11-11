@@ -91,7 +91,7 @@ export class CourseCardComponent implements OnInit {
   }
 
   onContinue(): void {
-    this.continueClick.emit(this.courseDetail.trainingDetailId);
+    this.continueClick.emit(this.courseDetail.moduleId);
     if (this.courseDetail.trainingLink) {
       this.onWatchVideo();
     }
@@ -102,7 +102,7 @@ export class CourseCardComponent implements OnInit {
   }
 
   onWatchVideo(): void {
-    this.continueClick.emit(this.courseDetail.trainingDetailId);
+    this.continueClick.emit(this.courseDetail.moduleId);
   }
 
     getStatusText(): string {

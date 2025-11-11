@@ -10,8 +10,8 @@ import java.util.Optional;
 @Repository
 public interface VideoProgressRepository extends JpaRepository<VideoProgress, Long> {
     Optional<VideoProgress> findByUserIdAndCourseIdAndLessonId(String userId, String courseId, String lessonId);
-    List<VideoProgress> findByUserIdAndCourseId(String userId, String courseId);
-    
+  Optional<VideoProgress> findByUserIdAndCourseIdAndLessonIdAndCompleted(String userId, String courseId, String lessonId, Boolean completed);
+
     @Query("SELECT SUM(vp.watchTime) FROM VideoProgress vp WHERE vp.userId = ?1")
     Double getTotalWatchTimeByUserId(String userId);
 }

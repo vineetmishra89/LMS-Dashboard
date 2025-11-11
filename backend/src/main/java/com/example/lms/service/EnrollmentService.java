@@ -1,83 +1,24 @@
 package com.example.lms.service;
 
-import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.EnrollmentDetails;
-import com.example.lms.domain.EnrollmentDetailsId;
 import com.example.lms.domain.EnrollmentMapping;
-import com.example.lms.repo.CourseRepository;
-import com.example.lms.repo.EnrollmentDetailsRepository;
-import com.example.lms.repo.EnrollmentRepository;
-import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-@Service
-public class EnrollmentService {
-  private final EnrollmentRepository enrollmentRepository;
-  private final EnrollmentDetailsRepository enrollmentDetailsRepository;
+public interface EnrollmentService {
 
-  public EnrollmentService(EnrollmentRepository enrollmentRepository,EnrollmentDetailsRepository enrollmentDetailsRepository) {
-    this.enrollmentRepository = enrollmentRepository;
-    this.enrollmentDetailsRepository = enrollmentDetailsRepository;
-  }
+  List<EnrollmentMapping> byUser(String userId);
 
-  public List<EnrollmentMapping> byUser(String userId) {
-    return enrollmentRepository.findByUserId(userId);
-  }
+  EnrollmentMapping enroll(String userId, Long courseId, String enrollmentType);
 
-  public EnrollmentMapping enroll(String userId, Long courseId) {
-    CourseSummary summary = new CourseSummary();
-    summary.setTrainingId(courseId);
-    EnrollmentMapping e = new EnrollmentMapping();
-    e.setUserId(userId);
-    e.setCourseSummary(summary);
-    e.setStatus("ACTIVE");
-    e.setEnrolledTs(OffsetDateTime.now());
-    return enrollmentRepository.save(e);
-  }
+  EnrollmentMapping getById(Long enrollmentId);
 
-  public EnrollmentMapping getById(Long enrollmentId) {
-    return enrollmentRepository.findById(enrollmentId).orElseThrow();
-  }
+  EnrollmentDetails updateProgress(Long enrollmentDetailsId, Map<String, Object> progressData);
 
-  public EnrollmentDetails updateProgress(Long enrollmentId, Long moduleId, Map<String, Object> progressData) {
-    EnrollmentDetailsId enrollmentDetailsId = new EnrollmentDetailsId();
-    enrollmentDetailsId.setTrainingEmrollmentId(enrollmentId);
-    enrollmentDetailsId.setModuleId(moduleId);
-    EnrollmentDetails enrollmentDetails = enrollmentDetailsRepository.findById(enrollmentDetailsId).orElseThrow();
+  List<EnrollmentMapping> bulkEnroll(List<String> emailIdList, List<Long> courseIdList, String enrollmentType, String userId);
 
-    if (progressData.containsKey("overallProgress")) {
-      Integer progress = ((Number) progressData.get("overallProgress")).intValue();
-      enrollmentDetails.setCurrentLearningTs(progress);
-    }
+  EnrollmentMapping completeCourse(Long enrollmentId);
 
-    enrollmentDetails.setLastAccessedAt(OffsetDateTime.now());
-    return enrollmentDetailsRepository.save(enrollmentDetails);
-  }
-
-  public Map<String, Object> getStats(String userId) {
-    List<EnrollmentMapping> enrollments = enrollmentRepository.findByUserId(userId);
-
-    long totalEnrollments = enrollments.size();
-    long activeEnrollments = enrollments.stream().filter(e -> "active".equals(e.getStatus())).count();
-    long completedEnrollments = enrollments.stream().filter(e -> "completed".equals(e.getStatus())).count();
-
-    Map<String, Object> stats = new HashMap<>();
-    stats.put("totalEnrollments", totalEnrollments);
-    stats.put("activeEnrollments", activeEnrollments);
-    stats.put("completedEnrollments", completedEnrollments);
-
-    return stats;
-  }
-
-  public EnrollmentMapping completeCourse(Long enrollmentId) {
-    EnrollmentMapping e = enrollmentRepository.findById(enrollmentId).orElseThrow();
-    e.setStatus("COMPLETED");
-
-    return enrollmentRepository.save(e);
-  }
+  void unEnroll(String userId, Long courseId);
 }

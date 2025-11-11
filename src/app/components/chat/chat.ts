@@ -84,7 +84,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.typingSubject.pipe(
       debounceTime(1000),
       distinctUntilChanged(),
-      takeUntil(this.destroy$)
+      //takeUntil(this.destroy$)
     ).subscribe(() => {
       this.isTyping = false;
     });
@@ -260,8 +260,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           const activeEnrollment = enrollments.sort((a, b) => 
             new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime()
           )[0];
-          
-          const course = await this.courseService.getCourseById(activeEnrollment.courseId).toPromise();
+
+          const course = await this.courseService.getCourseById(activeEnrollment.courseId,'test_trainee1@irissoftware.com').toPromise();
           const progressPercent = activeEnrollment.progress.overallProgress;
           
           return {

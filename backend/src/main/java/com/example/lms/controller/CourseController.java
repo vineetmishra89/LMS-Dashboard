@@ -2,6 +2,7 @@ package com.example.lms.controller;
 
 import com.example.lms.domain.CourseDetail;
 import com.example.lms.domain.CourseSummary;
+import com.example.lms.dto.CourseCardDetailDto;
 import com.example.lms.service.CourseService;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,12 @@ public class CourseController {
 
   @GetMapping("/getCourseById/{courseId}")
   public CourseSummary getCourseById(@PathVariable(required = true) Long courseId,@RequestParam String userId) {
-    return courseService.search(courseId);
+    CourseSummary summary = courseService.search(courseId);
+    return summary;
+  }
+
+  @GetMapping("/courseCard/viewType/{viewType}")
+  public List<CourseCardDetailDto> getCourseCardList(@PathVariable(required = true) String viewType, @RequestParam(required = false) String category) {
+    return courseService.getCourseCardList(viewType,category);
   }
 }
