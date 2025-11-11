@@ -58,8 +58,8 @@ public class EnrollmentMapping {
   @Column(name = "updated_By")
   private String updatedBy;
 
-  @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JsonManagedReference
+  @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @JsonManagedReference("LMS_USER_TRNG_ENROLLMENT_DTLS")
   private List<EnrollmentDetails> enrollmentDetailsList;
 
   @ManyToOne(fetch=FetchType.EAGER)

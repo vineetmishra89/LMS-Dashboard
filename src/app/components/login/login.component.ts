@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
@@ -11,7 +11,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  imports: [InputTextModule, ButtonModule, FloatLabelModule ,CommonModule, FormsModule, ReactiveFormsModule ],
+  imports: [InputTextModule, ButtonModule, FloatLabelModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   standalone: true
 })
 export class LoginComponent implements OnInit {

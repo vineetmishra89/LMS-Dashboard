@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
   showMobileMenu = false; 
   isDarkMode = false;
   showSyncIndicator = false;
+  showHeader = false;
 
 public showInstallPrompt = false;
 private deferredPrompt: any = null;
@@ -45,6 +46,23 @@ private deferredPrompt: any = null;
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
+    
+    this.setupAuthenticationListener();
+    
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe((event: any) => {
+      this.updateHeaderVisibility(event.urlAfterRedirects || event.url);
+    });
+    
+    this.authService.isAuthenticated$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.updateHeaderVisibility(this.router.url);
+    });
+    
+    this.updateHeaderVisibility(this.router.url);
   }
 
   ngOnDestroy(): void {
@@ -65,19 +83,26 @@ private deferredPrompt: any = null;
 
   private setupAuthenticationListener(): void {
     this.authService.isAuthenticated$.pipe(
-     // //takeUntil(this.destroy$)
+      takeUntil(this.destroy$)
     ).subscribe(isAuthenticated => {
       this.isAuthenticated = isAuthenticated;
     });
 
     this.authService.currentUser$.pipe(
-      //takeUntil(this.destroy$)
+      takeUntil(this.destroy$)
     ).subscribe(user => {
       this.currentUser = user;
       if (user) {
         this.loadUserPreferences();
       }
     });
+  }
+
+  private updateHeaderVisibility(url: string): void {
+    const authRoutes = ['/login', '/forgot-password'];
+    const isAuthRoute = authRoutes.some(route => url?.startsWith(route));
+    
+    this.showHeader = this.isAuthenticated && !isAuthRoute;
   }
 
 

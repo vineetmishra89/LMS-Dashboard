@@ -65,6 +65,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         details.setUpdatedTs(OffsetDateTime.now());
         details.setCreatedBy(userId);
         details.setUpdatedBy(userId);
+        //details.setCurrentLearningTs(0);
 
         enrollmentDetailsList.add(details);
       }
@@ -163,7 +164,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             details.setUpdatedTs(now);
             details.setCreatedBy(userId);
             details.setUpdatedBy(userId);
-           // details.setCurrentLearningTs(0);
+            //details.setCurrentLearningTs(0);
 
             detailsList.add(details);
           }
