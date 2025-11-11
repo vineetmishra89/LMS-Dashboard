@@ -138,4 +138,17 @@ public class CourseService {
     }
     return ((Number) obj).longValue();
   }
+
+  public String getFolderPathByTrainingId(Long trainingId) {
+    try {
+      CourseSummary course = courseRepository.findById(trainingId)
+        .orElseThrow(() -> new ResourceNotFoundException("Course", "id", trainingId));
+      return course.getFolderPath();
+    } catch (ResourceNotFoundException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      log.error("Database error while fetching folder path for training id: {}", trainingId, ex);
+      throw new DatabaseException("Failed to fetch folder path for training id: " + trainingId, ex);
+    }
+  }
 }
