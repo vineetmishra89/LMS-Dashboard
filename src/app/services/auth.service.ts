@@ -93,7 +93,7 @@ export class AuthService {
       password: credentials.password 
     };
     
-    return this.http.post<any>('http://localhost:5000/api/auth/login', loginRequest).pipe(
+    return this.http.post<any>('http://192.168.8.116:5000/api/auth/login', loginRequest).pipe(
       tap(response => {
         if (response.token) {
           sessionStorage.setItem(this.tokenKey, response.token);
@@ -139,7 +139,7 @@ export class AuthService {
     const token = this.getToken();
     
     if (token) {
-      this.http.post('http://localhost:5000/api/auth/logout', {}).subscribe({
+      this.http.post('http://192.168.8.116:5000/api/auth/logout', {}).subscribe({
         next: () => console.log('Logout successful'),
         error: (error) => console.error('Logout error:', error)
       });
@@ -191,7 +191,7 @@ export class AuthService {
   }
 
   changePassword(currentPassword: string, newPassword: string): Observable<any> {
-    return this.http.post('http://localhost:5000/api/auth/change-password', {
+    return this.http.post('http://192.168.8.116:5000/api/auth/change-password', {
       currentPassword,
       newPassword
     }).pipe(
