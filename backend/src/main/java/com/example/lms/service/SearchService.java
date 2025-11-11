@@ -138,7 +138,7 @@ public class SearchService {
         log.info("got results");
         return results.stream()
           .map(row -> new TrainingNameDto(
-            (String)row[0],(String)row[1],(Integer)row[2]
+            (String)row[0],(String)row[1],(Long)row[2]
           ))
           .collect(Collectors.toList());
       } else {
