@@ -79,9 +79,9 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
       }
       
-      logger.info("Found folder path: {} for trngId: {}", folderPath, trngId);
+      logger.info("Found folder path (webUrl): {} for trngId: {}", folderPath, trngId);
       
-      FolderNode folderStructure = userTokenSharePointService.listFoldersAndFilesRecursivelyByPath(bearerToken, folderPath);
+      FolderNode folderStructure = userTokenSharePointService.listFoldersAndFilesRecursively(bearerToken, folderPath);
       
       List<FileNode> nonVideoFiles = filterNonVideoFiles(folderStructure);
       
