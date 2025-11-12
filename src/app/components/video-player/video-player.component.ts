@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { VideoProgressService } from '../../services/video-progress.service';
 import { UserService } from '../../services/user.service';
 import { CourseMaster } from '../../models/course';
-import { EnrollmentMapping } from '../../models/enrollments';
+import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
 
 @Component({
   selector: 'app-video-player',
@@ -13,10 +13,9 @@ import { EnrollmentMapping } from '../../models/enrollments';
 })
 export class VideoPlayerComponent implements OnInit, OnDestroy {
   @Input() videoUrl!: string;
-  @Input() courseId!: string;
-  @Input() lessonId: string = 'default';
-  @Input() course!: CourseMaster;
-  @Input() enrollmentMapping!: EnrollmentMapping;
+  @Input() courseId!: number;
+  @Input() lessonId!: number;
+  @Input() selectedEnrollmentModule!: EnrollmentDetails;
   completed: boolean = false;
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
@@ -39,6 +38,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   ) {}
   
   ngOnInit(): void {
+    console.log('Load video progress');
     this.loadVideoProgress();
     this.setupProgressTracking();
   }
@@ -50,18 +50,13 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   }
   
   private loadVideoProgress(): void {
-    const user = this.userService.getCurrentUser();
-    console.log('Course ID recieved : '+this.courseId);
-    console.log('Lesson ID recieved : '+this.lessonId);
-    console.log('Url recieved : '+this.videoUrl);
-    if (!user) return;
-    
-    this.videoProgressService.getProgress(user.id, this.courseId, this.lessonId)
+    this.videoProgressService.getProgress(this.selectedEnrollmentModule.enrollmentDetailsId)
       .subscribe({
         next: (progress) => {
           if (progress && this.videoElement.nativeElement) {
             this.videoElement.nativeElement.currentTime = progress.currentTime;
             this.lastSavedTime = progress.currentTime;
+            console.log("current video progress : "+ progress.currentTime);
           }
         },
         error: (error) => {
@@ -83,6 +78,12 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   onVideoLoaded(): void {
     this.isLoading = false;
     this.duration = this.videoElement.nativeElement.duration;
+  }
+
+  onVideoEnded(): void {
+    console.log("video ended. Marking the module progress completed");
+    this.onTimeUpdate();
+    this.saveCurrentProgress();
   }
   
   onPlay(): void {
@@ -130,7 +131,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
         duration: this.duration,
         watchTime: watchTimeDelta / 60,
         completed: this.completed,
-        progress: (this.currentTime / this.duration) * 100
+        progress: (this.currentTime / this.duration) * 100,
+        trainingEnrollmentDtlId:  this.selectedEnrollmentModule.enrollmentDetailsId
       }).subscribe({
         next: () => {
           console.log('Video progress saved successfully');

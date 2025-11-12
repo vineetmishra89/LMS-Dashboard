@@ -34,7 +34,7 @@ public class SearchService {
   }
 
   public List<SearchDto> search(String category, String topics, String instructor, String level) {
-    StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd join  ltd.trainerDetails td where 1=1");
+    StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd ");
 
     if (category != null) {
       hql.append(" AND cm.category = :category");
@@ -42,9 +42,12 @@ public class SearchService {
     if (topics != null) {
       hql.append(" AND cm.topics = :topics");
     }
+    /*
     if (instructor != null) {
       hql.append(" AND td.emailid =:instructor");
     }
+
+     */
     if (level != null) {
       hql.append(" AND cm.level =:level");
     }

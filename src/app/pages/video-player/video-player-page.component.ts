@@ -6,7 +6,8 @@ import { UserService } from '../../services/user.service';
 import { DataSharingService } from '../../services/data-sharing.service';
 import { CommonModule } from '@angular/common';
 import { EnrollmentService } from '../../services/enrollment.service';
-import { EnrollmentMapping } from '../../models/enrollments';
+import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-video-player-page',
@@ -20,7 +21,8 @@ export class VideoPlayerPageComponent implements OnInit {
    playCourseData: CourseMaster | null = null;
    selectedModule: CourseDetail | null = null;
    enrollmentMapping: EnrollmentMapping | null = null;
-   
+   selectedEnrollmentModule: EnrollmentDetails | null = null;
+   videoPageReady: boolean = false;
   
   constructor(
     private route: ActivatedRoute,
@@ -31,31 +33,36 @@ export class VideoPlayerPageComponent implements OnInit {
   
   ngOnInit(): void {
     const courseId = this.route.snapshot.params['trainingId'];
+    console.log("courseId : "+courseId);
     const trngEnrollmentId = this.route.snapshot.params['trngEnrollmentId'];
+    console.log("trngEnrollmentId : "+trngEnrollmentId);
     const userId = 'test_trainee1@irissoftware.com';
     
-      this.courseService.getCourseById(courseId,userId).subscribe({
-        next: (course) => {
+    forkJoin({
+      course: this.courseService.getCourseById(courseId,userId),
+      enrollment: this.enrollmentService.getEnrollmentById(trngEnrollmentId)
+    }).subscribe({
+        next: ({course, enrollment}) => {
           this.isLoading = false;
+          this.course = course;
           this.playCourseData = course;
           this.selectedModule = course.lmsTrainingDetails[0];
+
+          this.enrollmentMapping = enrollment;
+          this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[0];
+          this.videoPageReady = true;
+          console.log("Video player page loaded successfully");
         },
         error: (error) => {
-          console.error('Failed to load course:', error);
+          console.error('Failed to load video player page:', error);
           this.router.navigate(['/dashboard']);
         }
       });
-
-      this.enrollmentService.getEnrollmentById(trngEnrollmentId).subscribe({
-        next: (enrollmentMapping) => {
-          this.enrollmentMapping = enrollmentMapping;
-        }
-      })
   }
 
   moduleSelected(selectedModule: any, index: number) {
-    this.selectedModule = selectedModule
-
+    this.selectedModule = selectedModule;
+    this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[index];
   }
   
   goBack(): void {

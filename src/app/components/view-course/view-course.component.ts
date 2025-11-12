@@ -90,7 +90,6 @@ export class ViewCourseComponent implements OnInit {
         this.loading = false;
       }
     });
-
   }
 
   resume() {

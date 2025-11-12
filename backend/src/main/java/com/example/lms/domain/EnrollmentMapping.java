@@ -60,7 +60,7 @@ public class EnrollmentMapping {
   @Column(name = "updated_By")
   private String updatedBy;
 
-  @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, orphanRemoval = true , fetch = FetchType.EAGER)
   @JsonManagedReference
   private List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
 

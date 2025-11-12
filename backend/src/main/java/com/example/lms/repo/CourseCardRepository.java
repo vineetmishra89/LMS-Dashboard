@@ -17,7 +17,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "    ts.TRNG_ID,\n" +
     "    ts.TRNG_TOPIC AS Course_Name,\n" +
     "    STRING_AGG(DISTINCT td.TRAINER_NAME::text, ',') AS Trainer_Names,\n" +
-    "    STRING_AGG(DISTINCT td.email_id::text, ',') AS Trainer_Email_ids,\n" +
+    "    STRING_AGG(DISTINCT td.trainer_email_id::text, ',') AS Trainer_Email_ids,\n" +
     "    SUM(tdt.Module_duration) AS Duration,\n" +
     "    ts.LEVEL_CODE AS Level,\n" +
     "    COUNT(tdt.Module_id) AS Modules,\n" +
@@ -26,7 +26,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "FROM\n" +
     "    lms_schema.LMS_TRNG_SUMMARY ts\n" +
     "    JOIN lms_schema.LMS_TRNG_DTLS tdt ON ts.TRNG_ID = tdt.TRNG_ID\n" +
-    "    JOIN lms_schema.LMS_TRAINER_DTLS td ON tdt.TRAINER_ID = td.TRAINER_ID\n" +
+    "    JOIN lms_schema.LMS_TRAINER_TRNG_MAPPING td ON ts.TRNG_ID = td.TRNG_ID\n" +
     "    JOIN lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING tem ON ts.TRNG_ID = tem.TRNG_ID\n" +
     "WHERE\n" +
     "    tem.ENROLLED_TS BETWEEN (NOW() - CAST(:courseInterval AS INTERVAL)) AND NOW()\n" +
@@ -39,10 +39,10 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
 
   @Query(value = "WITH trng_details AS (\n" +
     "        SELECT ts.TRNG_ID, SUM(tdt.Module_duration) AS Duration, COUNT(tdt.module_id) AS Modules, STRING_AGG(DISTINCT td.TRAINER_NAME::text, ',') AS Trainer_Names,\n" +
-    "        STRING_AGG(DISTINCT td.email_id::text, ',') AS Trainer_Email_ids\n" +
-    "        FROM lms_schema.LMS_TRNG_SUMMARY ts\n" +
-    "        JOIN lms_schema.LMS_TRNG_DTLS tdt ON ts.TRNG_ID = tdt.TRNG_ID\n" +
-    "        JOIN lms_schema.LMS_TRAINER_DTLS td ON tdt.TRAINER_ID = td.TRAINER_ID\n" +
+    "         STRING_AGG(DISTINCT td.trainer_email_id::text, ',') AS Trainer_Email_ids"+
+    " FROM lms_schema.LMS_TRNG_SUMMARY ts" +
+    " JOIN lms_schema.LMS_TRNG_DTLS tdt ON ts.TRNG_ID = tdt.TRNG_ID"+
+    " JOIN lms_schema.LMS_TRAINER_TRNG_MAPPING td ON ts.TRNG_ID = td.TRNG_ID"+
     "        GROUP BY ts.TRNG_ID\n" +
     "        ORDER BY COUNT(ts.TRNG_ID) DESC\n" +
     "    ),\n" +
@@ -54,7 +54,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "        JOIN lms_schema.LMS_TRNG_DTLS tdt ON ts.TRNG_ID = tdt.TRNG_ID\n" +
     "        \n" +
     "        JOIN lms_schema.LMS_TRNG_SEARCH_HIST tsh ON ts.TRNG_ID = tsh.TRNG_ID AND tdt.TRNG_ID = tsh.TRNG_ID\n" +
-    "        WHERE tsh.VIEW_TS BETWEEN (NOW() - INTERVAL '24 months') AND NOW()\n" +
+    "        WHERE tsh.VIEW_TS BETWEEN (NOW() - CAST(:courseInterval AS INTERVAL)) AND NOW()\n" +
     "        GROUP BY ts.TRNG_ID\n" +
     "        ORDER BY COUNT(ts.TRNG_ID) DESC\n" +
     "    )\n" +
@@ -67,7 +67,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "    ts.TRNG_ID,\n" +
     "    ts.TRNG_TOPIC AS Course_Name,\n" +
     "    STRING_AGG(DISTINCT td.TRAINER_NAME, ',') AS Trainer_Names,\n" +
-    "    STRING_AGG(DISTINCT td.email_id::text, ',') AS Trainer_Email_ids,\n" +
+    "    STRING_AGG(DISTINCT td.trainer_email_id::text, ',') AS Trainer_Email_ids,\n" +
     "    SUM(tdt.MODULE_DURATION) AS duration,\n" +
     "    ts.LEVEL_CODE AS Level,\n" +
     "    COUNT(tdt.MODULE_ID) AS Modules,\n" +
@@ -76,7 +76,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "FROM\n" +
     "    lms_schema.LMS_TRNG_SUMMARY ts\n" +
     "    JOIN lms_schema.LMS_TRNG_DTLS tdt ON ts.TRNG_ID = tdt.TRNG_ID\n" +
-    "    JOIN lms_schema.LMS_TRAINER_DTLS td ON tdt.TRAINER_ID = td.TRAINER_ID\n" +
+    "    JOIN lms_schema.LMS_TRAINER_TRNG_MAPPING td ON ts.TRNG_ID = td.TRNG_ID\n" +
     " WHERE ts.CREATED_TS BETWEEN (NOW() - CAST(:courseInterval AS INTERVAL)) AND NOW()\n" +
     "GROUP BY\n" +
     "    ts.TRNG_ID, ts.TRNG_TOPIC, ts.LEVEL_CODE\n" +
@@ -89,7 +89,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "    ts.TRNG_ID,\n" +
     "    ts.TRNG_TOPIC AS Course_Name,\n" +
     "    STRING_AGG(DISTINCT td.TRAINER_NAME, ',') AS Trainer_Names,\n" +
-    "    STRING_AGG(DISTINCT td.email_id::text, ',') AS Trainer_Email_ids,\n" +
+    "    STRING_AGG(DISTINCT td.trainer_email_id::text, ',') AS Trainer_Email_ids,\n" +
     "    SUM(tdt.MODULE_DURATION) AS duration,\n" +
     "    ts.LEVEL_CODE AS Level,\n" +
     "    COUNT(tdt.MODULE_ID) AS Modules,\n" +
@@ -98,7 +98,7 @@ public interface CourseCardRepository extends JpaRepository<CourseDetail, String
     "FROM\n" +
     "    lms_schema.LMS_TRNG_SUMMARY ts\n" +
     "    JOIN lms_schema.LMS_TRNG_DTLS tdt ON ts.TRNG_ID = tdt.TRNG_ID\n" +
-    "    JOIN lms_schema.LMS_TRAINER_DTLS td ON tdt.TRAINER_ID = td.TRAINER_ID\n" +
+    "    JOIN lms_schema.LMS_TRAINER_TRNG_MAPPING td ON ts.TRNG_ID = td.TRNG_ID\n" +
     "WHERE ts.CREATED_TS BETWEEN (NOW() - CAST(:courseInterval AS INTERVAL)) AND NOW() and ts.Category=:categoryType\n" +
     "GROUP BY ts.TRNG_ID",
     nativeQuery = true)

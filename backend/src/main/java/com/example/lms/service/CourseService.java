@@ -83,7 +83,7 @@ public class CourseService {
   public CourseSummary search(Long courseId) {
     try{
       return courseRepository.findById(courseId)
-          .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
+        .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
     }catch(ResourceNotFoundException ex){
       throw ex;
     }catch(Exception ex){
@@ -96,6 +96,7 @@ public class CourseService {
     try{
       if(StringUtils.isNotBlank(viewType)){
         List<Object[]> courseCardDetailList = null;
+        log.info("viewType :: {}",viewType);
         switch(viewType) {
           case "View":
             courseCardDetailList = courseCardRepository.findCourceCardDetailsByView(getCourseInterval());
@@ -115,10 +116,8 @@ public class CourseService {
         return courseCardDetailList != null ? courseCardDetailList.stream()
           .map(row -> {
             int duration = (Integer) row[4] == null?0 : (Integer) row[4];
-            int rating = (Integer) row[6] == null?0 : (Integer) row[6];
             Long trainingId = (Long) row[0];
-            int modules = (Integer) row[6]== null?0 : (Integer) row[6];
-            return new CourseCardDetailDto(trainingId,(String) row[1], (String) row[2], (String) row[3], (long) duration, (String) row[5], modules, String.valueOf(rating), (String) row[8]);
+            return new CourseCardDetailDto(trainingId,(String) row[1], (String) row[2], (String) row[3], (long) duration, (String) row[5], (Long) row[6], (BigDecimal) row[7], (String) row[8]);
           })
           .collect(Collectors.toList()): List.of();
       }
@@ -127,5 +126,12 @@ public class CourseService {
       log.error("Database error while fetching course card list", ex);
       throw new DatabaseException("Failed to fetch course card list", ex);
     }
+  }
+
+  private static long toLong(Object obj) {
+    if (obj == null) {
+      return 0L;
+    }
+    return ((Number) obj).longValue();
   }
 }

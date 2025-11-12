@@ -19,28 +19,13 @@ public class VideoProgressController {
     }
 
     @PostMapping("/update")
-    public VideoProgress updateProgress(@RequestBody Map<String, Object> request) {
-      VideoProgress progress = prepareVideoProgress(request);
+    public VideoProgress updateProgress(@RequestBody VideoProgress progress) {
         return service.updateProgress(progress);
     }
 
-    private VideoProgress prepareVideoProgress(Map<String, Object> request){
-      VideoProgress progress = new VideoProgress();
-      progress.setUserId((String) request.get("userId"));
-      progress.setCourseId(String.valueOf((Integer) request.get("courseId")));
-      progress.setLessonId(String.valueOf((Integer) request.get("lessonId")));
-      progress.setCurrentTime(new BigDecimal(request.get("currentTime").toString()));
-      progress.setDuration(new BigDecimal(request.get("duration").toString()));
-      progress.setWatchTime(new BigDecimal(request.get("watchTime").toString()));
-      progress.setCompleted((Boolean) request.get("completed"));
-      return progress;
-    }
-
-    @GetMapping("/{userId}/{courseId}/{lessonId}")
-    public Optional<VideoProgress> getProgress(@PathVariable String userId,
-                                              @PathVariable String courseId,
-                                              @PathVariable String lessonId) {
-        return service.getProgress(userId, courseId, lessonId);
+    @GetMapping("/{enrollmentDetailsId}")
+    public Optional<VideoProgress> getProgress(@PathVariable Integer enrollmentDetailsId) {
+        return service.getProgress(enrollmentDetailsId);
     }
 
     @GetMapping("/learning-hours/{userId}")

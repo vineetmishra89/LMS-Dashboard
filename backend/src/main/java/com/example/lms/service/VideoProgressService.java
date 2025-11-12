@@ -17,7 +17,7 @@ public class VideoProgressService {
     }
 
     public VideoProgress updateProgress(VideoProgress progress) {
-        Optional<VideoProgress> existing = repository.findByUserIdAndCourseIdAndLessonId(progress.getUserId(), progress.getCourseId(), progress.getLessonId());
+        Optional<VideoProgress> existing = repository.findByTrainingEnrollmentDtlIdAndCompleted(progress.getTrainingEnrollmentDtlId().intValue(),false);
 
       VideoProgress existingProgress = null;
         if (existing.isPresent() && !existing.get().getCompleted()) {
@@ -30,6 +30,7 @@ public class VideoProgressService {
           existingProgress.setLessonId(progress.getLessonId());
           existingProgress.setWatchTime(progress.getWatchTime());
           existingProgress.setCreatedAt(OffsetDateTime.now());
+          existingProgress.setTrainingEnrollmentDtlId(progress.getTrainingEnrollmentDtlId());
         }
 
       existingProgress.setCurrentTime(progress.getCurrentTime());
@@ -42,8 +43,8 @@ public class VideoProgressService {
         return repository.save(existingProgress);
     }
 
-    public Optional<VideoProgress> getProgress(String userId, String courseId, String lessonId) {
-        return repository.findByUserIdAndCourseIdAndLessonIdAndCompleted(userId, courseId, lessonId,false);
+    public Optional<VideoProgress> getProgress(Integer enrollmentDetailsId) {
+        return repository.findByTrainingEnrollmentDtlIdAndCompleted(enrollmentDetailsId,false);
     }
 
     public Double getTotalLearningHours(String userId) {
