@@ -27,8 +27,8 @@ public class VideoProgressController {
     private VideoProgress prepareVideoProgress(Map<String, Object> request){
       VideoProgress progress = new VideoProgress();
       progress.setUserId((String) request.get("userId"));
-      progress.setCourseId(String.valueOf((Integer) request.get("courseId")));
-      progress.setLessonId(String.valueOf((Integer) request.get("lessonId")));
+      progress.setCourseId((Integer)request.get("courseId"));
+      progress.setLessonId((Integer) request.get("lessonId"));
       progress.setCurrentTime(new BigDecimal(request.get("currentTime").toString()));
       progress.setDuration(new BigDecimal(request.get("duration").toString()));
       progress.setWatchTime(new BigDecimal(request.get("watchTime").toString()));
@@ -38,8 +38,8 @@ public class VideoProgressController {
 
     @GetMapping("/{userId}/{courseId}/{lessonId}")
     public Optional<VideoProgress> getProgress(@PathVariable String userId,
-                                              @PathVariable String courseId,
-                                              @PathVariable String lessonId) {
+                                              @PathVariable Integer courseId,
+                                              @PathVariable Integer lessonId) {
         return service.getProgress(userId, courseId, lessonId);
     }
 
