@@ -5,6 +5,7 @@ import { CourseService } from '../../services/course.service';
 import { UserService } from '../../services/user.service';
 import { DataSharingService } from '../../services/data-sharing.service';
 import { CommonModule } from '@angular/common';
+import { Globals } from '../../components/shared/globals';
 
 @Component({
   selector: 'app-video-player-page',
@@ -15,6 +16,7 @@ export class VideoPlayerPageComponent implements OnInit {
   course: CourseMaster | null = null;
   isLoading = true;
    dataSharingService = inject(DataSharingService);
+   globals = inject(Globals);
    playCourseData: any = null;
    selectedModule: any = null;
    
@@ -28,7 +30,7 @@ export class VideoPlayerPageComponent implements OnInit {
   
   ngOnInit(): void {
     const courseId = this.route.snapshot.params['trainingId'];
-    const userId = 'test_trainee1@irissoftware.com';
+    const userId = this.globals.getUser().emailId;
     
     const navigationState = this.router.getCurrentNavigation()?.extras?.state || 
                            (history.state && history.state.courseData ? history.state : null);

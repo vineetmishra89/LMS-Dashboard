@@ -6,6 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { Globals } from '../shared/globals';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ export class LoginComponent implements OnInit {
   returnUrl = '';
   showPassword = false;
   route =  inject(ActivatedRoute);
+  globals = inject(Globals);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -61,6 +63,8 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         console.log('Login successful:', response);
         this.isLoading = false;
+        
+        this.globals.setUser(JSON.stringify(response));
         this.router.navigate([this.returnUrl]);
       },
       error: (error) => {

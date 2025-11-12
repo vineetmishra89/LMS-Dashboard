@@ -13,6 +13,8 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { DataSharingService } from '../../services/data-sharing.service';
+import { error } from 'console';
+import { Globals } from '../shared/globals';
 
 @Component({
   selector: 'app-view-course',
@@ -24,7 +26,7 @@ import { DataSharingService } from '../../services/data-sharing.service';
 })
 export class ViewCourseComponent implements OnInit {
 
-  userId: string = 'chetna.bhatia@irissoftware.com';
+  userId: string = '';
   router = inject(Router);
   liked: boolean = false;
   courseService = inject(CourseService);
@@ -33,6 +35,7 @@ export class ViewCourseComponent implements OnInit {
   confirmationService = inject(ConfirmationService);
   dataSharingService = inject(DataSharingService);
   route = inject(ActivatedRoute);
+  globals = inject(Globals);
   courseDetail: any = null;
   totalLearners: number = 0;
   ratings: number = 0;
@@ -50,6 +53,7 @@ export class ViewCourseComponent implements OnInit {
   ]
 
   ngOnInit(): void {
+    this.userId = this.globals.getUser().emailId;
     this.getCourseDetailsById();
     
   }
@@ -107,7 +111,8 @@ export class ViewCourseComponent implements OnInit {
     this.courseService.getCourseDetailsById(this.userId, this.trainingId).subscribe({
       next: (res) => {
         
-        
+        this.getCourseMaterial();
+
         this.courseDetail = res;
         this.totalLearners = res.enrollmentMappings.filter((x: any)=> x.status === 'Completed').length;
         this.ratings = Math.floor(Number(res.rating));
@@ -133,5 +138,16 @@ export class ViewCourseComponent implements OnInit {
   convertStringToInt(str: string){ 
     var Num = parseInt(str); 
     return Num;
+  }
+
+  getCourseMaterial() {
+    this.trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
+    this.courseService.getCourseMaterial(this.trainingId).subscribe({
+      next: (res) => {
+        console.log(res);
+      }, error: (error) => {
+        console.log(error);
+      }
+    })
   }
 }
