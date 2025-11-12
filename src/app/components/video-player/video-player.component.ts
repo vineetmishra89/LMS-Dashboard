@@ -4,6 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { VideoProgressService } from '../../services/video-progress.service';
 import { UserService } from '../../services/user.service';
 import { CourseMaster } from '../../models/course';
+import { EnrollmentMapping } from '../../models/enrollments';
 
 @Component({
   selector: 'app-video-player',
@@ -15,6 +16,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   @Input() courseId!: string;
   @Input() lessonId: string = 'default';
   @Input() course!: CourseMaster;
+  @Input() enrollmentMapping!: EnrollmentMapping;
   completed: boolean = false;
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;

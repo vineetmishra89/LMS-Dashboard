@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CourseDetail, CourseMaster } from '../../models/course';
-import { Enrollment } from '../../models/enrollment';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { CourseService } from '../../services/course.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { Router } from '@angular/router';
+import { EnrollmentMapping } from '../../models/enrollments';
 
 type ChatMessage = { id: string; message?: string };
 
@@ -15,7 +15,7 @@ type ChatMessage = { id: string; message?: string };
 })
 export class CourseCardComponent implements OnInit {
   @Input() course!: CourseMaster;
-  @Input() enrollment?: Enrollment;
+  @Input() enrollment?: EnrollmentMapping;
   @Input() showEnrollButton: boolean = false;
   @Input() showProgress: boolean = true;
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
@@ -23,7 +23,7 @@ export class CourseCardComponent implements OnInit {
   courseDetail!: CourseDetail;
   
   @Output() enrollClick = new EventEmitter<string>();
-  @Output() continueClick = new EventEmitter<string>();
+  @Output() continueClick = new EventEmitter<number>();
   @Output() viewDetails = new EventEmitter<string>();
   
   @Input() enrolled = false;

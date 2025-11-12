@@ -15,6 +15,7 @@ export interface EnrollmentMapping {
   updatedBy: string;
   enrollmentDetailsList: EnrollmentDetails[];
   courseSummary: CourseMaster;
+  progress: EnrollmentProgress;
 }
 
 export interface EnrollmentDetails {
@@ -34,7 +35,7 @@ export interface EnrollmentDetails {
 
 export interface EnrollmentProgress {
   completedLessons: string[];
-  completedModules: string[];
+  completedModules: number[];
   currentModule: string;
   currentLesson: string;
   overallProgress: number; // 0-100

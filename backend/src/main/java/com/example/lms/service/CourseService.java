@@ -116,9 +116,9 @@ public class CourseService {
           .map(row -> {
             int duration = (Integer) row[4] == null?0 : (Integer) row[4];
             int rating = (Integer) row[6] == null?0 : (Integer) row[6];
-            Integer trainingId = (Integer) row[0];
+            Long trainingId = (Long) row[0];
             int modules = (Integer) row[6]== null?0 : (Integer) row[6];
-            return new CourseCardDetailDto(Long.valueOf(trainingId),(String) row[1], (String) row[2], (String) row[3], (long) duration, (String) row[5], modules, String.valueOf(rating), (String) row[8]);
+            return new CourseCardDetailDto(trainingId,(String) row[1], (String) row[2], (String) row[3], (long) duration, (String) row[5], modules, String.valueOf(rating), (String) row[8]);
           })
           .collect(Collectors.toList()): List.of();
       }

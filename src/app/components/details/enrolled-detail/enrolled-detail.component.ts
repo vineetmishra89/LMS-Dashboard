@@ -3,9 +3,9 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { CourseDetail, CourseMaster } from '../../../models/course';
-import { Enrollment } from '../../../models/enrollment';
 import { CourseService } from '../../../services/course.service';
 import { EnrollmentService } from '../../../services/enrollment.service';
+import { EnrollmentMapping } from '../../../models/enrollments';
 
 @Component({
   selector: 'app-enrolled-detail',
@@ -14,7 +14,7 @@ import { EnrollmentService } from '../../../services/enrollment.service';
 })
 export class EnrolledDetailComponent implements OnInit {
   enrolledCourses$!: Observable<CourseMaster[]>;
-  enrollments$!: Observable<Enrollment[]>;
+  enrollments$!: Observable<EnrollmentMapping[]>;
   userId: string = 'chetna.bhatia@irissoftware.com';
 
   constructor(
@@ -32,9 +32,9 @@ export class EnrolledDetailComponent implements OnInit {
     this.router.navigate(['/video-player', course.moduleId]);
   }
 
-  getEnrollmentFor(courseId: string): Observable<Enrollment | undefined> {
+  getEnrollmentFor(courseId: string): Observable<EnrollmentMapping | undefined> {
     return this.enrollments$.pipe(
-      map(enrollments => enrollments.find(e => e.courseId === courseId))
+      map(enrollments => enrollments.find(e => e.courseSummary.trainingId === courseId))
     );
   }
 

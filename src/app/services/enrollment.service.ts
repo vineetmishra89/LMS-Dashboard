@@ -131,7 +131,7 @@ export class EnrollmentService {
           { 
             enrollmentId,
             newProgress: progress,
-            overallProgress: updatedEnrollment.progress.overallProgress
+            overallProgress: updatedEnrollment.progressPercent
           }
         ).subscribe();
       }),
@@ -189,7 +189,7 @@ export class EnrollmentService {
   }
 
   // MODULE MANAGEMENT
-  markModuleComplete(enrollmentId: string, moduleId: string): Observable<EnrollmentMapping> {
+  markModuleComplete(enrollmentId: number, moduleId: number): Observable<EnrollmentMapping> {
     return this.apiService.post<EnrollmentMapping>(`enrollments/${enrollmentId}/modules/${moduleId}/complete`, {}).pipe(
       tap(enrollment => {
         this.updateLocalEnrollment(enrollment);
@@ -219,25 +219,13 @@ export class EnrollmentService {
 
 
   // COURSE COMPLETION
-  completeCourse(enrollmentId: string): Observable<EnrollmentMapping> {
+  completeCourse(enrollmentId: number): Observable<EnrollmentMapping> {
     return this.apiService.post<EnrollmentMapping>(`enrollments/${enrollmentId}/complete`, {}).pipe(
       tap(completedEnrollment => {
         this.updateLocalEnrollment(completedEnrollment);
         
         // Generate certificate
         this.generateCompletionCertificate(enrollmentId);
-        
-        // Track course completion
-        this.analyticsService.trackEvent(
-          completedEnrollment.userId,
-          'course_completed',
-          { 
-            enrollmentId, 
-            courseId: completedEnrollment.courseId,
-            completionTime: completedEnrollment.timeSpent,
-            finalScore: this.calculateFinalScore(completedEnrollment)
-          }
-        ).subscribe();
         
         // Show completion celebration
        
@@ -259,7 +247,7 @@ export class EnrollmentService {
   }
 
   resumeEnrollment(enrollmentId: string): Observable<EnrollmentMapping> {
-    return this.apiService.put<Enrollment>(`enrollments/${enrollmentId}/resume`, {}).pipe(
+    return this.apiService.put<EnrollmentMapping>(`enrollments/${enrollmentId}/resume`, {}).pipe(
       tap(enrollment => {
         this.updateLocalEnrollment(enrollment);
         
@@ -325,7 +313,7 @@ export class EnrollmentService {
 
   // PROGRESS CALCULATIONS
   calculateOverallProgress(enrollment: EnrollmentMapping, course?: CourseMaster): number {
-    if (!enrollment.progress) return 0;
+    if (!enrollment.progressPercent) return 0;
     
     const totalLessons = this.getTotalLessonsCount(enrollment, course);
     const completedLessons = enrollment.progress.completedLessons.length;
@@ -358,7 +346,7 @@ export class EnrollmentService {
   }
 
   calculateStreakImpact(enrollment: EnrollmentMapping): Observable<any> {
-    return this.apiService.get(`enrollments/${enrollment.id}/streak-impact`);
+    return this.apiService.get(`enrollments/${enrollment.trainingEnrollmentId}/streak-impact`);
   }
 
   // STUDY SESSIONS
@@ -442,7 +430,7 @@ export class EnrollmentService {
     
     // Update current enrollment if it's the same
     const currentEnrollment = this.currentEnrollmentSubject.value;
-    if (currentEnrollment?.id === updatedEnrollment.trainingEnrollmentId) {
+    if (currentEnrollment?.trainingEnrollmentId === updatedEnrollment.trainingEnrollmentId) {
       this.currentEnrollmentSubject.next(updatedEnrollment);
     }
   }
@@ -463,7 +451,7 @@ export class EnrollmentService {
     }
   }
 
-  private generateCompletionCertificate(enrollmentId: string): void {
+  private generateCompletionCertificate(enrollmentId: number): void {
     this.apiService.post(`enrollments/${enrollmentId}/certificate/generate`, {}).subscribe({
       next: (certificate) => {
         console.log('Certificate generated:', certificate);
@@ -496,12 +484,12 @@ export class EnrollmentService {
     return true; // Placeholder
   }
 
-  private getModuleIdForLesson(lessonId: string): string | null {
+  private getModuleIdForLesson(lessonId: string): number | null {
     // This would query course structure to find module for lesson
-    return 'module-1'; // Placeholder
+    return 1; // Placeholder
   }
 
-  private isModuleCompleted(enrollment: EnrollmentMapping, moduleId: string): boolean {
+  private isModuleCompleted(enrollment: EnrollmentMapping, moduleId: number): boolean {
     return enrollment.progress.completedModules.includes(moduleId);
   }
 
