@@ -66,16 +66,21 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
 
             String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, relativePath);
-            logger.info("Resolved folder ID: {}", targetFolderId);
+          DriveItem targetItem = client
+            .drives()
+            .byId(driveId)
+            .items()
+            .byId(targetFolderId)
+            .buildRequest()
+            .get();
 
-            FolderNode rootFolder = new FolderNode();
-            rootFolder.setName(getLastSegment(relativePath));
-            rootFolder.setPath(relativePath);
+          if (targetItem == null) {
+            throw new RuntimeException("Target folder not found with ID: " + targetFolderId);
+          }
 
-            listFolderContentsByIdRecursively(client, driveId, targetFolderId, rootFolder);
-
-            logger.info("Successfully listed folders and files recursively");
-            return rootFolder;
+          FolderNode rootNode = new FolderNode(targetItem.name, targetFolderId, targetItem.webUrl);
+          listFolderContentsByIdRecursively(client, driveId, targetFolderId, rootNode);
+            return rootNode;
 
         } catch (Exception e) {
             logger.error("Error listing folders and files recursively: {}", e.getMessage(), e);
@@ -619,4 +624,81 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             result.addError("Error processing file '" + item.name + "': " + e.getMessage());
         }
     }
+
+  @Override
+  public java.util.List<String> fetchAllFilePathsFromWebUrl(String bearerToken, String webUrl) {
+    try {
+      validateConfiguration();
+
+      logger.info("Fetching all file paths from webUrl: {}", webUrl);
+
+      if (webUrl == null || webUrl.trim().isEmpty()) {
+        throw new IllegalArgumentException("WebUrl cannot be null or empty");
+      }
+
+      GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
+
+      String relativePath = parseFolderUrl(webUrl);
+      int lastSlashIndex = relativePath.lastIndexOf("/");
+      String finalpath = lastSlashIndex != -1 ? relativePath.substring(lastSlashIndex + 1) : relativePath;
+      logger.info("Parsed relative path from webUrl: {}, finalpath:{}", relativePath, finalpath);
+
+      String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, finalpath);
+      logger.info("Resolved folder ID: {} for webUrl: {}", targetFolderId, webUrl);
+
+      java.util.List<String> filePaths = new java.util.ArrayList<>();
+      collectFilePathsRecursively(client, driveId, targetFolderId, filePaths);
+
+      logger.info("Successfully fetched {} file paths from webUrl: {}", filePaths.size(), webUrl);
+      return filePaths;
+
+    } catch (Exception e) {
+      logger.error("Error fetching file paths from webUrl '{}': {}", webUrl, e.getMessage(), e);
+      throw new RuntimeException("Failed to fetch file paths from webUrl: " + webUrl, e);
+    }
+  }
+
+  private void collectFilePathsRecursively(GraphServiceClient<Request> client, String driveId, String folderId, java.util.List<String> filePaths) {
+    try {
+      logger.debug("Collecting file paths from folder ID: {}", folderId);
+
+      DriveItemCollectionPage items = client
+        .drives()
+        .byId(driveId)
+        .items()
+        .byId(folderId)
+        .children()
+        .buildRequest()
+        .get();
+
+      if (items == null || items.getCurrentPage() == null) {
+        logger.debug("No items found in folder ID: {}", folderId);
+        return;
+      }
+
+      do {
+        for (DriveItem item : items.getCurrentPage()) {
+          if (item.folder != null) {
+            logger.debug("Recursing into subfolder: {} (id={})", item.name, item.id);
+            collectFilePathsRecursively(client, driveId, item.id, filePaths);
+          } else if (item.file != null) {
+            logger.debug("Found file: {} with webUrl: {}", item.name, item.webUrl);
+            filePaths.add(item.webUrl);
+          }
+        }
+
+        if (items.getNextPage() != null) {
+          items = items.getNextPage().buildRequest().get();
+        } else {
+          break;
+        }
+      } while (items != null && items.getCurrentPage() != null);
+
+    } catch (Exception e) {
+      logger.error("Error collecting file paths from folder ID '{}': {}", folderId, e.getMessage(), e);
+      throw new RuntimeException("Failed to collect file paths from folder: " + folderId, e);
+    }
+  }
+
+
 }
