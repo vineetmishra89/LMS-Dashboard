@@ -35,7 +35,6 @@ import { SidebarComponent } from './components/sidebar/sidebar';
 import { WelcomeBannerComponent } from './components/welcome-banner/welcome-banner';
 import { StatsCardComponent } from './components/stats-card/stats-card';
 import { CourseCardComponent } from './components/course-card/course-card';
-import { ChatComponent } from './components/chat/chat';
 
 // Authentication Components
 import { LoginComponent } from './components/login/login.component';
@@ -109,7 +108,6 @@ import { Globals } from './components/shared/globals';
     WelcomeBannerComponent,
     StatsCardComponent,
     CourseCardComponent,
-    ChatComponent,
     
     // Auth Components
     

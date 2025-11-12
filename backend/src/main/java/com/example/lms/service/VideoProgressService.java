@@ -1,6 +1,7 @@
 package com.example.lms.service;
 
 import com.example.lms.domain.VideoProgress;
+import com.example.lms.repo.EnrollmentRepository;
 import com.example.lms.repo.VideoProgressRepository;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -12,12 +13,15 @@ import java.util.Optional;
 public class VideoProgressService {
     private final VideoProgressRepository repository;
 
-    public VideoProgressService(VideoProgressRepository repository) {
+    private final EnrollmentRepository enrollmentRepository;
+
+    public VideoProgressService(VideoProgressRepository repository, EnrollmentRepository enrollmentRepository) {
         this.repository = repository;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     public VideoProgress updateProgress(VideoProgress progress) {
-        Optional<VideoProgress> existing = repository.findByUserIdAndCourseIdAndLessonId(progress.getUserId(), progress.getCourseId(), progress.getLessonId());
+        Optional<VideoProgress> existing = repository.findByTrainingEnrollmentDtlIdAndCompleted(progress.getTrainingEnrollmentDtlId().intValue(),false);
 
       VideoProgress existingProgress = null;
         if (existing.isPresent() && !existing.get().getCompleted()) {
@@ -30,6 +34,7 @@ public class VideoProgressService {
           existingProgress.setLessonId(progress.getLessonId());
           existingProgress.setWatchTime(progress.getWatchTime());
           existingProgress.setCreatedAt(OffsetDateTime.now());
+          existingProgress.setTrainingEnrollmentDtlId(progress.getTrainingEnrollmentDtlId());
         }
 
       existingProgress.setCurrentTime(progress.getCurrentTime());
@@ -39,11 +44,17 @@ public class VideoProgressService {
       existingProgress.setLastWatchedAt(OffsetDateTime.now());
       existingProgress.setUpdatedAt(OffsetDateTime.now());
 
-        return repository.save(existingProgress);
+      VideoProgress videoProgress = repository.save(existingProgress);
+
+      if(progress.getCompleted()){
+        this.enrollmentRepository.updateEnrollmentStatusByEnrollmentDtlId(progress.getTrainingEnrollmentDtlId());
+      }
+
+        return videoProgress;
     }
 
-    public Optional<VideoProgress> getProgress(String userId, Integer courseId, Integer lessonId) {
-        return repository.findByUserIdAndCourseIdAndLessonIdAndCompleted(userId, courseId, lessonId,false);
+    public Optional<VideoProgress> getProgress(Integer enrollmentDetailsId) {
+        return repository.findByTrainingEnrollmentDtlIdAndCompleted(enrollmentDetailsId,false);
     }
 
     public Double getTotalLearningHours(String userId) {

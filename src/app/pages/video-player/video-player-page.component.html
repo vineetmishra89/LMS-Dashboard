@@ -18,13 +18,23 @@
         [course]="course"
       >
       </app-video-player> -->
+      <div *ngIf="videoPageReady; else loadingTemplate">
       <app-video-player
+        *ngIf="selectedEnrollmentModule && playCourseData"
         [videoUrl]="selectedModule.videoUrl || selectedModule.trainingLink"
         [courseId]="course.trainingId"
         [lessonId]="selectedModule.moduleId"
-        [course]="course"
+        [selectedEnrollmentModule]="selectedEnrollmentModule"
       >
       </app-video-player>
+      </div>
+
+      <ng-template #loadingTemplate>
+        <div *ngIf="isPageReady" class="loading-overlay">
+          <div class="spinner"></div>
+          <p>Loading video...</p>
+        </div>
+      </ng-template>
 
       <div class="course-info">
         <h2>{{ course.title }}</h2>
