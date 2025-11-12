@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
 import { forkJoin } from 'rxjs';
+import { Globals } from '../../components/shared/globals';
 
 @Component({
   selector: 'app-video-player-page',
@@ -36,7 +37,7 @@ export class VideoPlayerPageComponent implements OnInit {
     console.log("courseId : "+courseId);
     const trngEnrollmentId = this.route.snapshot.params['trngEnrollmentId'];
     console.log("trngEnrollmentId : "+trngEnrollmentId);
-    const userId = 'test_trainee1@irissoftware.com';
+    const userId = this.globals.getUser().emailId;
     
     forkJoin({
       course: this.courseService.getCourseById(courseId,userId),

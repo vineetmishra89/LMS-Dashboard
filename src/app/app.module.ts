@@ -96,6 +96,7 @@ import { ChipModule } from 'primeng/chip';
 // Environment
 import { environment } from '../environments/environment';
 import { CarouselModule } from 'primeng/carousel';
+import { Globals } from './components/shared/globals';
 
 @NgModule({
   declarations: [
@@ -202,7 +203,7 @@ import { CarouselModule } from 'primeng/carousel';
     VideoProgressService,
     
     LoadingInterceptor,
-    
+    Globals,
     // Guards
     AuthGuard,
     RoleGuard,
