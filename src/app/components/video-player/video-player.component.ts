@@ -84,6 +84,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     console.log("video ended. Marking the module progress completed");
     this.onTimeUpdate();
     this.saveCurrentProgress();
+    this.completed = false;
   }
   
   onPlay(): void {
