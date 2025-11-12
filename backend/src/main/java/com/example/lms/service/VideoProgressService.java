@@ -42,7 +42,7 @@ public class VideoProgressService {
         return repository.save(existingProgress);
     }
 
-    public Optional<VideoProgress> getProgress(String userId, String courseId, String lessonId) {
+    public Optional<VideoProgress> getProgress(String userId, Integer courseId, Integer lessonId) {
         return repository.findByUserIdAndCourseIdAndLessonIdAndCompleted(userId, courseId, lessonId,false);
     }
 
