@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
   showPassword = false;
   route =  inject(ActivatedRoute);
   globals = inject(Globals);
+  accessToken: string | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -61,7 +62,10 @@ export class LoginComponent implements OnInit {
     
     this.authService.login(credentials).subscribe({
       next: (response) => {
+
         console.log('Login successful:', response);
+
+        this.getAccessToken();
         this.isLoading = false;
         
         this.globals.setUser(JSON.stringify(response));
@@ -73,6 +77,32 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
+    getAccessToken() {
+      this.authService.getAccessToken().subscribe({
+        next: (result) => {
+          this.accessToken = result.accessToken;
+          console.log('Access token:', this.accessToken);
+  
+          // Validate token with backend and get files
+          this.validateToken();
+          sessionStorage.setItem('accessToken', this.accessToken);
+        },
+        error: (error) => console.error('Failed to get access token', error)
+      });
+    }
+
+    validateToken() {
+      if (this.accessToken) {
+        // Validate token with Spring Boot backend
+        this.authService.validateTokenWithBackend(this.accessToken).subscribe({
+          next: (response) => {
+            console.log('Token validation response:', response);
+          },
+          error: (error) => console.error('Token validation failed:', error)
+        });
+      }
+    }
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;

@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../models/user';
 import { environment } from '../../environments/environment';
+import { AuthenticationResult } from '@azure/msal-browser';
+import { MsalService } from '@azure/msal-angular';
+import {msalInstance} from '../auth.config';
+import { loginRequest } from '.././auth.config';
 
 interface LoginCredentials {
   email: string;
@@ -86,14 +90,15 @@ export class AuthService {
      this.isAuthenticatedSubject.next(true);
      return of(null);
   }
+  
 
   login(credentials: LoginCredentials): Observable<User> {
-    const loginRequest = { 
+    const loginRequestLocal = { 
       emailId: credentials.email, 
       password: credentials.password 
     };
-    
-    return this.http.post<any>('http://192.168.8.116:5000/api/auth/login', loginRequest).pipe(
+
+    return this.http.post<any>('http://localhost:5000/api/auth/login', loginRequestLocal).pipe(
       tap(response => {
         if (response.token) {
           sessionStorage.setItem(this.tokenKey, response.token);
@@ -106,6 +111,13 @@ export class AuthService {
           this.isAuthenticatedSubject.next(true);
           
           console.log('Login successful:', response.user);
+
+                // Then ensure we have SSO account:
+      const accounts = msalInstance.getAllAccounts();
+      if (!accounts || accounts.length === 0) {
+        // This will SSO on office laptop; may silently bounce via redirect
+        msalInstance.loginRedirect(loginRequest);
+      }
         }
       }),
       map(response => response.user as any),
@@ -260,4 +272,38 @@ export class AuthService {
     const user = this.getCurrentUser();
     return user ? user.role === role : false;
   }
+
+  getActiveAccount() {
+    return msalInstance.getActiveAccount();
+  }
+
+  getAccessToken(): Observable<AuthenticationResult> {
+  const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+  console.log('account : '+ account);
+  if (account) {
+    const accessTokenRequest = {
+      scopes: ['User.Read'],
+      account: account
+    };
+    return from(msalInstance.acquireTokenSilent(accessTokenRequest));
+  } else {
+    return new Observable(observer => {
+      observer.error(new Error('No active account'));
+    });
+  }
+  }
+
+    // Method to send access token to Spring Boot backend
+    validateTokenWithBackend(accessToken: string): Observable<any> {
+      const url = 'http://localhost:5000/api/graph/validate-token';
+      const body = { accessToken: accessToken };
+      
+      return from(fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
+      }).then(response => response.json()));
+    }
 }

@@ -38,6 +38,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   ) {}
   
   ngOnInit(): void {
+    console.log('video url : '+ this.videoUrl);
     console.log('Load video progress');
     this.loadVideoProgress();
     this.setupProgressTracking();
@@ -82,6 +83,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
 
   onVideoEnded(): void {
     console.log("video ended. Marking the module progress completed");
+    this.updateSessionWatchTime();
     this.onTimeUpdate();
     this.saveCurrentProgress();
     this.completed = false;
