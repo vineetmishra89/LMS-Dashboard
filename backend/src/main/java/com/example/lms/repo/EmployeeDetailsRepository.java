@@ -12,4 +12,31 @@ public interface EmployeeDetailsRepository extends JpaRepository<EmployeeDetails
     Optional<EmployeeDetails> findByEmailIdIgnoreCase(String emailId);
     
     boolean existsByEmailIdIgnoreCase(String emailId);
+    
+    /**
+     * Count employees who have the given email as their RO (Reporting Officer).
+     * Used to determine if a user is an RO (has employees reporting to them).
+     * 
+     * @param roEmailId Email ID to check as RO
+     * @return Count of active employees reporting to this RO
+     */
+    @Query(value = "SELECT COUNT(*) " +
+                   "FROM lms_schema.LMS_EMPLOYEE_DTLS " +
+                   "WHERE LOWER(ro_email_id) = LOWER(:roEmailId) " +
+                   "  AND emp_active_flag = 'Y'", 
+           nativeQuery = true)
+    Long countByRoEmailIdAndActiveFlag(@Param("roEmailId") String roEmailId);
+    
+    /**
+     * Check if user is a Reporting Officer (has active employees reporting to them).
+     * 
+     * @param roEmailId Email ID to check as RO
+     * @return true if user is an RO, false otherwise
+     */
+    @Query(value = "SELECT COUNT(*) > 0 " +
+                   "FROM lms_schema.LMS_EMPLOYEE_DTLS " +
+                   "WHERE LOWER(ro_email_id) = LOWER(:roEmailId) " +
+                   "  AND emp_active_flag = 'Y'", 
+           nativeQuery = true)
+    boolean isReportingOfficer(@Param("roEmailId") String roEmailId);
 }
