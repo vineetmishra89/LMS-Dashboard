@@ -15,7 +15,7 @@ import { Globals } from '../../shared/globals';
 })
 export class EnrolledDetailComponent implements OnInit {
   enrolledCourses$!: Observable<CourseMaster[]>;
-  enrollments$!: Observable<Enrollment[]>;
+  enrollments$!: Observable<EnrollmentMapping[]>;
   userId: string = '';
   globals = inject(Globals);
 
