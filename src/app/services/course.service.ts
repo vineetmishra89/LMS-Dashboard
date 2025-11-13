@@ -174,4 +174,8 @@ export class CourseService {
     return this.apiService.get<any>(`courses/materialCourse?trngId=${trainingId}`);
   }
 
+  recordSearchHistory(data: any) {
+    return this.apiService.post<any>(`courses/recordSearchHistory`, data);
+  }
+
 }
