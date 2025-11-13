@@ -5,6 +5,7 @@ import { TagModule } from 'primeng/tag';
 import { Router } from '@angular/router';
 import { CourseService } from '../../services/course.service';
 import { DataSharingService } from '../../services/data-sharing.service';
+import { Globals } from '../shared/globals';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +19,7 @@ export class HomeComponent {
   router = inject(Router);
   courseService = inject(CourseService);
   dataSharingService = inject(DataSharingService);
+  globals = inject(Globals);
 
   responsiveOptions: any[] | undefined;
   trendingCourses: any[] = [];
@@ -63,7 +65,7 @@ export class HomeComponent {
   }
 
   viewCourse(product: any) {
-    console.log(product);
+    this.recordSearchHistory(product);
     product.trainerDetail = {
       names: product.trainerNames, 
       emails: product.trainerEmailIds
@@ -71,6 +73,21 @@ export class HomeComponent {
     this.dataSharingService.sendData(product.trainerDetail);
     this.router.navigate(['/viewCourse', product.trngId]);
    //this.router.navigate(['viewCourse'])
+  }
+
+  recordSearchHistory(course: any) {
+    const data = {
+      trng_id: course.trngId,
+      email_id: this.globals.getUser().emailId
+      }
+    this.courseService.recordSearchHistory(data).subscribe({
+      next: (res) => {
+        console.log('res', res);
+      }, error: (err) => {
+        console.log('Error', err);
+      }
+    })
+
   }
 
   async loadHomePageCourses() {
