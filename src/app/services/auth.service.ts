@@ -56,13 +56,26 @@ export class AuthService {
     const token = this.getToken();
     const user = this.getCurrentUserFromStorage();
     
-    if (token && user && !this.isTokenExpired(token)) {
-      this.currentUserSubject.next(user);
-      this.isAuthenticatedSubject.next(true);
+    if (token && user) {
+      if (this.isTokenExpired(token)) {
+        this.clearAuthStorage();
+        this.isAuthenticatedSubject.next(false);
+        return;
+      }
+      
+      const tokenType = sessionStorage.getItem('tokenType');
+      const expiresAt = sessionStorage.getItem('expiresAt');
+      
+      if (tokenType && expiresAt) {
+        this.currentUserSubject.next(user);
+        this.isAuthenticatedSubject.next(true);
+        return;
+      }
+      
+      this.clearAuthStorage();
+      this.isAuthenticatedSubject.next(false);
       return;
-    } /*else {
-      this.logout();
-    }*/
+    }
 
   if (environment.devAutoLogin) {
     const exp = Math.floor(Date.now()/1000) + 60*60*24*365;
@@ -80,6 +93,17 @@ export class AuthService {
 
   // default: not authenticated
   this.isAuthenticatedSubject.next(false);
+  }
+
+  private clearAuthStorage(): void {
+    sessionStorage.removeItem(this.tokenKey);
+    sessionStorage.removeItem('tokenType');
+    sessionStorage.removeItem('expiresAt');
+    sessionStorage.removeItem(this.userKey);
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.refreshTokenKey);
+    localStorage.removeItem(this.userKey);
+    localStorage.removeItem('userId');
   }
 
   loginhardcode() {
