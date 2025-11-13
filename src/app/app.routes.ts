@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'support', component: SupportComponent },
   { path: 'dashboard', component: SearchComponent },
   { path: 'viewCourse/:trainingId', component: ViewCourseComponent },
-  { path: 'runningCourse/:trainingId', component: VideoPlayerPageComponent },
+  { path: 'runningCourse/:trainingId/:trngEnrollmentId', component: VideoPlayerPageComponent },
   { path: 'video-player/:courseId', component: VideoPlayerPageComponent },
   { path: 'detail/completed', component: CompletedDetailComponent },
   { path: 'detail/enrolled', component: EnrolledDetailComponent },

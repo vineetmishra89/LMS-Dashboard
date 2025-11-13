@@ -35,7 +35,6 @@ import { SidebarComponent } from './components/sidebar/sidebar';
 import { WelcomeBannerComponent } from './components/welcome-banner/welcome-banner';
 import { StatsCardComponent } from './components/stats-card/stats-card';
 import { CourseCardComponent } from './components/course-card/course-card';
-import { ChatComponent } from './components/chat/chat';
 
 // Authentication Components
 import { LoginComponent } from './components/login/login.component';
@@ -97,6 +96,7 @@ import { ChipModule } from 'primeng/chip';
 // Environment
 import { environment } from '../environments/environment';
 import { CarouselModule } from 'primeng/carousel';
+import { Globals } from './components/shared/globals';
 
 @NgModule({
   declarations: [
@@ -108,7 +108,6 @@ import { CarouselModule } from 'primeng/carousel';
     WelcomeBannerComponent,
     StatsCardComponent,
     CourseCardComponent,
-    ChatComponent,
     
     // Auth Components
     
@@ -204,7 +203,7 @@ import { CarouselModule } from 'primeng/carousel';
     VideoProgressService,
     
     LoadingInterceptor,
-    
+    Globals,
     // Guards
     AuthGuard,
     RoleGuard,

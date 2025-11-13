@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { CourseDetail, CourseMaster } from '../../../models/course';
-import { Enrollment } from '../../../models/enrollment';
 import { CourseService } from '../../../services/course.service';
 import { EnrollmentService } from '../../../services/enrollment.service';
+import { EnrollmentMapping } from '../../../models/enrollments';
+import { Globals } from '../../shared/globals';
 
 @Component({
   selector: 'app-enrolled-detail',
@@ -15,7 +16,8 @@ import { EnrollmentService } from '../../../services/enrollment.service';
 export class EnrolledDetailComponent implements OnInit {
   enrolledCourses$!: Observable<CourseMaster[]>;
   enrollments$!: Observable<Enrollment[]>;
-  userId: string = 'chetna.bhatia@irissoftware.com';
+  userId: string = '';
+  globals = inject(Globals);
 
   constructor(
     private courseService: CourseService,
@@ -24,6 +26,8 @@ export class EnrolledDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const userId = localStorage.getItem('userId');
+    this.userId = this.globals.getUser().emailId;
     this.enrolledCourses$ = this.courseService.getEnrolledCourses(this.userId);
     this.enrollments$ = this.enrollmentService.getUserEnrollments(this.userId);
   }
@@ -32,9 +36,9 @@ export class EnrolledDetailComponent implements OnInit {
     this.router.navigate(['/video-player', course.moduleId]);
   }
 
-  getEnrollmentFor(courseId: string): Observable<Enrollment | undefined> {
+  getEnrollmentFor(courseId: string): Observable<EnrollmentMapping | undefined> {
     return this.enrollments$.pipe(
-      map(enrollments => enrollments.find(e => e.courseId === courseId))
+      map(enrollments => enrollments.find(e => e.courseSummary.trainingId === courseId))
     );
   }
 
