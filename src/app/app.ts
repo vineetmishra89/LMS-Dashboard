@@ -94,6 +94,10 @@ private deferredPrompt: any = null;
         this.roleService.clearRoles();
         this.showLndAdmin = false;
         this.showRODashboard = false;
+      } else {
+        if (this.currentUser && this.roleService.getCurrentRoles().length === 0) {
+          this.loadUserRoles();
+        }
       }
     });
 
