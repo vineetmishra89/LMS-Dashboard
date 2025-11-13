@@ -16,7 +16,7 @@ import { LndAdminComponent } from './components/lnd-admin/lnd-admin';
 import { LoginComponent } from './components/login/login.component';
 import { RoAdminComponent } from './components/ro-admin/ro-admin.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
