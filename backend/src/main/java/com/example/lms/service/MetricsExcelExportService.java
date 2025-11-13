@@ -128,7 +128,7 @@ public class MetricsExcelExportService {
       cell3.setCellStyle(dataStyle);
       
       Cell cell4 = row.createCell(4);
-      cell4.setCellValue(course.getRating());
+      cell4.setCellValue(course.getRating() != null?course.getRating().doubleValue(): null);
       cell4.setCellStyle(dataStyle);
       
       Cell cell5 = row.createCell(5);
@@ -174,7 +174,7 @@ public class MetricsExcelExportService {
       cell3.setCellStyle(dataStyle);
       
       Cell cell4 = row.createCell(4);
-      cell4.setCellValue(course.getRating());
+      cell4.setCellValue(course.getRating() != null?course.getRating().doubleValue(): null);
       cell4.setCellStyle(dataStyle);
       
       Cell cell5 = row.createCell(5);
@@ -220,7 +220,7 @@ public class MetricsExcelExportService {
       cell3.setCellStyle(dataStyle);
       
       Cell cell4 = row.createCell(4);
-      cell4.setCellValue(course.getRating());
+      cell4.setCellValue(course.getRating() != null?course.getRating().doubleValue(): null);
       cell4.setCellStyle(dataStyle);
       
       Cell cell5 = row.createCell(5);
@@ -270,7 +270,7 @@ public class MetricsExcelExportService {
       cell3.setCellStyle(dataStyle);
       
       Cell cell4 = row.createCell(4);
-      cell4.setCellValue(course.getRating());
+      cell4.setCellValue(course.getRating() != null?course.getRating().doubleValue(): null);
       cell4.setCellStyle(dataStyle);
       
       Cell cell5 = row.createCell(5);

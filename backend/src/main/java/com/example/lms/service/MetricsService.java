@@ -75,7 +75,7 @@ public class MetricsService {
       (String) row[1],
       (String) row[2],
       (String) row[3],
-      (String) row[4],
+      (BigDecimal) row[4],
       ((Long) row[5]).longValue(),
       0L,
       0L
@@ -90,7 +90,7 @@ public class MetricsService {
       (String) row[1],
       (String) row[2],
       (String) row[3],
-      (String) row[4],
+      (BigDecimal) row[4],
       ((Long) row[5]).longValue(),
       0L,
       0L
@@ -105,7 +105,7 @@ public class MetricsService {
       (String) row[1],
       (String) row[2],
       (String) row[3],
-      (String) row[4],
+      (BigDecimal) row[4],
       ((Long) row[5]).longValue(),
       0L,
       ((Long) row[7]).longValue()
@@ -120,7 +120,7 @@ public class MetricsService {
       (String) row[1],
       (String) row[2],
       (String) row[3],
-      (String) row[4],
+      (BigDecimal) row[4],
       ((Long) row[5]).longValue(),
       ((Long) row[6]).longValue(),
       0L
