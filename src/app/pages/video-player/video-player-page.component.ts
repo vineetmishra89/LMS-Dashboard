@@ -25,7 +25,6 @@ export class VideoPlayerPageComponent implements OnInit {
    enrollmentMapping: EnrollmentMapping | null = null;
    selectedEnrollmentModule: EnrollmentDetails | null = null;
    videoPageReady: boolean = false;
-   globals = inject(Globals);
   
   constructor(
     private route: ActivatedRoute,

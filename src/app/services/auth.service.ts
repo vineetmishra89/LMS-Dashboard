@@ -58,7 +58,7 @@ export class AuthService {
     
     if (token && user && !this.isTokenExpired(token)) {
       this.currentUserSubject.next(user);
-      this.isAuthenticatedSubject.next(false);
+      this.isAuthenticatedSubject.next(true);
       return;
     } /*else {
       this.logout();
