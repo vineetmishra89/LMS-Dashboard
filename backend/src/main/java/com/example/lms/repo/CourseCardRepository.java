@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.sql.Timestamp;
 import java.util.List;
 
-public interface CourseCardRepository extends JpaRepository<CourseDetail, String> {
+public interface CourseCardRepository extends JpaRepository<CourseDetail, Long> {
 
   @Query(value = "SELECT\n" +
     "    ts.TRNG_ID,\n" +
