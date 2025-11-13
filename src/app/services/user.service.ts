@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { User, UserPreferences } from '../models/user';
 import { ApiService } from './api.service';
+import { Globals } from '../components/shared/globals';
 
 @Injectable({
   providedIn: 'root'
@@ -9,14 +10,14 @@ import { ApiService } from './api.service';
 export class UserService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  globals = inject(Globals);
 
   constructor(private apiService: ApiService) {
-    localStorage.setItem('userId', 'chetna.bhatia@irissoftware.com');
-    this.loadCurrentUser();
+       this.loadCurrentUser();
   }
 
   private loadCurrentUser(): void {
-    const userId = localStorage.getItem('userId');
+    const userId = this.globals.getUser().emailId;
     if (userId) {
       this.getUserById(userId).subscribe({
         next: user => this.currentUserSubject.next(user),

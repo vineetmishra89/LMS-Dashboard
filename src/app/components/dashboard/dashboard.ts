@@ -5,7 +5,6 @@ import { Observable, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { takeUntil, map, startWith, catchError, switchMap, distinctUntilChanged, debounceTime, take, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../../models/user';
-import { Enrollment } from '../../models/enrollment';
 import { UserService } from '../../services/user.service';
 import { CourseService } from '../../services/course.service';
 import { EnrollmentService } from '../../services/enrollment.service';

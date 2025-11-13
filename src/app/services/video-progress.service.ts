@@ -4,20 +4,21 @@ import { ApiService } from './api.service';
 
 export interface VideoProgressData {
   userId: string;
-  courseId: string;
-  lessonId: string;
+  courseId: number;
+  lessonId: number;
   currentTime: number;
   duration: number;
   watchTime: number;
   completed: boolean;
   progress: number;
+  trainingEnrollmentDtlId:number;
 }
 
 export interface VideoProgress {
   id: number;
   userId: string;
-  courseId: string;
-  lessonId: string;
+  courseId: number;
+  lessonId: number;
   currentTime: number;
   duration: number;
   watchTime: number;
@@ -35,8 +36,9 @@ export class VideoProgressService {
     return this.apiService.post<VideoProgress>('video-progress/update', data);
   }
 
-  getProgress(userId: string, courseId: string, lessonId: string): Observable<VideoProgress> {
-    return this.apiService.get<VideoProgress>(`video-progress/${userId}/${courseId}/${lessonId}`);
+  getProgress(enrollmentDetailsId: number): Observable<VideoProgress> {
+    console.log('loading progress from backend')
+    return this.apiService.get<VideoProgress>(`video-progress/${enrollmentDetailsId}`);
   }
 
   getLearningHours(userId: string): Observable<{ totalHours: number }> {

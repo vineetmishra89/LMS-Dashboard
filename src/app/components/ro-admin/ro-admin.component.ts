@@ -18,6 +18,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { PickListModule } from 'primeng/picklist';
+import { Globals } from '../shared/globals';
 
 
 @Component({
@@ -50,6 +51,7 @@ export class RoAdminComponent implements OnInit {
      enrollmentService = inject(EnrollmentService);
      messageService = inject(MessageService);
      confirmationService = inject(ConfirmationService);
+     globals = inject(Globals);
     filterData: any = null;
     trainingNameList: any = [];
     searchedCourse: any[] = [];
@@ -61,9 +63,11 @@ export class RoAdminComponent implements OnInit {
     suggestions: any[] | undefined;
     selectedTrainingName: any | undefined;
     selectedUserTraining: any[] = [];
-    roEmailId = 'rajib.bhattacharya@irissoftware.com';
+    roEmailId = '';
 
     ngOnInit(): void {
+      const userId = localStorage.getItem('userId');
+    this.roEmailId = this.globals.getUser().emailId;
       this.loadForm();
       this.getUser();
       this.getCourseSearchList();
