@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { RoleService } from '../../services/role.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
@@ -27,7 +28,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    private roleService: RoleService
   ) {}
 
   ngOnInit(): void {
@@ -65,7 +67,18 @@ export class LoginComponent implements OnInit {
         this.isLoading = false;
         
         this.globals.setUser(JSON.stringify(response));
-        this.router.navigate([this.returnUrl]);
+        
+        this.roleService.clearRoles();
+        this.roleService.fetchUserRoles().subscribe({
+          next: (roles) => {
+            console.log('Roles fetched after login:', roles);
+            this.router.navigate([this.returnUrl]);
+          },
+          error: (roleError) => {
+            console.error('Error fetching roles after login:', roleError);
+            this.router.navigate([this.returnUrl]);
+          }
+        });
       },
       error: (error) => {
         this.errorMessage = error.userMessage || 'Login failed. Please check your credentials.';
