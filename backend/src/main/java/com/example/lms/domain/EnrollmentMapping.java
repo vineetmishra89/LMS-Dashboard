@@ -7,8 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.util.CollectionUtils;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -58,12 +60,27 @@ public class EnrollmentMapping {
   @Column(name = "updated_By")
   private String updatedBy;
 
-  @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-  @JsonManagedReference("LMS_USER_TRNG_ENROLLMENT_DTLS")
-  private List<EnrollmentDetails> enrollmentDetailsList;
+  @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, orphanRemoval = true , fetch = FetchType.EAGER)
+  @JsonManagedReference
+  private List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
 
   @ManyToOne(fetch=FetchType.EAGER)
   @JoinColumn(name="trng_id")
   @JsonBackReference
   private CourseSummary courseSummary;
+
+  public void addEnrollmentDetail(EnrollmentDetails enrollmentDetails){
+    if(this.enrollmentDetailsList == null){
+      this.enrollmentDetailsList = new ArrayList<>();
+    }
+    enrollmentDetails.setEnrollmentMapping(this);
+    this.enrollmentDetailsList.add(enrollmentDetails);
+
+  }
+
+  public void removeEnrollmentDetail(EnrollmentDetails enrollmentDetails){
+    this.enrollmentDetailsList.remove(enrollmentDetails);
+    enrollmentDetails.setEnrollmentMapping(null);
+
+  }
 }

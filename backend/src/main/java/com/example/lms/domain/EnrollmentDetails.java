@@ -41,8 +41,8 @@ public class EnrollmentDetails implements Serializable {
   private String updatedBy;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "trng_enrl_id")
-  @JsonBackReference("LMS_USER_TRNG_ENROLLMENT_DTLS")
+  @JoinColumn(name = "trng_enrl_id", nullable = false)
+  @JsonBackReference
   private EnrollmentMapping enrollmentMapping;
 
   @ManyToOne(fetch = FetchType.EAGER)

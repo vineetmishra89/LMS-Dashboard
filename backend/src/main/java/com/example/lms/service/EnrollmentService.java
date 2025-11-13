@@ -20,5 +20,5 @@ public interface EnrollmentService {
 
   EnrollmentMapping completeCourse(Long enrollmentId);
 
-  void unEnroll(String userId, Long courseId);
+  void unEnroll(Long enrollmentId);
 }

@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { CourseService } from '../../services/course.service';
 import { SkeletonModule } from 'primeng/skeleton';
+import { Globals } from '../shared/globals';
 
 @Component({
   selector: 'app-search',
@@ -23,18 +24,20 @@ export class SearchComponent implements OnInit {
    enrolled: any[] = [];
     router = inject(Router);
     courseService = inject(CourseService);
+    globals = inject(Globals);
   
     responsiveOptions: any[] | undefined;
 
     selectedCourseType: string = 'Completed Course';
     summary: any;
-    userId = 'chetna.bhatia@irissoftware.com';
+    userId = '';
     enrolledCourse: any | null = null;
     pendingCourse: any = [];
     completedCourse: any = [];
     likedCourse: any = [];
 
     ngOnInit(): void {
+      this.userId = this.globals.getUser().emailId;
       this.getSummary();
       this.getCompletedCourse();
       this.getEnrolledCourse();
