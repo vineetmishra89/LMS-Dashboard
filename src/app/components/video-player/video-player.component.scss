@@ -106,15 +106,19 @@
   color: #ddd;
 }
 
-.error-actions {
+// Error action buttons container (outside video wrapper to prevent clipping)
+.video-error-actions {
   display: flex !important;
   gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 
-.error-actions button {
+.video-error-actions button {
   display: inline-block !important;
   visibility: visible !important;
   opacity: 1 !important;
