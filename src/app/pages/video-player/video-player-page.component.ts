@@ -19,12 +19,12 @@ export class VideoPlayerPageComponent implements OnInit {
    course: CourseMaster | null = null;
    isLoading = true;
    dataSharingService = inject(DataSharingService);
+   globals = inject(Globals);
    playCourseData: CourseMaster | null = null;
    selectedModule: CourseDetail | null = null;
    enrollmentMapping: EnrollmentMapping | null = null;
    selectedEnrollmentModule: EnrollmentDetails | null = null;
    videoPageReady: boolean = false;
-   globals = inject(Globals);
   
   constructor(
     private route: ActivatedRoute,
