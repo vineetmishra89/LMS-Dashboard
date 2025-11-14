@@ -32,6 +32,10 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   duration = 0;
   progress = 0;
   
+  showSignInPrompt = false;
+  videoError = false;
+  videoErrorMessage = '';
+  
   constructor(
     private videoProgressService: VideoProgressService,
     private userService: UserService
@@ -78,6 +82,52 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   onVideoLoaded(): void {
     this.isLoading = false;
     this.duration = this.videoElement.nativeElement.duration;
+    this.videoError = false;
+    this.showSignInPrompt = false;
+  }
+  
+  onVideoError(event: any): void {
+    console.error('Video failed to load:', event);
+    this.isLoading = false;
+    this.videoError = true;
+    
+    const video = this.videoElement.nativeElement;
+    if (video.error) {
+      const errorCode = video.error.code;
+      const errorMessage = video.error.message;
+      
+      console.error('Video error code:', errorCode, 'Message:', errorMessage);
+      
+      if (errorCode === 2 || errorCode === 4) {
+        this.videoErrorMessage = 'Unable to load video. You may need to sign in to Microsoft 365.';
+        this.showSignInPrompt = true;
+      } else {
+        this.videoErrorMessage = 'An error occurred while loading the video.';
+      }
+    }
+  }
+  
+  openMicrosoftSignIn(): void {
+    const sharePointUrl = 'https://irissoft-my.sharepoint.com';
+    const signInWindow = window.open(sharePointUrl, 'Microsoft365SignIn', 'width=800,height=600');
+    
+    console.log('Opening Microsoft 365 sign-in window');
+    
+    this.showSignInPrompt = false;
+    
+    this.videoErrorMessage = 'Please sign in to Microsoft 365 in the new window, then close it and click "Retry Video" below.';
+  }
+  
+  retryVideo(): void {
+    console.log('Retrying video playback');
+    
+    this.videoError = false;
+    this.showSignInPrompt = false;
+    this.videoErrorMessage = '';
+    this.isLoading = true;
+    
+    const video = this.videoElement.nativeElement;
+    video.load();
   }
 
   onVideoEnded(): void {
