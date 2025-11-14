@@ -8,6 +8,7 @@ import { AuthService } from './services/auth.service';
 import { ConfigService } from './services/config.service';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { PrimeNGConfig } from 'primeng/api';
+import { RoleService } from './services/role.service';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +29,8 @@ export class AppComponent implements OnInit, OnDestroy {
   isDarkMode = false;
   showSyncIndicator = false;
   showHeader = false;
+  showLndAdmin = false;
+  showRODashboard = false;
 
 public showInstallPrompt = false;
 private deferredPrompt: any = null;
@@ -39,7 +42,8 @@ private deferredPrompt: any = null;
     private configService: ConfigService,
     private loadingInterceptor: LoadingInterceptor,
     private router: Router,
-    private primengConfig: PrimeNGConfig
+    private primengConfig: PrimeNGConfig,
+    private roleService: RoleService
   ) {
     this.initializeApp();
   }
@@ -63,6 +67,11 @@ private deferredPrompt: any = null;
     });
     
     this.updateHeaderVisibility(this.router.url);
+    
+    if (this.authService.isLoggedIn() && this.roleService.getCurrentRoles().length === 0) {
+      console.log('User already authenticated on app init, fetching roles...');
+      this.loadUserRoles();
+    }
   }
 
   ngOnDestroy(): void {
@@ -86,6 +95,15 @@ private deferredPrompt: any = null;
       takeUntil(this.destroy$)
     ).subscribe(isAuthenticated => {
       this.isAuthenticated = isAuthenticated;
+      if (!isAuthenticated) {
+        this.roleService.clearRoles();
+        this.showLndAdmin = false;
+        this.showRODashboard = false;
+      } else {
+        if (this.currentUser && this.roleService.getCurrentRoles().length === 0) {
+          this.loadUserRoles();
+        }
+      }
     });
 
     this.authService.currentUser$.pipe(
@@ -94,7 +112,14 @@ private deferredPrompt: any = null;
       this.currentUser = user;
       if (user) {
         this.loadUserPreferences();
+        this.loadUserRoles();
       }
+    });
+
+    this.roleService.roles$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.updateRoleVisibility();
     });
   }
 
@@ -105,7 +130,23 @@ private deferredPrompt: any = null;
     this.showHeader = this.isAuthenticated && !isAuthRoute;
   }
 
+  private loadUserRoles(): void {
+    this.roleService.fetchUserRoles().subscribe({
+      next: () => {
+        this.updateRoleVisibility();
+      },
+      error: (error) => {
+        console.error('Error loading user roles:', error);
+        this.showLndAdmin = false;
+        this.showRODashboard = false;
+      }
+    });
+  }
 
+  private updateRoleVisibility(): void {
+    this.showLndAdmin = this.roleService.isLndAdmin();
+    this.showRODashboard = this.roleService.canAccessRODashboard();
+  }
 
   private loadUserPreferences(): void {
     if (this.currentUser?.preferences) {
@@ -191,6 +232,7 @@ private deferredPrompt: any = null;
   // }
 
   logout(): void {
+    this.roleService.clearRoles();
     this.authService.logout();
   }
 
