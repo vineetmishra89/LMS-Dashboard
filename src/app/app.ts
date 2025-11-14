@@ -46,29 +46,6 @@ private deferredPrompt: any = null;
     private msalBroadcastService: MsalBroadcastService
   ) {
     this.initializeApp();
-    // Only run MSAL browser stuff in browser (not on server)
-    if (typeof window !== 'undefined') {
-      // 1️⃣ Process the redirect result if we just came back from loginRedirect()
-      msalInstance.handleRedirectPromise().then(result => {
-        if (result && result.account) {
-          console.log('MSAL redirect result, setting active account:', result.account);
-          msalInstance.setActiveAccount(result.account);
-        }
-      });
-
-      // 2️⃣ After all interactions are done, ensure we have an active account
-      this.msalBroadcastService.inProgress$
-        .pipe(filter(status => status === InteractionStatus.None))
-        .subscribe(() => {
-          const accounts = msalInstance.getAllAccounts();
-          console.log('MSAL interaction done, accounts:', accounts);
-
-          if (accounts.length > 0 && !msalInstance.getActiveAccount()) {
-            msalInstance.setActiveAccount(accounts[0]);
-            console.log('MSAL active account set to:', accounts[0]);
-          }
-        });
-    }
   }
 
   ngOnInit(): void {

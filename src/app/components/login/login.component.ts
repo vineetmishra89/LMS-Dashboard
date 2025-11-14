@@ -7,6 +7,8 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { Globals } from '../shared/globals';
+import { msalInstance } from '../../auth.config';
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +30,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    private msalService: MsalService
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +46,14 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
+    });
+
+    // 1️⃣ Process the redirect result if we just came back from loginRedirect()
+    this.msalService.instance.handleRedirectPromise().then(result => {
+      if (result && result.account) {
+        console.log('MSAL redirect result, setting active account:', result.account);
+        msalInstance.setActiveAccount(result.account);
+      }
     });
   }
 

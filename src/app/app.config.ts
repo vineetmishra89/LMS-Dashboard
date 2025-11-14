@@ -11,7 +11,7 @@ import {
   MSAL_GUARD_CONFIG,
   MSAL_INTERCEPTOR_CONFIG
 } from '@azure/msal-angular';
-import { InteractionType } from '@azure/msal-browser';
+import { InteractionType, IPublicClientApplication } from '@azure/msal-browser';
 import { routes } from './app.routes';
 import { msalInstance, loginRequest } from './auth.config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -34,6 +34,10 @@ export function MSALInterceptorConfigFactory() {
       ['https://graph.microsoft.com/v1.0/me', ['user.read']]
     ])
   };
+}
+
+export function initializeMsal(msalInstance: IPublicClientApplication) : () => Promise<void> {
+  return () => msalInstance.initialize();
 }
 
 export const appConfig: ApplicationConfig = {

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, importProvidersFrom, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -97,6 +97,8 @@ import { ChipModule } from 'primeng/chip';
 import { environment } from '../environments/environment';
 import { CarouselModule } from 'primeng/carousel';
 import { Globals } from './components/shared/globals';
+import { MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalBroadcastService, MsalGuard, MsalInterceptor, MsalModule, MsalRedirectComponent, MsalService } from '@azure/msal-angular';
+import { initializeMsal, MSALGuardConfigFactory, MSALInstanceFactory, MSALInterceptorConfigFactory } from './app.config';
 
 @NgModule({
   declarations: [
@@ -152,6 +154,8 @@ import { Globals } from './components/shared/globals';
     // Routing
     AppRoutingModule,
     CarouselModule,
+
+    MsalModule,
     
     // Angular Material
     MatDialogModule,
@@ -208,6 +212,27 @@ import { Globals } from './components/shared/globals';
     AuthGuard,
     RoleGuard,
     UnsavedChangesGuard,
+    MsalRedirectComponent,
+    MsalBroadcastService,  importProvidersFrom(MsalModule),
+        {
+          provide: MSAL_INSTANCE,
+          useFactory: MSALInstanceFactory
+        },
+        {
+          provide: MSAL_GUARD_CONFIG,
+          useFactory: MSALGuardConfigFactory
+        },
+        {
+          provide: MSAL_INTERCEPTOR_CONFIG,
+          useFactory: MSALInterceptorConfigFactory
+        },
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: MsalInterceptor,
+          multi: true
+        },
+        MsalService,
+        MsalGuard,
     
     // HTTP Interceptors
     {
@@ -228,6 +253,12 @@ import { Globals } from './components/shared/globals';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CacheInterceptor,
+      multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeMsal,
+      deps: [MSAL_INSTANCE],
       multi: true
     }
   ],
