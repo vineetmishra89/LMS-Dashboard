@@ -107,13 +107,17 @@
 }
 
 .error-actions {
-  display: flex;
+  display: flex !important;
   gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
+  margin-top: 16px;
 }
 
-.error-actions .btn {
+.error-actions button {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
   padding: 12px 24px;
   font-size: 16px;
   border: none;
@@ -121,22 +125,23 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
+  text-decoration: none;
 }
 
-.error-actions .btn-primary {
-  background: #0078d4;
-  color: white;
+.signin-btn {
+  background: #0078d4 !important;
+  color: white !important;
 }
 
-.error-actions .btn-primary:hover {
-  background: #106ebe;
+.signin-btn:hover {
+  background: #106ebe !important;
 }
 
-.error-actions .btn-secondary {
-  background: #6c757d;
-  color: white;
+.retry-btn {
+  background: #6c757d !important;
+  color: white !important;
 }
 
-.error-actions .btn-secondary:hover {
-  background: #5a6268;
+.retry-btn:hover {
+  background: #5a6268 !important;
 }
