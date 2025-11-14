@@ -91,19 +91,16 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     this.isLoading = false;
     this.videoError = true;
     
+    this.videoErrorMessage = 'Unable to load video. You may need to sign in to Microsoft 365.';
+    this.showSignInPrompt = true;
+    
     const video = this.videoElement.nativeElement;
-    if (video.error) {
+    if (video && video.error) {
       const errorCode = video.error.code;
       const errorMessage = video.error.message;
-      
       console.error('Video error code:', errorCode, 'Message:', errorMessage);
-      
-      if (errorCode === 2 || errorCode === 4) {
-        this.videoErrorMessage = 'Unable to load video. You may need to sign in to Microsoft 365.';
-        this.showSignInPrompt = true;
-      } else {
-        this.videoErrorMessage = 'An error occurred while loading the video.';
-      }
+    } else {
+      console.error('Video error occurred but error details not available');
     }
   }
   
