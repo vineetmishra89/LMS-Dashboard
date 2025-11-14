@@ -67,6 +67,11 @@ private deferredPrompt: any = null;
     });
     
     this.updateHeaderVisibility(this.router.url);
+    
+    if (this.authService.isLoggedIn() && this.roleService.getCurrentRoles().length === 0) {
+      console.log('User already authenticated on app init, fetching roles...');
+      this.loadUserRoles();
+    }
   }
 
   ngOnDestroy(): void {
