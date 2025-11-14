@@ -23,12 +23,6 @@ public interface EnrollmentRepository extends JpaRepository<EnrollmentMapping, L
 
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Transactional
-  @Query(value="delete from lms_schema.LMS_USER_TRNG_ENROLLMENT_DTLS where trng_enrl_id= :enrollmentId", nativeQuery = true)
-  void deleteEnrollDetailByEnrollmentId(@Param("enrollmentId") Long enrollmentId);
-
-  @Modifying(clearAutomatically = true, flushAutomatically = true)
-  @Transactional
-  @Query(value="update lms_schema.LMS_USER_TRNG_ENROLLMENT_DTLS set status='COMPLETED' where trng_enrl_dtl_id= :enrollmentDetailsId", nativeQuery = true)
-  void updateEnrollmentStatusByEnrollmentDtlId(@Param("enrollmentDetailsId") Long enrollmentDetailsId);
-
+  @Query(value="update lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING set completion_review_status=:completionReviewStatus where trng_id= :trainingId and email_id=:userId", nativeQuery = true)
+  void updateEnrollMappingByUseridAndTrngId(@Param("completionReviewStatus") String completionReviewStatus, @Param("trainingId") Integer trainingId, @Param("userId") String userId);
 }

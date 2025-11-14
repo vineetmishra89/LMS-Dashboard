@@ -52,6 +52,7 @@ export class VideoPlayerPageComponent implements OnInit {
 
           this.enrollmentMapping = enrollment;
           this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[0];
+          console.log('CourseDetail : '+this.enrollmentMapping!.enrollmentDetailsList[0].courseDetail);
           this.videoPageReady = true;
           console.log("Video player page loaded successfully");
         },

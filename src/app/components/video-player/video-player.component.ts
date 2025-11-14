@@ -44,7 +44,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   }
   
   ngOnDestroy(): void {
-    this.saveCurrentProgress();
+    this.saveCurrentProgress(false);
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -70,7 +70,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
       //takeUntil(this.destroy$)
     ).subscribe(() => {
       if (this.isPlaying) {
-        this.saveCurrentProgress();
+        this.saveCurrentProgress(false);
       }
     });
   }
@@ -83,7 +83,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   onVideoEnded(): void {
     console.log("video ended. Marking the module progress completed");
     this.onTimeUpdate();
-    this.saveCurrentProgress();
+    this.saveCurrentProgress(true);
     this.completed = false;
   }
   
@@ -96,7 +96,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     console.log('Pausing the video');
     this.isPlaying = false;
     this.updateSessionWatchTime();
-    this.saveCurrentProgress();
+    this.saveCurrentProgress(false);
   }
   
   onTimeUpdate(): void {
@@ -111,15 +111,16 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     }
   }
   
-  private saveCurrentProgress(): void {
+  private saveCurrentProgress(videoCompleted: boolean): void {
     const user = this.userService.getCurrentUser();
     if (!user || !this.videoElement.nativeElement) return;
     
     this.updateSessionWatchTime();
     
     const watchTimeDelta = Math.max(0, this.sessionWatchTime);
+    console.log("watchTimeDelta : "+watchTimeDelta);
     
-    if (watchTimeDelta > 0) {
+    if (watchTimeDelta > 0 || videoCompleted) {
       console.log('Storing session watch time : '+ watchTimeDelta);
       if(this.currentTime >= this.duration) {
         this.completed = true;

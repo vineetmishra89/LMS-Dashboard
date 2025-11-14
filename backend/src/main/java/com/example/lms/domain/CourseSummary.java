@@ -7,7 +7,9 @@ import lombok.*;
 import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "LMS_TRNG_SUMMARY")
@@ -82,7 +84,7 @@ public class CourseSummary {
     fetch = FetchType.EAGER
   )
   @JsonManagedReference("LMS_TRNG_DTLS")
-  private List<CourseDetail> lmsTrainingDetails = new ArrayList<>();
+  private Set<CourseDetail> lmsTrainingDetails = new HashSet<>();
 
   @OneToMany(
     mappedBy = "courseSummary",
@@ -91,7 +93,7 @@ public class CourseSummary {
     fetch = FetchType.EAGER
   )
   @JsonManagedReference("LMS_USER_TRNG_ENROLLMENT_MAPPING")
-  private List<EnrollmentMapping> enrollmentMappings;
+  private Set<EnrollmentMapping> enrollmentMappings;
 
   // helpers to keep both sides in sync
   public void addDetail(CourseDetail d) {

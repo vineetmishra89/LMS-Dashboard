@@ -48,14 +48,14 @@
     </div>
     <div class="right" style="width: 30vw">
       <ul style="list-style: none">
-        @for(item of playCourseData?.lmsTrainingDetails; track item; let i = $index) {
-        <li (click)="moduleSelected(item, i)"
+        @for(item of enrollmentMapping?.enrollmentDetailsList; track item; let i = $index) {
+        <li (click)="moduleSelected(item.courseDetail, i)"
           style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300); color: #292b2d"
           class="{{
             item.status === 'Completed'  || i === 0 ? 'color-active' : 'color-disabled'
           }} {{item.moduleId === selectedModule.moduleId ? 'selected-module' : ''}}"
         >
-          Module {{ i + 1 + ':  ' }} {{ item.details }}
+          Module {{ i + 1 + ':  ' }} {{ item.courseDetail.details }}
         </li>
         }
       </ul>

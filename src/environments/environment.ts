@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://192.168.8.116:5000/api',
+  apiUrl: 'http://localhost:5000/api',
   authUrl: 'http://localhost:3000/auth',
   fileUploadUrl: 'http://localhost:3000/uploads',
   websocketUrl: 'ws://192.168.8.116:5000',

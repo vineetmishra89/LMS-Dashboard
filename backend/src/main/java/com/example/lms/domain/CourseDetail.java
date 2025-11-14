@@ -8,6 +8,7 @@ import lombok.*;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "LMS_TRNG_DTLS")
@@ -60,6 +61,6 @@ public class CourseDetail {
   private CourseSummary course;
 
   @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JsonManagedReference
-  private List<EnrollmentDetails> enrollmentDetailsList;
+  @JsonBackReference
+  private Set<EnrollmentDetails> enrollmentDetailsList;
 }
