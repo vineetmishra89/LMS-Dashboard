@@ -14,4 +14,5 @@ export class RoleConstants {
   static readonly ROLE_ONSITE_DD = 'ROLE_ONSITE_DD';
   static readonly ROLE_HRBP = 'ROLE_HRBP';
   static readonly ROLE_TRAINER = 'ROLE_TRAINER';
+  static readonly ROLE_TRAINEE = 'ROLE_TRAINEE';
 }
