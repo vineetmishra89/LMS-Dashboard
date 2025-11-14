@@ -46,6 +46,11 @@ public final class RoleConstants {
      */
     public static final String ROLE_TRAINER = "ROLE_TRAINER";
     
+    /**
+     * Trainee role - all employees in LMS_EMPLOYEE_DTLS
+     */
+    public static final String ROLE_TRAINEE = "ROLE_TRAINEE";
+    
     private RoleConstants() {
         throw new UnsupportedOperationException("This is a constants class and cannot be instantiated");
     }

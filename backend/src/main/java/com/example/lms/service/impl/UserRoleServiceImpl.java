@@ -42,6 +42,18 @@ public class UserRoleServiceImpl implements UserRoleService {
         
         List<String> roles = new ArrayList<>();
         
+        try {
+            boolean isEmployee = employeeDetailsRepository.existsByEmailIdIgnoreCase(emailId);
+            if (isEmployee) {
+                roles.add(RoleConstants.ROLE_TRAINEE);
+                logger.debug("User {} is an employee, added ROLE_TRAINEE", emailId);
+            } else {
+                logger.warn("User {} not found in LMS_EMPLOYEE_DTLS, no ROLE_TRAINEE assigned", emailId);
+            }
+        } catch (Exception e) {
+            logger.error("Error checking employee status for user {}: {}", emailId, e.getMessage(), e);
+        }
+        
         roles.addAll(getDatabaseRoles(emailId));
         
         if (isReportingOfficer(emailId)) {
