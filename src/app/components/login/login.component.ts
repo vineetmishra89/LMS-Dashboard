@@ -33,9 +33,16 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+    
+    if (this.authService.isLoggedIn()) {
+      console.log('User already authenticated, redirecting to:', this.returnUrl);
+      this.router.navigate([this.returnUrl]);
+      return;
+    }
+    
     const x = this.authService.isLoggedIn();
     console.log(x);
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
     const registered = this.route.snapshot.queryParams['registered'] === '1';
     if (registered) {
       this.errorMessage = '';
