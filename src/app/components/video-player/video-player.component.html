@@ -30,11 +30,13 @@
         
         <div class="error-actions">
           <button *ngIf="showSignInPrompt" 
-                  class="btn btn-primary" 
+                  type="button"
+                  class="signin-btn" 
                   (click)="openMicrosoftSignIn()">
             Sign In to Microsoft 365
           </button>
-          <button class="btn btn-secondary" 
+          <button type="button"
+                  class="retry-btn" 
                   (click)="retryVideo()">
             Retry Video
           </button>
