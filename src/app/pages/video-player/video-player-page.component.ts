@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CourseDetail, CourseMaster } from '../../models/course';
 import { CourseService } from '../../services/course.service';
@@ -9,6 +9,7 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
 import { forkJoin } from 'rxjs';
 import { Globals } from '../../components/shared/globals';
+import { VideoPlayerComponent } from '../../components/video-player/video-player.component';
 
 @Component({
   selector: 'app-video-player-page',
@@ -16,6 +17,8 @@ import { Globals } from '../../components/shared/globals';
   styleUrls: ['./video-player-page.component.scss']
 })
 export class VideoPlayerPageComponent implements OnInit {
+   @ViewChild(VideoPlayerComponent) videoPlayer!: VideoPlayerComponent;
+   
    course: CourseMaster | null = null;
    isLoading = true;
    dataSharingService = inject(DataSharingService);
@@ -25,6 +28,9 @@ export class VideoPlayerPageComponent implements OnInit {
    enrollmentMapping: EnrollmentMapping | null = null;
    selectedEnrollmentModule: EnrollmentDetails | null = null;
    videoPageReady: boolean = false;
+   
+   videoError: boolean = false;
+   showSignInPrompt: boolean = false;
   
   constructor(
     private route: ActivatedRoute,
@@ -69,5 +75,25 @@ export class VideoPlayerPageComponent implements OnInit {
   
   goBack(): void {
     this.router.navigate(['/dashboard']);
+  }
+  
+  onVideoErrorChange(hasError: boolean): void {
+    this.videoError = hasError;
+  }
+  
+  onShowSignInPromptChange(showPrompt: boolean): void {
+    this.showSignInPrompt = showPrompt;
+  }
+  
+  openMicrosoftSignIn(): void {
+    if (this.videoPlayer) {
+      this.videoPlayer.openMicrosoftSignIn();
+    }
+  }
+  
+  retryVideo(): void {
+    if (this.videoPlayer) {
+      this.videoPlayer.retryVideo();
+    }
   }
 }

@@ -27,20 +27,6 @@
         <div class="error-icon">⚠️</div>
         <h3>Video Playback Error</h3>
         <p class="error-message">{{ videoErrorMessage }}</p>
-        
-        <div class="error-actions">
-          <button *ngIf="showSignInPrompt" 
-                  type="button"
-                  class="signin-btn" 
-                  (click)="openMicrosoftSignIn()">
-            Sign In to Microsoft 365
-          </button>
-          <button type="button"
-                  class="retry-btn" 
-                  (click)="retryVideo()">
-            Retry Video
-          </button>
-        </div>
       </div>
     </div>
   </div>
