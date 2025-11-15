@@ -31,21 +31,6 @@
     </div>
   </div>
   
-  <!-- Error action buttons outside video wrapper to prevent clipping -->
-  <div *ngIf="videoError" class="video-error-actions">
-    <button *ngIf="showSignInPrompt" 
-            type="button"
-            class="signin-btn" 
-            (click)="openMicrosoftSignIn()">
-      Sign In to Microsoft 365
-    </button>
-    <button type="button"
-            class="retry-btn" 
-            (click)="retryVideo()">
-      Retry Video
-    </button>
-  </div>
-  
   <div class="progress-info">
     <span>Progress: {{progress | number:'1.1-1'}}%</span>
   </div>

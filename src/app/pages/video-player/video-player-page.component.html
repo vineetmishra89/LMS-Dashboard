@@ -25,6 +25,8 @@
         [courseId]="course.trainingId"
         [lessonId]="selectedModule.moduleId"
         [selectedEnrollmentModule]="selectedEnrollmentModule"
+        (videoErrorChange)="onVideoErrorChange($event)"
+        (showSignInPromptChange)="onShowSignInPromptChange($event)"
       >
       </app-video-player>
       </div>
@@ -44,6 +46,20 @@
           <span class="duration">Duration: {{ course.durationMinutes }} minutes</span>
           <span class="category">Category: {{ course.category }}</span>
         </div>
+      </div>
+      
+      <div *ngIf="videoError" class="video-error-actions">
+        <button *ngIf="showSignInPrompt" 
+                type="button"
+                class="signin-btn" 
+                (click)="openMicrosoftSignIn()">
+          Sign In to Microsoft 365
+        </button>
+        <button type="button"
+                class="retry-btn" 
+                (click)="retryVideo()">
+          Retry Video
+        </button>
       </div>
     </div>
     <div class="right" style="width: 30vw">

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoProgressService } from '../../services/video-progress.service';
@@ -16,6 +16,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   @Input() courseId!: number;
   @Input() lessonId!: number;
   @Input() selectedEnrollmentModule!: EnrollmentDetails;
+  @Output() videoErrorChange = new EventEmitter<boolean>();
+  @Output() showSignInPromptChange = new EventEmitter<boolean>();
   completed: boolean = false;
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
@@ -84,6 +86,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     this.duration = this.videoElement.nativeElement.duration;
     this.videoError = false;
     this.showSignInPrompt = false;
+    this.videoErrorChange.emit(false);
+    this.showSignInPromptChange.emit(false);
   }
   
   onVideoError(event: any): void {
@@ -93,6 +97,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     
     this.videoErrorMessage = 'Unable to load video. You may need to sign in to Microsoft 365.';
     this.showSignInPrompt = true;
+    
+    this.videoErrorChange.emit(true);
+    this.showSignInPromptChange.emit(true);
     
     const video = this.videoElement.nativeElement;
     if (video && video.error) {
@@ -111,6 +118,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     console.log('Opening Microsoft 365 sign-in window');
     
     this.showSignInPrompt = false;
+    this.showSignInPromptChange.emit(false);
     
     this.videoErrorMessage = 'Please sign in to Microsoft 365 in the new window, then close it and click "Retry Video" below.';
   }
@@ -122,6 +130,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     this.showSignInPrompt = false;
     this.videoErrorMessage = '';
     this.isLoading = true;
+    
+    this.videoErrorChange.emit(false);
+    this.showSignInPromptChange.emit(false);
     
     const video = this.videoElement.nativeElement;
     video.load();
