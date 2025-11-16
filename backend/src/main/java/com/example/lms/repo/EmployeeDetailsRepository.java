@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,6 +15,8 @@ public interface EmployeeDetailsRepository extends JpaRepository<EmployeeDetails
     Optional<EmployeeDetails> findByEmailIdIgnoreCase(String emailId);
     
     boolean existsByEmailIdIgnoreCase(String emailId);
+    
+    List<EmployeeDetails> findByEmpNameIgnoreCase(String empName);
     
     /**
      * Count employees who have the given email as their RO (Reporting Officer).
