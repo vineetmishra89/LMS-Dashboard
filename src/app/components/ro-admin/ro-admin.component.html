@@ -17,6 +17,22 @@
           <div>
             <form [formGroup]="filterFormGroup" class="ro-form-group">
               <p-multiSelect
+                [options]="sbuList"
+                formControlName="selectedSbus"
+                [selectAll]="null"
+                styleClass="assign-training-multiselect"
+                placeholder="Select SBU"
+                (onChange)="onSbuChange()"
+              />
+              <p-multiSelect
+                [options]="projectList"
+                formControlName="selectedProjects"
+                [selectAll]="null"
+                styleClass="assign-training-multiselect"
+                placeholder="Select Project"
+                (onChange)="onProjectChange()"
+              />
+              <p-multiSelect
                 [options]="users"
                 formControlName="selectedUsers"
                 optionLabel="empName"
