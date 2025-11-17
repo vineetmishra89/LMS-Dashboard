@@ -51,4 +51,43 @@ public interface ProjectRepository extends JpaRepository<ProjectDetails, String>
                    "  AND proj_active_flag = 'Y'", 
            nativeQuery = true)
     boolean hasAnyProjectRole(@Param("emailId") String emailId);
+    
+    /**
+     * Find distinct BU values for projects where user has any project role.
+     * Used for RO/PM Dashboard SBU filter.
+     * 
+     * @param emailId User's email ID
+     * @return List of distinct BU values
+     */
+    @Query(value = "SELECT DISTINCT bu " +
+                   "FROM lms_schema.LMS_PROJECT_DTLS " +
+                   "WHERE proj_active_flag = 'Y' " +
+                   "  AND bu IS NOT NULL " +
+                   "  AND (LOWER(pm_email_id) = LOWER(:emailId) " +
+                   "   OR LOWER(adm_email_id) = LOWER(:emailId) " +
+                   "   OR LOWER(offshore_dd_email_id) = LOWER(:emailId)) " +
+                   "ORDER BY bu", 
+           nativeQuery = true)
+    List<String> findDistinctBuByUser(@Param("emailId") String emailId);
+    
+    /**
+     * Find distinct project names for projects where user has any project role.
+     * Optionally filtered by BU values.
+     * Used for RO/PM Dashboard Project filter.
+     * 
+     * @param emailId User's email ID
+     * @param sbus List of BU values to filter by (optional)
+     * @return List of distinct project names
+     */
+    @Query(value = "SELECT DISTINCT project_name " +
+                   "FROM lms_schema.LMS_PROJECT_DTLS " +
+                   "WHERE proj_active_flag = 'Y' " +
+                   "  AND (LOWER(pm_email_id) = LOWER(:emailId) " +
+                   "   OR LOWER(adm_email_id) = LOWER(:emailId) " +
+                   "   OR LOWER(offshore_dd_email_id) = LOWER(:emailId)) " +
+                   "  AND (:sbus IS NULL OR bu IN (:sbus)) " +
+                   "ORDER BY project_name", 
+           nativeQuery = true)
+    List<String> findDistinctProjectsByUserAndSbus(@Param("emailId") String emailId, 
+                                                     @Param("sbus") List<String> sbus);
 }

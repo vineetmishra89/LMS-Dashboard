@@ -9,20 +9,36 @@
       <p-tabPanel>
         <ng-template pTemplate="header">
           <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
-            <span class="font-bold white-space-nowrap m-0"> Assign Training </span>
+            <span class="font-bold white-space-nowrap m-0"> RO/PM Dashboard </span>
             <span class="pi pi-user-plus" style="margin-left: 8px"></span>
           </div>
         </ng-template>
         <div>
           <div>
-            <form [formGroup]="filterFormGroup" class="ro-form-group">
+            <form [formGroup]="filterFormGroup" class="ro-pm-form-grid">
+              <p-multiSelect
+                [options]="sbuList"
+                formControlName="selectedSbus"
+                [selectAll]="null"
+                styleClass="ro-pm-multiselect"
+                placeholder="Select SBU"
+                (onChange)="onSbuChange()"
+              />
+              <p-multiSelect
+                [options]="projectList"
+                formControlName="selectedProjects"
+                [selectAll]="null"
+                styleClass="ro-pm-multiselect"
+                placeholder="Select Project"
+                (onChange)="onProjectChange()"
+              />
               <p-multiSelect
                 [options]="users"
                 formControlName="selectedUsers"
                 optionLabel="empName"
                 filterBy="empName,empId,emailId"
                 [selectAll]="null"
-                styleClass="assign-training-multiselect"
+                styleClass="ro-pm-multiselect"
                 placeholder="Search by Employee Name, Email Id, Emp Code"
               />
               <p-multiSelect
@@ -31,32 +47,19 @@
                 optionLabel="trainingName"
                 filterBy="trainingName"
                 [selectAll]="null"
-                styleClass="assign-training-multiselect"
+                styleClass="ro-pm-multiselect"
                 placeholder="Search by Training Name"
               />
-              <!-- <p-dropdown
-                formControlName="selectedTrainingName"
-                [options]="filterData?.trainingNameList"
-                [filter]="true"
-                optionLabel="trainingName"
-                placeholder="Select a Training Name"
-              /> -->
-              <!-- <button
-                pButton
-                pRipple
-                label="Add"
-                class="p-button-primary"
-                [disabled]="!filterFormGroup?.valid"
-                (click)="add()"
-              ></button> -->
-              <button
-                pButton
-                pRipple
-                label="Assign Training"
-                class="p-button-primary"
-                [disabled]="filterFormGroup?.value?.selectedUsers?.length === 0 || filterFormGroup?.value?.selectedTrainingName?.length === 0"
-                (click)="bulkEnroll()"
-              ></button>
+              <div class="ro-pm-button-row">
+                <button
+                  pButton
+                  pRipple
+                  label="Assign Training"
+                  class="p-button-primary"
+                  [disabled]="filterFormGroup?.value?.selectedUsers?.length === 0 || filterFormGroup?.value?.selectedTrainingName?.length === 0"
+                  (click)="bulkEnroll()"
+                ></button>
+              </div>
             </form>
             @if(filterFormGroup?.value?.selectedUsers?.length > 0) {
             <div style="margin: 30px 0px 15px 15px">
