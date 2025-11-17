@@ -1,5 +1,7 @@
 package com.example.lms.service.impl;
 
+import com.example.lms.domain.EmployeeDetails;
+import com.example.lms.domain.ProjectDetails;
 import com.example.lms.dto.EmployeeDetailsDto;
 import com.example.lms.repo.EmployeeDetailsRepository;
 import com.example.lms.repo.EmployeeHierarchyRepository;
@@ -29,6 +31,72 @@ public class ROPMDashboardServiceImpl implements ROPMDashboardService {
         this.employeeHierarchyRepository = employeeHierarchyRepository;
     }
     
+    /**
+     * Check if user is RO-only (has no project roles like PM/ADM/Offshore DD).
+     * RO-only users should only see their own project's BU and employees in their hierarchy.
+     * 
+     * @param userId User's email ID
+     * @return true if user is RO-only, false if user has project roles
+     */
+    private boolean isRoOnlyUser(String userId) {
+        try {
+            boolean hasProjectRole = projectRepository.hasAnyProjectRole(userId);
+            logger.debug("User {} has project role: {}", userId, hasProjectRole);
+            return !hasProjectRole;
+        } catch (Exception e) {
+            logger.error("Error checking if user {} is RO-only: {}", userId, e.getMessage(), e);
+            return false;
+        }
+    }
+    
+    /**
+     * Get user's own project name from LMS_EMPLOYEE_DTLS.
+     * Used for RO-only users to restrict them to their own project.
+     * 
+     * @param userId User's email ID
+     * @return User's project name, or null if not found
+     */
+    private String getUserProjectName(String userId) {
+        try {
+            Optional<EmployeeDetails> employeeOpt = employeeDetailsRepository.findByEmailIdIgnoreCase(userId);
+            if (employeeOpt.isPresent()) {
+                String projectName = employeeOpt.get().getProjectName();
+                logger.debug("User {} project name: {}", userId, projectName);
+                return projectName;
+            } else {
+                logger.warn("Employee not found for userId: {}", userId);
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching project name for user {}: {}", userId, e.getMessage(), e);
+            return null;
+        }
+    }
+    
+    /**
+     * Get BU for a given project name from LMS_PROJECT_DTLS.
+     * Used for RO-only users to get their project's BU.
+     * 
+     * @param projectName Project name
+     * @return BU value, or null if not found
+     */
+    private String getProjectBu(String projectName) {
+        try {
+            Optional<ProjectDetails> projectOpt = projectRepository.findById(projectName);
+            if (projectOpt.isPresent()) {
+                String bu = projectOpt.get().getSbu();
+                logger.debug("Project {} BU: {}", projectName, bu);
+                return bu;
+            } else {
+                logger.warn("Project not found: {}", projectName);
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching BU for project {}: {}", projectName, e.getMessage(), e);
+            return null;
+        }
+    }
+    
     @Override
     public List<String> getSbusByUser(String userId) {
         logger.info("Fetching SBUs for user: {}", userId);
@@ -39,9 +107,30 @@ public class ROPMDashboardServiceImpl implements ROPMDashboardService {
         }
         
         try {
-            List<String> sbus = projectRepository.findDistinctBuByUser(userId);
-            logger.info("Found {} SBUs for user: {}", sbus.size(), userId);
-            return sbus;
+            boolean isRoOnly = isRoOnlyUser(userId);
+            logger.info("User {} is RO-only: {}", userId, isRoOnly);
+            
+            if (isRoOnly) {
+                String userProjectName = getUserProjectName(userId);
+                if (userProjectName == null || userProjectName.trim().isEmpty()) {
+                    logger.warn("RO-only user {} has no project name, returning empty SBU list", userId);
+                    return Collections.emptyList();
+                }
+                
+                String projectBu = getProjectBu(userProjectName);
+                if (projectBu == null || projectBu.trim().isEmpty()) {
+                    logger.warn("RO-only user {} project {} has no BU, returning empty SBU list", 
+                               userId, userProjectName);
+                    return Collections.emptyList();
+                }
+                
+                logger.info("RO-only user {} - returning single SBU: {}", userId, projectBu);
+                return Collections.singletonList(projectBu);
+            } else {
+                List<String> sbus = projectRepository.findDistinctBuByUser(userId);
+                logger.info("User with project roles {} - found {} SBUs", userId, sbus.size());
+                return sbus;
+            }
         } catch (Exception e) {
             logger.error("Error fetching SBUs for user: {}", userId, e);
             return Collections.emptyList();
@@ -58,9 +147,23 @@ public class ROPMDashboardServiceImpl implements ROPMDashboardService {
         }
         
         try {
-            List<String> projects = projectRepository.findDistinctProjectsByUserAndSbus(userId, sbus);
-            logger.info("Found {} projects for user: {}", projects.size(), userId);
-            return projects;
+            boolean isRoOnly = isRoOnlyUser(userId);
+            logger.info("User {} is RO-only: {}", userId, isRoOnly);
+            
+            if (isRoOnly) {
+                String userProjectName = getUserProjectName(userId);
+                if (userProjectName == null || userProjectName.trim().isEmpty()) {
+                    logger.warn("RO-only user {} has no project name, returning empty project list", userId);
+                    return Collections.emptyList();
+                }
+                
+                logger.info("RO-only user {} - returning single project: {}", userId, userProjectName);
+                return Collections.singletonList(userProjectName);
+            } else {
+                List<String> projects = projectRepository.findDistinctProjectsByUserAndSbus(userId, sbus);
+                logger.info("User with project roles {} - found {} projects", userId, projects.size());
+                return projects;
+            }
         } catch (Exception e) {
             logger.error("Error fetching projects for user: {}", userId, e);
             return Collections.emptyList();
@@ -77,6 +180,9 @@ public class ROPMDashboardServiceImpl implements ROPMDashboardService {
         }
         
         try {
+            boolean isRoOnly = isRoOnlyUser(roEmailId);
+            logger.info("User {} is RO-only: {}", roEmailId, isRoOnly);
+            
             Map<String, EmployeeDetailsDto> employeeMap = new LinkedHashMap<>();
             
             List<Object[]> hierarchyResults = employeeHierarchyRepository.findAllEmployeesInHierarchy(roEmailId);
@@ -87,7 +193,8 @@ public class ROPMDashboardServiceImpl implements ROPMDashboardService {
                 employeeMap.put(dto.emailId(), dto);
             }
             
-            if (projects != null && !projects.isEmpty()) {
+            if (!isRoOnly && projects != null && !projects.isEmpty()) {
+                logger.info("User has project roles - adding employees from selected projects");
                 List<Object[]> projectEmployees = employeeDetailsRepository.findActiveEmployeesByProjectNames(projects);
                 logger.debug("Found {} employees from selected projects", projectEmployees.size());
                 
@@ -95,6 +202,8 @@ public class ROPMDashboardServiceImpl implements ROPMDashboardService {
                     EmployeeDetailsDto dto = mapToEmployeeDetailsDto(row);
                     employeeMap.put(dto.emailId(), dto);
                 }
+            } else if (isRoOnly) {
+                logger.info("RO-only user - ignoring project filters, returning only RO hierarchy employees");
             }
             
             List<EmployeeDetailsDto> result = new ArrayList<>(employeeMap.values());
