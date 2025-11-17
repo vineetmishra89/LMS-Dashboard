@@ -91,15 +91,13 @@ export class VideoPlayerPageComponent implements OnInit {
   }
 
   currentVideCompleted(event: any) {
-    console.log(event);
     if (this.enrollmentMapping) {
       const currentIndex = this.enrollmentMapping.enrollmentDetailsList.findIndex((x: any) => x.moduleId === this.selectedModule?.moduleId);
+      if (this.enrollmentMapping.enrollmentDetailsList[currentIndex]) {
+        this.enrollmentMapping.enrollmentDetailsList[currentIndex].status = 'Completed';
+        this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
+      }
 
-      this.enrollmentMapping!.enrollmentDetailsList[currentIndex].status = 'Completed';
-      console.log(this.enrollmentMapping!.enrollmentDetailsList);
-      this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
     }
-
-
   }
 }
