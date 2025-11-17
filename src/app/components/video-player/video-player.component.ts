@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoProgressService } from '../../services/video-progress.service';
@@ -16,6 +16,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   @Input() courseId!: number;
   @Input() lessonId!: number;
   @Input() selectedEnrollmentModule!: EnrollmentDetails;
+  @Output() currentVideCompleted = new EventEmitter<boolean>();
   completed: boolean = false;
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
@@ -82,6 +83,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
 
   onVideoEnded(): void {
     console.log("video ended. Marking the module progress completed");
+    this.currentVideCompleted.emit(true)
     this.onTimeUpdate();
     this.saveCurrentProgress(true);
     this.completed = false;
@@ -102,6 +104,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   onTimeUpdate(): void {
     this.currentTime = this.videoElement.nativeElement.currentTime;
     this.progress = (this.currentTime / this.duration) * 100;
+    console.log(this.currentTime, Math.floor(this.progress), this.duration);
+    
   }
   
   private updateSessionWatchTime(): void {
