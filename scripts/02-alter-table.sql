@@ -8,6 +8,9 @@ ADD COLUMN bu VARCHAR(255);
 ALTER TABLE lms_Schema.lms_trng_summary
 ADD COLUMN trng_skill_area VARCHAR(255);
 
+ALTER TABLE lms_schema.lms_user_trng_enrollment_mapping
+alter column enrolled_by_email_id type varchar(255);
+
 update lms_Schema.lms_trng_summary 
 set trng_skill_area = category;
 
