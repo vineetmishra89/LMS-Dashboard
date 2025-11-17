@@ -64,11 +64,14 @@ export class RoAdminComponent implements OnInit {
     selectedTrainingName: any | undefined;
     selectedUserTraining: any[] = [];
     roEmailId = '';
+    sbuList: string[] = [];
+    projectList: string[] = [];
 
     ngOnInit(): void {
       const userId = localStorage.getItem('userId');
     this.roEmailId = this.globals.getUser().emailId;
       this.loadForm();
+      this.getSbus();
       this.getUser();
       this.getCourseSearchList();
       
@@ -78,19 +81,84 @@ export class RoAdminComponent implements OnInit {
  loadForm() {
   
   this.filterFormGroup = new FormGroup({
+    selectedSbus: new FormControl([]),
+    selectedProjects: new FormControl([]),
     selectedUsers: new FormControl([]),
     selectedTrainingName: new FormControl([])
   })
  }
 
-    getUser() {
-      const emailId = this.roEmailId;
-      this.courseService.getEmployeeHierarchy(emailId).subscribe({
+    getSbus() {
+      this.courseService.getSbusByUser(this.roEmailId).subscribe({
         next: (res) => {
-          console.log(res);
-          this.users = res.employees;
+          console.log('SBUs:', res);
+          this.sbuList = res;
+        },
+        error: (err) => {
+          console.error('Error fetching SBUs:', err);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load SBUs' });
         }
-      })
+      });
+    }
+
+    onSbuChange() {
+      const selectedSbus = this.filterFormGroup?.get('selectedSbus')?.value;
+      console.log('Selected SBUs:', selectedSbus);
+      
+      this.filterFormGroup?.get('selectedProjects')?.setValue([]);
+      this.filterFormGroup?.get('selectedUsers')?.setValue([]);
+      
+      if (selectedSbus && selectedSbus.length > 0) {
+        this.courseService.getProjectsByUserAndSbus(this.roEmailId, selectedSbus).subscribe({
+          next: (res) => {
+            console.log('Projects:', res);
+            this.projectList = res;
+          },
+          error: (err) => {
+            console.error('Error fetching projects:', err);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load projects' });
+          }
+        });
+      } else {
+        this.courseService.getProjectsByUserAndSbus(this.roEmailId).subscribe({
+          next: (res) => {
+            console.log('Projects:', res);
+            this.projectList = res;
+          },
+          error: (err) => {
+            console.error('Error fetching projects:', err);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load projects' });
+          }
+        });
+      }
+      
+      this.getUser();
+    }
+
+    onProjectChange() {
+      console.log('Project changed');
+      this.filterFormGroup?.get('selectedUsers')?.setValue([]);
+      this.getUser();
+    }
+
+    getUser() {
+      const selectedProjects = this.filterFormGroup?.get('selectedProjects')?.value;
+      
+      const request = {
+        roEmailId: this.roEmailId,
+        projects: selectedProjects && selectedProjects.length > 0 ? selectedProjects : null
+      };
+      
+      this.courseService.getEmployeesForROPMDashboard(request).subscribe({
+        next: (res) => {
+          console.log('Employees:', res);
+          this.users = res;
+        },
+        error: (err) => {
+          console.error('Error fetching employees:', err);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load employees' });
+        }
+      });
     }
 
     add() {
