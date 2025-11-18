@@ -53,6 +53,9 @@ public class CourseSummary {
   @Column(name = "category")
   private String category;
 
+  @Column(name = "trng_skill_area")
+  private String trainingSkillArea;
+
   @Column(name = "tools_needed", length = 4000)
   private String toolsNeeded;
 

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CourseDetail, CourseMaster } from '../../models/course';
 import { CourseService } from '../../services/course.service';
@@ -9,6 +9,7 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
 import { forkJoin } from 'rxjs';
 import { Globals } from '../../components/shared/globals';
+import { VideoPlayerComponent } from '../../components/video-player/video-player.component';
 
 @Component({
   selector: 'app-video-player-page',
@@ -98,6 +99,24 @@ export class VideoPlayerPageComponent implements OnInit {
         this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
       }
 
+  
+  onVideoErrorChange(hasError: boolean): void {
+    this.videoError = hasError;
+  }
+  
+  onShowSignInPromptChange(showPrompt: boolean): void {
+    this.showSignInPrompt = showPrompt;
+  }
+  
+  openMicrosoftSignIn(): void {
+    if (this.videoPlayer) {
+      this.videoPlayer.openMicrosoftSignIn();
+    }
+  }
+  
+  retryVideo(): void {
+    if (this.videoPlayer) {
+      this.videoPlayer.retryVideo();
     }
   }
 }

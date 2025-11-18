@@ -67,3 +67,85 @@
   font-size: 14px;
   color: #666;
 }
+
+.error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.error-content {
+  text-align: center;
+  color: white;
+  padding: 32px;
+  max-width: 500px;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.error-content h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+.error-message {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  color: #ddd;
+}
+
+// Error action buttons container (outside video wrapper to prevent clipping)
+.video-error-actions {
+  display: flex !important;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.video-error-actions button {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.signin-btn {
+  background: #0078d4 !important;
+  color: white !important;
+}
+
+.signin-btn:hover {
+  background: #106ebe !important;
+}
+
+.retry-btn {
+  background: #6c757d !important;
+  color: white !important;
+}
+
+.retry-btn:hover {
+  background: #5a6268 !important;
+}

@@ -98,3 +98,46 @@
 .color-disabled {
   color: #8d95a7;
 }
+
+.video-error-actions {
+  display: flex !important;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.video-error-actions button {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.signin-btn {
+  background: #0078d4 !important;
+  color: white !important;
+}
+
+.signin-btn:hover {
+  background: #106ebe !important;
+}
+
+.retry-btn {
+  background: #6c757d !important;
+  color: white !important;
+}
+
+.retry-btn:hover {
+  background: #5a6268 !important;
+}
