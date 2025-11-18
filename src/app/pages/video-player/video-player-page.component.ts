@@ -17,6 +17,7 @@ import { VideoPlayerComponent } from '../../components/video-player/video-player
   styleUrls: ['./video-player-page.component.scss']
 })
 export class VideoPlayerPageComponent implements OnInit {
+  @ViewChild(VideoPlayerComponent) videoPlayer!: VideoPlayerComponent;
   course: CourseMaster | null = null;
   isLoading = true;
   dataSharingService = inject(DataSharingService);
@@ -26,6 +27,9 @@ export class VideoPlayerPageComponent implements OnInit {
   enrollmentMapping: EnrollmentMapping | null = null;
   selectedEnrollmentModule: EnrollmentDetails | null = null;
   videoPageReady: boolean = false;
+
+  videoError: boolean = false;
+  showSignInPrompt: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -86,20 +90,6 @@ export class VideoPlayerPageComponent implements OnInit {
     this.selectedModule = selectedModule;
     this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[index];
   }
-
-  goBack(): void {
-    this.router.navigate(['/dashboard']);
-  }
-
-  currentVideCompleted(event: any) {
-    if (this.enrollmentMapping) {
-      const currentIndex = this.enrollmentMapping.enrollmentDetailsList.findIndex((x: any) => x.moduleId === this.selectedModule?.moduleId);
-      if (this.enrollmentMapping.enrollmentDetailsList[currentIndex]) {
-        this.enrollmentMapping.enrollmentDetailsList[currentIndex].status = 'Completed';
-        this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
-      }
-
-  
   onVideoErrorChange(hasError: boolean): void {
     this.videoError = hasError;
   }
@@ -119,4 +109,21 @@ export class VideoPlayerPageComponent implements OnInit {
       this.videoPlayer.retryVideo();
     }
   }
+
+  goBack(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  currentVideCompleted(event: any) {
+    if (this.enrollmentMapping) {
+      const currentIndex = this.enrollmentMapping.enrollmentDetailsList.findIndex((x: any) => x.moduleId === this.selectedModule?.moduleId);
+      if (this.enrollmentMapping.enrollmentDetailsList[currentIndex]) {
+        this.enrollmentMapping.enrollmentDetailsList[currentIndex].status = 'Completed';
+        this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
+      }
+    }
+  }
+
+  
+  
 }
