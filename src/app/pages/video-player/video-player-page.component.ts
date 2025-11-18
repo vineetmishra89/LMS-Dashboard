@@ -17,6 +17,8 @@ import { VideoPlayerComponent } from '../../components/video-player/video-player
   styleUrls: ['./video-player-page.component.scss']
 })
 export class VideoPlayerPageComponent implements OnInit {
+  @ViewChild(VideoPlayerComponent) videoPlayer!: VideoPlayerComponent;
+  
   course: CourseMaster | null = null;
   isLoading = true;
   dataSharingService = inject(DataSharingService);
@@ -26,6 +28,9 @@ export class VideoPlayerPageComponent implements OnInit {
   enrollmentMapping: EnrollmentMapping | null = null;
   selectedEnrollmentModule: EnrollmentDetails | null = null;
   videoPageReady: boolean = false;
+  
+  videoError: boolean = false;
+  showSignInPrompt: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -98,7 +103,8 @@ export class VideoPlayerPageComponent implements OnInit {
         this.enrollmentMapping.enrollmentDetailsList[currentIndex].status = 'Completed';
         this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
       }
-
+    }
+  }
   
   onVideoErrorChange(hasError: boolean): void {
     this.videoError = hasError;
