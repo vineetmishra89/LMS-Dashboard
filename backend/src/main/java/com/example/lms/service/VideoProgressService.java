@@ -1,8 +1,11 @@
 package com.example.lms.service;
 
+import com.example.lms.constant.ReviewStatus;
 import com.example.lms.domain.VideoProgress;
+import com.example.lms.repo.EnrollmentDetailsRepository;
 import com.example.lms.repo.EnrollmentRepository;
 import com.example.lms.repo.VideoProgressRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -13,11 +16,14 @@ import java.util.Optional;
 public class VideoProgressService {
     private final VideoProgressRepository repository;
 
-    private final EnrollmentRepository enrollmentRepository;
+    private EnrollmentDetailsRepository enrollmentDetailsRepository;
 
-    public VideoProgressService(VideoProgressRepository repository, EnrollmentRepository enrollmentRepository) {
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    public VideoProgressService(VideoProgressRepository repository, EnrollmentDetailsRepository enrollmentDetailsRepository) {
         this.repository = repository;
-        this.enrollmentRepository = enrollmentRepository;
+        this.enrollmentDetailsRepository = enrollmentDetailsRepository;
     }
 
     public VideoProgress updateProgress(VideoProgress progress) {
@@ -47,7 +53,11 @@ public class VideoProgressService {
       VideoProgress videoProgress = repository.save(existingProgress);
 
       if(progress.getCompleted()){
-        this.enrollmentRepository.updateEnrollmentStatusByEnrollmentDtlId(progress.getTrainingEnrollmentDtlId());
+        this.enrollmentDetailsRepository.updateEnrollmentStatusByEnrollmentDtlId(progress.getTrainingEnrollmentDtlId());
+        long count = this.enrollmentDetailsRepository.countEnrollmentByStatusAndEnrollmentId(progress.getCourseId(), progress.getUserId());
+        if(count==0){
+           this.enrollmentRepository.updateEnrollMappingByUseridAndTrngId(ReviewStatus.PENDING_LND_REVIEW.name(),progress.getCourseId(), progress.getUserId());
+        }
       }
 
         return videoProgress;

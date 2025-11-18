@@ -87,10 +87,9 @@ public class CourseService {
       .flatMap(courseRepository::findById);
   }
 
-  public CourseSummary search(Long courseId) {
+  public CourseSummary search(Long courseId, String userId) {
     try{
-      return courseRepository.findById(courseId)
-        .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
+      return courseRepository.findByIdAndUserId(courseId,userId);
     }catch(ResourceNotFoundException ex){
       throw ex;
     }catch(Exception ex){

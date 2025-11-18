@@ -11,7 +11,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "LMS_USER_TRNG_ENROLLMENT_MAPPING")
@@ -62,7 +64,7 @@ public class EnrollmentMapping {
 
   @OneToMany(mappedBy = "enrollmentMapping", cascade = CascadeType.ALL, orphanRemoval = true , fetch = FetchType.EAGER)
   @JsonManagedReference
-  private List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
+  private Set<EnrollmentDetails> enrollmentDetailsList = new HashSet<>();
 
   @ManyToOne(fetch=FetchType.EAGER)
   @JoinColumn(name="trng_id")
@@ -71,7 +73,7 @@ public class EnrollmentMapping {
 
   public void addEnrollmentDetail(EnrollmentDetails enrollmentDetails){
     if(this.enrollmentDetailsList == null){
-      this.enrollmentDetailsList = new ArrayList<>();
+      this.enrollmentDetailsList = new HashSet<>();
     }
     enrollmentDetails.setEnrollmentMapping(this);
     this.enrollmentDetailsList.add(enrollmentDetails);
