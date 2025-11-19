@@ -1,5 +1,6 @@
 package com.example.lms.controller;
 
+import com.example.lms.dto.EmployeeDetailsDto;
 import com.example.lms.dto.EmployeeHierarchyResponseDto;
 import com.example.lms.dto.MetricsRequestDto;
 import com.example.lms.dto.MetricsResponseDto;
@@ -147,8 +148,8 @@ public class ROPMMetricsController {
     try {
       EmployeeHierarchyResponseDto hierarchy = employeeHierarchyService.getEmployeeHierarchy(roEmailId);
       
-      List<String> employeeEmails = hierarchy.getEmployees().stream()
-        .map(emp -> emp.getEmailId())
+      List<String> employeeEmails = hierarchy.employees().stream()
+        .map(EmployeeDetailsDto::emailId)
         .collect(Collectors.toList());
       
       logger.info("Successfully retrieved {} employee emails from hierarchy", employeeEmails.size());
