@@ -15,7 +15,7 @@ export class RopmMetricsService {
   ) { }
 
   getMetrics(data: any): Observable<any> {
-    return this.apiService.post<any>(`ro-pm/metrics/report`, data);
+    return this.apiService.post<any>(`ro-pm-dashboard/metrics/report`, data);
   }
 
   getMetricsDownload(data: any): Observable<any> {
@@ -29,7 +29,7 @@ export class RopmMetricsService {
     if (data.topN) params.topN = data.topN;
 
     const queryString = new URLSearchParams(params).toString();
-    const url = `${environment.apiUrl}/ro-pm/metrics/report/download${queryString ? '?' + queryString : ''}`;
+    const url = `${environment.apiUrl}/ro-pm-dashboard/metrics/report/download${queryString ? '?' + queryString : ''}`;
 
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
