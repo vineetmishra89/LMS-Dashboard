@@ -636,7 +636,8 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         throw new IllegalArgumentException("WebUrl cannot be null or empty");
       }
 
-      GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
+      //GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
+      GraphServiceClient<Request> client = graphClientProvider.getGraphClient();
 
       String relativePath = parseFolderUrl(webUrl);
       int lastSlashIndex = relativePath.lastIndexOf("/");

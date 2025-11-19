@@ -22,29 +22,33 @@ public class MetricsService {
   }
 
   public MetricsResponseDto getMetrics(MetricsRequestDto request) {
-    OffsetDateTime startDate = convertToOffsetDateTime(request.getStartDate() != null ? request.getStartDate() : LocalDate.now().minusMonths(6));
+    return getMetricsForEmployees(request, null);
+  }
+
+  public MetricsResponseDto getMetricsForEmployees(MetricsRequestDto request, List<String> employeeEmails) {
+    OffsetDateTime startDate = convertToOffsetDateTime(request.getStartDate() != null ? request.getStartDate() : LocalDate.now().minusDays(60));
     OffsetDateTime endDate = convertToOffsetDateTime(request.getEndDate() != null ?request.getEndDate() : LocalDate.now());
     Integer topN = request.getTopN() != null ? request.getTopN() : 10;
 
     MetricsResponseDto response = new MetricsResponseDto();
     
     response.setTopTrainees(getTopTrainees(startDate, endDate, request.getCategory(), 
-      request.getLevel(), request.getTechnology(), topN));
+      request.getLevel(), request.getTechnology(), topN, employeeEmails));
     
     response.setTopRatedCourses(getTopRatedCourses(startDate, endDate, request.getCategory(), 
-      request.getLevel(), request.getTechnology(), topN));
+      request.getLevel(), request.getTechnology(), topN, employeeEmails));
     
     response.setTopEnrolledCourses(getTopEnrolledCourses(startDate, endDate, request.getCategory(), 
-      request.getLevel(), request.getTechnology(), topN));
+      request.getLevel(), request.getTechnology(), topN, employeeEmails));
     
     response.setTopViewedCourses(getTopViewedCourses(startDate, endDate, request.getCategory(), 
-      request.getLevel(), request.getTechnology(), topN));
+      request.getLevel(), request.getTechnology(), topN, employeeEmails));
     
     response.setTopCompletedCourses(getTopCompletedCourses(startDate, endDate, request.getCategory(), 
-      request.getLevel(), request.getTechnology(), topN));
+      request.getLevel(), request.getTechnology(), topN, employeeEmails));
     
     response.setUserTrainingDump(getUserTrainingDump(startDate, endDate, request.getCategory(), 
-      request.getLevel(), request.getTechnology()));
+      request.getLevel(), request.getTechnology(), employeeEmails));
 
     return response;
   }
@@ -57,8 +61,8 @@ public class MetricsService {
   }
 
   private List<TopTraineeDto> getTopTrainees(OffsetDateTime startDate, OffsetDateTime endDate, 
-                                              String category, String level, String technology, Integer topN) {
-    List<Object[]> results = metricsRepository.findTopTrainees(startDate, endDate, category, level, technology, topN);
+                                              String category, String level, String technology, Integer topN, List<String> employeeEmails) {
+    List<Object[]> results = metricsRepository.findTopTrainees(startDate, endDate, category, level, technology, topN, employeeEmails);
     return results.stream().map(row -> new TopTraineeDto(
       (String) row[0],
       ((Long) row[1]).longValue(),
@@ -68,8 +72,8 @@ public class MetricsService {
   }
 
   private List<TopCourseDto> getTopRatedCourses(OffsetDateTime startDate, OffsetDateTime endDate, 
-                                                 String category, String level, String technology, Integer topN) {
-    List<Object[]> results = metricsRepository.findTopRatedCourses(startDate, endDate, category, level, technology, topN);
+                                                 String category, String level, String technology, Integer topN, List<String> employeeEmails) {
+    List<Object[]> results = metricsRepository.findTopRatedCourses(startDate, endDate, category, level, technology, topN, employeeEmails);
     return results.stream().map(row -> new TopCourseDto(
       ((Long) row[0]).longValue(),
       (String) row[1],
@@ -83,8 +87,8 @@ public class MetricsService {
   }
 
   private List<TopCourseDto> getTopEnrolledCourses(OffsetDateTime startDate, OffsetDateTime endDate, 
-                                                    String category, String level, String technology, Integer topN) {
-    List<Object[]> results = metricsRepository.findTopEnrolledCourses(startDate, endDate, category, level, technology, topN);
+                                                    String category, String level, String technology, Integer topN, List<String> employeeEmails) {
+    List<Object[]> results = metricsRepository.findTopEnrolledCourses(startDate, endDate, category, level, technology, topN, employeeEmails);
     return results.stream().map(row -> new TopCourseDto(
       ((Long) row[0]).longValue(),
       (String) row[1],
@@ -98,8 +102,8 @@ public class MetricsService {
   }
 
   private List<TopCourseDto> getTopViewedCourses(OffsetDateTime startDate, OffsetDateTime endDate, 
-                                                  String category, String level, String technology, Integer topN) {
-    List<Object[]> results = metricsRepository.findTopViewedCourses(startDate, endDate, category, level, technology, topN);
+                                                  String category, String level, String technology, Integer topN, List<String> employeeEmails) {
+    List<Object[]> results = metricsRepository.findTopViewedCourses(startDate, endDate, category, level, technology, topN, employeeEmails);
     return results.stream().map(row -> new TopCourseDto(
       ((Long) row[0]).longValue(),
       (String) row[1],
@@ -113,8 +117,8 @@ public class MetricsService {
   }
 
   private List<TopCourseDto> getTopCompletedCourses(OffsetDateTime startDate, OffsetDateTime endDate, 
-                                                     String category, String level, String technology, Integer topN) {
-    List<Object[]> results = metricsRepository.findTopCompletedCourses(startDate, endDate, category, level, technology, topN);
+                                                     String category, String level, String technology, Integer topN, List<String> employeeEmails) {
+    List<Object[]> results = metricsRepository.findTopCompletedCourses(startDate, endDate, category, level, technology, topN, employeeEmails);
     return results.stream().map(row -> new TopCourseDto(
       ((Long) row[0]).longValue(),
       (String) row[1],
@@ -128,8 +132,8 @@ public class MetricsService {
   }
 
   private List<UserTrainingDumpDto> getUserTrainingDump(OffsetDateTime startDate, OffsetDateTime endDate, 
-                                                         String category, String level, String technology) {
-    List<Object[]> results = metricsRepository.findUserTrainingDump(startDate, endDate, category, level, technology);
+                                                         String category, String level, String technology, List<String> employeeEmails) {
+    List<Object[]> results = metricsRepository.findUserTrainingDump(startDate, endDate, category, level, technology, employeeEmails);
     return results.stream().map(row -> new UserTrainingDumpDto(
       (String) row[0],
       ((Long) row[1]).longValue(),

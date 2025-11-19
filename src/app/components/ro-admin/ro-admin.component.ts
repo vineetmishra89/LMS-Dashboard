@@ -19,12 +19,14 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { PickListModule } from 'primeng/picklist';
 import { Globals } from '../shared/globals';
+import { MetricsPanelComponent } from '../metrics/metrics-panel.component';
+import { RopmMetricsService } from '../../services/ropm-metrics.service';
 
 
 @Component({
   selector: 'app-ro-admin',
   standalone: true,
-  imports: [TabViewModule , ToastModule, PickListModule, DropdownModule, AutoCompleteModule, ProgressSpinnerModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
+  imports: [TabViewModule , ToastModule, PickListModule, DropdownModule, AutoCompleteModule, ProgressSpinnerModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule, MetricsPanelComponent],
   templateUrl: './ro-admin.component.html',
   styleUrl: './ro-admin.component.scss',
     providers: [MessageService, ConfirmationService]
@@ -46,6 +48,7 @@ export class RoAdminComponent implements OnInit {
   
     metricsData: any[] = [];
     metricsService = inject(MetricsService);
+    ropmMetricsService = inject(RopmMetricsService);
     filterFormGroup: FormGroup | undefined;
     courseService = inject(CourseService);
      enrollmentService = inject(EnrollmentService);
@@ -66,6 +69,7 @@ export class RoAdminComponent implements OnInit {
     roEmailId = '';
     sbuList: string[] = [];
     projectList: string[] = [];
+    activeTabIndex: number = 0;
 
     ngOnInit(): void {
       const userId = localStorage.getItem('userId');
