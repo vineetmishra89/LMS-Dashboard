@@ -34,7 +34,7 @@ public class SearchService {
   }
 
   public List<SearchDto> search(String category, String topics, String instructor, String level) {
-    StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd ");
+    StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd WHERE 1 = 1");
 
     if (category != null) {
       hql.append(" AND cm.category = :category");
@@ -42,12 +42,12 @@ public class SearchService {
     if (topics != null) {
       hql.append(" AND cm.topics = :topics");
     }
-    /*
+
     if (instructor != null) {
-      hql.append(" AND td.emailid =:instructor");
+      hql.append(" AND cm.trainerEmailIds like :trainerEmailId");
     }
 
-     */
+
     if (level != null) {
       hql.append(" AND cm.level =:level");
     }
@@ -59,9 +59,12 @@ public class SearchService {
     if (topics != null) {
       query.setParameter("topics", topics);
     }
+
     if (instructor != null) {
-      query.setParameter("instructor", instructor);
+      query.setParameter("trainerEmailId", "%" + instructor + "%");
     }
+
+
     if (level != null) {
       query.setParameter("level", level);
     }
@@ -98,7 +101,7 @@ public class SearchService {
             .collect(Collectors.toList());
 
            */
-          searchDto.setTrainerDetailList(distinctTrainerDetailsSet);
+          //searchDto.setTrainerDetailList(distinctTrainerDetailsSet);
           searchDtoList.add(searchDto);
         }
 
@@ -207,20 +210,20 @@ public class SearchService {
 
     }
 
-  private List<TrainerDto> getTrainerDetails(String emailId) {
+  private Set<TrainerDto> getTrainerDetails(String emailId) {
     try {
       Set<TrainerDto> distinctTrainerDetailsSet = new HashSet<>();
-      List<Object[]> results = trainerRepository.getTrainerByEmailId(emailId);
+      Set<Object[]> results = trainerRepository.getTrainerByEmailId(emailId);
 
       return results.stream().map(row -> new TrainerDto(
         (String) row[0],
         (String) row[1]
       )).filter(distinctTrainerDetailsSet::add)
-        .collect(Collectors.toList());
+        .collect(Collectors.toSet());
     } catch (Exception e) {
       log.error("Error occured --? ");
       e.printStackTrace();
-      return Collections.emptyList();
+      return Collections.emptySet();
     }
 
   }

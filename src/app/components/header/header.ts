@@ -13,6 +13,8 @@ export class HeaderComponent {
   @Output() themeToggle = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();
   @Input() showMobileToggle: boolean = false;
+  @Input() showLndAdmin: boolean = false;
+  @Input() showRODashboard: boolean = false;
   authService = inject(AuthService);
 
 }

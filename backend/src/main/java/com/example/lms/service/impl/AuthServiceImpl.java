@@ -141,15 +141,13 @@ public class AuthServiceImpl implements AuthService {
     
     /**
      * Determines user role based on employee details.
-     * Logic: If user has direct reports (is an RO), assign RO role, otherwise TRAINEE.
+     * Note: This returns a single role for backward compatibility with LoginResponse.
+     * For complete role list, use UserRoleService.getUserRoles() after login.
      * 
      * @param employee Employee details
-     * @return User role
+     * @return User role (always returns "TRAINEE" as base role)
      */
     private String determineUserRole(EmployeeDetails employee) {
-        boolean isRo = employeeDetailsRepository.existsByEmailIdIgnoreCase(employee.getEmailId()) &&
-                       employee.getRoEmailId() != null;
-        
-        return isRo ? "RO" : "TRAINEE";
+        return "TRAINEE";
     }
 }

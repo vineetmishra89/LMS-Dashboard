@@ -174,4 +174,21 @@ export class CourseService {
     return this.apiService.get<any>(`courses/materialCourse?trngId=${trainingId}`);
   }
 
+  recordSearchHistory(data: any) {
+    return this.apiService.post<any>(`courses/recordSearchHistory`, data);
+  }
+
+  getSbusByUser(userId: string): Observable<string[]> {
+    return this.apiService.get<string[]>(`ro-pm-dashboard/filters/sbus?userId=${userId}`);
+  }
+
+  getProjectsByUserAndSbus(userId: string, sbus?: string[]): Observable<string[]> {
+    const sbuParams = sbus && sbus.length > 0 ? `&sbus=${sbus.join(',')}` : '';
+    return this.apiService.get<string[]>(`ro-pm-dashboard/filters/projects?userId=${userId}${sbuParams}`);
+  }
+
+  getEmployeesForROPMDashboard(request: any): Observable<any> {
+    return this.apiService.post<any>('ro-pm-dashboard/employees', request);
+  }
+
 }
