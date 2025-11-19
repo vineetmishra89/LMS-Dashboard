@@ -65,41 +65,41 @@ public class CourseController {
   @SecurityRequirement(name = "bearerAuth")
   public ResponseEntity<?> getMaterialCourseLink(@RequestParam Long trngId, HttpServletRequest httpRequest) {
     try {
-      logger.info("Received request to get material course link for trngId: {}", trngId);
-      String authorization = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
-      if (authorization == null || !authorization.startsWith("Bearer ")) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Invalid Authorization header");
-        error.put("message", "Authorization header must start with 'Bearer '");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-      }
-      String folderPath = courseService.getFolderPathByTrainingId(trngId);
+        logger.info("Received request to get material course link for trngId: {}", trngId);
+        String authorization = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+          Map<String, String> error = new HashMap<>();
+          error.put("error", "Invalid Authorization header");
+          error.put("message", "Authorization header must start with 'Bearer '");
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+        String folderPath = courseService.getFolderPathByTrainingId(trngId);
 
-      if (folderPath == null || folderPath.isEmpty()) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Folder path not found");
-        error.put("message", "No folder path configured for training ID: " + trngId);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-      }
-      Map<String, Object> response = courseService.getMaterialCourseLink(trngId, authorization, folderPath);
+        if (folderPath == null || folderPath.isEmpty()) {
+          Map<String, String> error = new HashMap<>();
+          error.put("error", "Folder path not found");
+          error.put("message", "No folder path configured for training ID: " + trngId);
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+        Map<String, Object> response = courseService.getMaterialCourseLink(trngId, authorization, folderPath);
 
 
-      return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
 
     } catch (Exception e) {
-      logger.error("Error getting material course link for trngId: {}: {}", trngId, e.getMessage(), e);
-      Map<String, String> error = new HashMap<>();
-      error.put("error", "Failed to get material course link");
-      error.put("message", e.getMessage());
+        logger.error("Error getting material course link for trngId: {}: {}", trngId, e.getMessage(), e);
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Failed to get material course link");
+        error.put("message", e.getMessage());
 
-      if (e.getMessage() != null &&
-          (e.getMessage().contains("401") ||
-           e.getMessage().contains("Unauthorized") ||
-           e.getMessage().contains("Invalid token"))) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-      }
+        if (e.getMessage() != null &&
+            (e.getMessage().contains("401") ||
+             e.getMessage().contains("Unauthorized") ||
+             e.getMessage().contains("Invalid token"))) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
 
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
   }
 
