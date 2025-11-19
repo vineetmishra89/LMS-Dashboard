@@ -21,6 +21,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_code = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
+    "AND (:employeeEmails IS NULL OR e.email_id IN (:employeeEmails)) " +
     "GROUP BY e.email_id " +
     "ORDER BY completedCourses DESC, averageProgress DESC " +
     "LIMIT :topN", nativeQuery = true)
@@ -29,7 +30,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
                                   @Param("category") String category,
                                   @Param("level") String level,
                                   @Param("technology") String technology,
-                                  @Param("topN") Integer topN);
+                                  @Param("topN") Integer topN,
+                                  @Param("employeeEmails") List<String> employeeEmails);
 
   @Query(value = "SELECT c.trng_id as trainingId, " +
     "c.trng_topic as topic, " +
@@ -47,6 +49,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_code = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +
+    "AND (:employeeEmails IS NULL OR e.email_id IN (:employeeEmails)) " +
     "GROUP BY c.trng_id, c.trng_topic, c.category, c.level_code, c.rating " +
     "ORDER BY CAST(c.rating AS DECIMAL) DESC NULLS LAST " +
     "LIMIT :topN", nativeQuery = true)
@@ -55,7 +58,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
                                       @Param("category") String category,
                                       @Param("level") String level,
                                       @Param("technology") String technology,
-                                      @Param("topN") Integer topN);
+                                      @Param("topN") Integer topN,
+                                      @Param("employeeEmails") List<String> employeeEmails);
 
   @Query(value = "SELECT c.trng_id as trainingId, " +
     "c.trng_topic as topic, " +
@@ -73,6 +77,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_code = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +
+    "AND (:employeeEmails IS NULL OR e.email_id IN (:employeeEmails)) " +
     "GROUP BY c.trng_id, c.trng_topic, c.category, c.level_code, c.rating " +
     "ORDER BY enrollmentCount DESC " +
     "LIMIT :topN", nativeQuery = true)
@@ -81,7 +86,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
                                          @Param("category") String category,
                                          @Param("level") String level,
                                          @Param("technology") String technology,
-                                         @Param("topN") Integer topN);
+                                         @Param("topN") Integer topN,
+                                         @Param("employeeEmails") List<String> employeeEmails);
 
   @Query(value = "SELECT c.trng_id as trainingId, " +
     "c.trng_topic as topic, " +
@@ -98,6 +104,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_code = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
+    "AND (:employeeEmails IS NULL OR e.email_id IN (:employeeEmails)) " +
     "GROUP BY c.trng_id, c.trng_topic, c.category, c.level_code, c.rating " +
     "ORDER BY viewCount DESC " +
     "LIMIT :topN", nativeQuery = true)
@@ -106,7 +113,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
                                        @Param("category") String category,
                                        @Param("level") String level,
                                        @Param("technology") String technology,
-                                       @Param("topN") Integer topN);
+                                       @Param("topN") Integer topN,
+                                       @Param("employeeEmails") List<String> employeeEmails);
 
   @Query(value = "SELECT c.trng_id as trainingId, " +
     "c.trng_topic as topic, " +
@@ -124,6 +132,7 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_code = :level) " +
     "AND (:technology IS NULL OR c.technology=:technology) " +
+    "AND (:employeeEmails IS NULL OR e.email_id IN (:employeeEmails)) " +
     "GROUP BY c.trng_id, c.trng_topic, c.category, c.level_code, c.rating " +
     "ORDER BY completedCount DESC " +
     "LIMIT :topN", nativeQuery = true)
@@ -132,7 +141,8 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
                                           @Param("category") String category,
                                           @Param("level") String level,
                                           @Param("technology") String technology,
-                                          @Param("topN") Integer topN);
+                                          @Param("topN") Integer topN,
+                                          @Param("employeeEmails") List<String> employeeEmails);
 
   @Query(value = "SELECT e.email_id as userId, " +
     "c.trng_id as trainingId, " +
@@ -152,10 +162,12 @@ public interface MetricsRepository extends JpaRepository<EnrollmentMapping, Long
     "AND (:category IS NULL OR c.category = :category) " +
     "AND (:level IS NULL OR c.level_code = :level) " +
     "AND (:technology IS NULL OR  c.technology=:technology) " +
+    "AND (:employeeEmails IS NULL OR e.email_id IN (:employeeEmails)) " +
     "ORDER BY e.enrolled_ts DESC", nativeQuery = true)
   List<Object[]> findUserTrainingDump(@Param("startDate") OffsetDateTime startDate,
                                        @Param("endDate") OffsetDateTime endDate,
                                        @Param("category") String category,
                                        @Param("level") String level,
-                                       @Param("technology") String technology);
+                                       @Param("technology") String technology,
+                                       @Param("employeeEmails") List<String> employeeEmails);
 }
