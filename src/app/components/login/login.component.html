@@ -1,25 +1,85 @@
 @if(authService.isLoggedIn() == false) { 
-  <div style="display: flex; align-items: center; justify-content: center; height: 85vh; width: 100%">
-    <div class="login-container">
-      <header>
-        <h1>Welcome</h1>
-      </header>
-      <form class="login-form" (ngSubmit)="onSubmit()">
-        <div class="input-group">
-          <label for="username">Empcode or Email</label>
-          <input type="text" id="username" name="username" formControlName="email" required />
-        </div>
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" formControlName="password" required />
-        </div>
-        <button type="submit" class="login-button">Log In</button>
-        <div class="footer-links">
-          <a href="#">Forgot Password?</a>
-          <span>|</span>
-          <a href="#">Create Account</a>
-        </div>
-      </form>
+  <div class="page-container">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">📚</div>
+        <div class="logo-text">LMS Portal</div>
+      </div>
+      
+      <div class="sidebar-content">
+        <h2 class="sidebar-title">Enterprise Learning Platform</h2>
+        <p class="sidebar-description">
+          Access your personalized learning dashboard, track progress, and enhance your skills with our comprehensive training programs.
+        </p>
+        
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span>Track your learning progress</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span>Access training materials 24/7</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span>Earn certificates and badges</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span>Connect with instructors</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <div class="login-card">
+        <h1>Sign in to LMS</h1>
+        <p class="subtitle">Enter your credentials to continue</p>
+        
+        @if(errorMessage) {
+          <div class="error-banner">
+            <span>⚠️</span>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+        
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="input-group">
+            <label for="email">Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon">📧</span>
+              <input type="email" id="email" formControlName="email" placeholder="your.email@company.com" required />
+            </div>
+            @if(loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+              <small class="error-text">Please enter a valid email address</small>
+            }
+          </div>
+          
+          <div class="input-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" placeholder="Enter your password" required />
+              <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+                {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+              </button>
+            </div>
+            @if(loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+              <small class="error-text">Password is required (min 6 characters)</small>
+            }
+          </div>
+          
+          <button type="submit" class="login-button" [disabled]="isLoading || loginForm.invalid">
+            {{ isLoading ? 'Signing in...' : 'Sign In' }}
+          </button>
+        </form>
+        
+        <p class="help-text">
+          Need help? <a routerLink="/forgot-password" class="help-link">Forgot Password?</a>
+        </p>
+      </div>
     </div>
   </div>
 }

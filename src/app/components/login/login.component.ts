@@ -1,17 +1,18 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { Globals } from '../shared/globals';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  imports: [InputTextModule, ButtonModule, FloatLabelModule ,CommonModule, FormsModule, ReactiveFormsModule ],
+  imports: [InputTextModule, ButtonModule, FloatLabelModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   standalone: true
 })
 export class LoginComponent implements OnInit {
@@ -21,6 +22,7 @@ export class LoginComponent implements OnInit {
   returnUrl = '';
   showPassword = false;
   route =  inject(ActivatedRoute);
+  globals = inject(Globals);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -44,30 +46,32 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-   // this.router.navigate(['/home']);
-   // if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      return;
+    }
     
     this.isLoading = true;
     this.errorMessage = '';
     
-    const credentials = this.loginForm.value;
-    this.authService.loginhardcode().subscribe({
-      next: () => {
-       // console.log('Login successful:', user);
-        this.router.navigate(['/home']);
+    const credentials = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
+    
+    this.authService.login(credentials).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        this.isLoading = false;
+        
+        this.globals.setUser(JSON.stringify(response));
+        this.router.navigate([this.returnUrl]);
+      },
+      error: (error) => {
+        this.errorMessage = error.userMessage || 'Login failed. Please check your credentials.';
+        this.isLoading = false;
       }
     });
-    
-    // this.authService.login(credentials).subscribe({
-    //   next: (user) => {
-    //     console.log('Login successful:', user);
-    //     this.router.navigate(['/home']);
-    //   },
-    //   error: (error) => {
-    //     this.errorMessage = error.userMessage || 'Login failed. Please check your credentials.';
-    //     this.isLoading = false;
-    //   }
-    // });
   }
 
   togglePasswordVisibility(): void {

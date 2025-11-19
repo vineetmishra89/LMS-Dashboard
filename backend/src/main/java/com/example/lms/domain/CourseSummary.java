@@ -46,7 +46,7 @@ public class CourseSummary {
   private String type;
 
   @Column(name = "rating")
-  private String rating;
+  private Integer rating;
 
   @Column(name = "category")
   private String category;
@@ -59,6 +59,9 @@ public class CourseSummary {
 
   @Column(name = "course_progress")
   private Long courseProgressPercentage;
+
+  @Column(name = "trainer_emails")
+  private String trainerEmailIds;
 
   @Column(name = "CREATED_BY", length = 100)
   private String createdBy;

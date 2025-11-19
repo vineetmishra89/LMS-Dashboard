@@ -142,13 +142,6 @@ export class CourseService {
   }
 
   getCourseDetail(data: any) {
-    // const cat = data['category'] ? 'category='+ data['category'] : '';
-    // const lev = data['level'] ? 'level='+ data['level']: '';
-    // const inst = data['instructor'] ? 'instructor='+data['instructor']: '';
-    // const top = data['topic'] ? 'topic='+data['topic'] : '';
-    // const param = '?'+ cat + lev + inst + top;
-    // const x = this.buildParamQueryModern('searchCourse/getCourseDetail', data);
-    //return this.apiService.get<any>(x);
     return this.apiService.post<any>('searchCourse/getCourseDetail', data);
   }
 
@@ -175,6 +168,10 @@ export class CourseService {
 
   getEmployeeHierarchy(emailId: string): Observable<any>  {
    return this.apiService.get('employee-hierarchy?userId=' + emailId);
+  }
+
+  getCourseMaterial(trainingId: any) {
+    return this.apiService.get<any>(`courses/materialCourse?trngId=${trainingId}`);
   }
 
 }

@@ -2,10 +2,7 @@ package com.example.lms.service;
 
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.LMSTrainerDetails;
-import com.example.lms.dto.SearchDto;
-import com.example.lms.dto.SearchFilterDto;
-import com.example.lms.dto.TrainerDto;
-import com.example.lms.dto.TrainingNameDto;
+import com.example.lms.dto.*;
 import com.example.lms.repo.TrainerRepository;
 import com.example.lms.repo.CourseRepository;
 import jakarta.persistence.EntityManager;
@@ -37,7 +34,7 @@ public class SearchService {
   }
 
   public List<SearchDto> search(String category, String topics, String instructor, String level) {
-    StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd join  ltd.trainerDetails td where 1=1");
+    StringBuilder hql = new StringBuilder("select  cm from CourseSummary cm  join fetch cm.lmsTrainingDetails ltd ");
 
     if (category != null) {
       hql.append(" AND cm.category = :category");
@@ -45,9 +42,12 @@ public class SearchService {
     if (topics != null) {
       hql.append(" AND cm.topics = :topics");
     }
+    /*
     if (instructor != null) {
       hql.append(" AND td.emailid =:instructor");
     }
+
+     */
     if (level != null) {
       hql.append(" AND cm.level =:level");
     }
@@ -73,6 +73,7 @@ public class SearchService {
       if (results != null) {
         for (int i = 0; i < results.size(); i++) {
           SearchDto searchDto = new SearchDto();
+          String[] trainerEmailArr = results.get(i).getTrainerEmailIds().split(",");
 
           searchDto.setTrainingId(results.get(i).getTrainingId());
           searchDto.setTrainingName(results.get(i).getTopics());
@@ -83,6 +84,11 @@ public class SearchService {
           searchDto.setRating(results.get(i).getRating());
           searchDto.setCourseDetailList(results.get(i).getLmsTrainingDetails());
 
+          // get trainer details
+          for(String trainer : trainerEmailArr){
+            searchDto.addTrainerDtoList((Set<TrainerDto>) getTrainerDetails(trainer.trim()));
+          }
+          /*
           results.get(i).getLmsTrainingDetails().stream()
             .map(lmsTrainingDetail -> new TrainerDto(
               lmsTrainingDetail.getTrainerDetails().getTrainerName(),
@@ -90,6 +96,8 @@ public class SearchService {
             ))
             .filter(distinctTrainerDetailsSet::add) // Ensure distinct TrainerInfo objects
             .collect(Collectors.toList());
+
+           */
           searchDto.setTrainerDetailList(distinctTrainerDetailsSet);
           searchDtoList.add(searchDto);
         }
@@ -198,5 +206,23 @@ public class SearchService {
       }
 
     }
+
+  private List<TrainerDto> getTrainerDetails(String emailId) {
+    try {
+      Set<TrainerDto> distinctTrainerDetailsSet = new HashSet<>();
+      List<Object[]> results = trainerRepository.getTrainerByEmailId(emailId);
+
+      return results.stream().map(row -> new TrainerDto(
+        (String) row[0],
+        (String) row[1]
+      )).filter(distinctTrainerDetailsSet::add)
+        .collect(Collectors.toList());
+    } catch (Exception e) {
+      log.error("Error occured --? ");
+      e.printStackTrace();
+      return Collections.emptyList();
+    }
+
+  }
 }
 

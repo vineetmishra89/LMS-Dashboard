@@ -39,6 +39,9 @@ public class CourseDetail {
   @Column(name = "module_path", length = 4000)
   private String trainingLink;
 
+  @Column(name = "trainer_id", length = 4000)
+  private Integer trainerId;
+
   @Column(name = "CREATED_BY", length = 100)
   private String createdBy;
 
@@ -56,17 +59,7 @@ public class CourseDetail {
   @JsonBackReference("LMS_TRNG_DTLS")
   private CourseSummary course;
 
-  @ManyToOne
-  @JoinColumn(name = "trainer_id")
-  @JsonBackReference
-  private LMSTrainerDetails trainerDetails;
-
   @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JsonManagedReference
   private List<EnrollmentDetails> enrollmentDetailsList;
-
-  @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JsonManagedReference
-  private List<VideoProgress> videoProgressList;
-
 }

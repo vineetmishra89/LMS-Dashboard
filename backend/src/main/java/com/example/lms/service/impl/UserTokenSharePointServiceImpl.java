@@ -66,16 +66,21 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
 
             String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, relativePath);
-            logger.info("Resolved folder ID: {}", targetFolderId);
+          DriveItem targetItem = client
+            .drives()
+            .byId(driveId)
+            .items()
+            .byId(targetFolderId)
+            .buildRequest()
+            .get();
 
-            FolderNode rootFolder = new FolderNode();
-            rootFolder.setName(getLastSegment(relativePath));
-            rootFolder.setPath(relativePath);
+          if (targetItem == null) {
+            throw new RuntimeException("Target folder not found with ID: " + targetFolderId);
+          }
 
-            listFolderContentsByIdRecursively(client, driveId, targetFolderId, rootFolder);
-
-            logger.info("Successfully listed folders and files recursively");
-            return rootFolder;
+          FolderNode rootNode = new FolderNode(targetItem.name, targetFolderId, targetItem.webUrl);
+          listFolderContentsByIdRecursively(client, driveId, targetFolderId, rootNode);
+            return rootNode;
 
         } catch (Exception e) {
             logger.error("Error listing folders and files recursively: {}", e.getMessage(), e);
@@ -426,6 +431,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             logger.info("Processing first-level folder: {} (driveId={}, folderId={})", folderName, driveId, folderId);
 
             Optional<CourseSummary> courseOpt = matchCourseByFolderPath(folderName, folderWebUrl);
+            logger.info("Completed matchCourseByFolderPath :: courseOpt.isPresent(): {}", courseOpt.isPresent());
 
             if (courseOpt.isPresent()) {
                 CourseSummary course = courseOpt.get();
@@ -462,7 +468,8 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     private void traverseSubtreeForFiles(GraphServiceClient<Request> client, String driveId, String folderId,
                                          CourseSummary matchedCourse, String username,
                                          SharePointSyncResult result, boolean dryRun, java.util.Set<String> visitedFolders) {
-        try {
+      int seqId = 1;
+      try {
             String folderKey = driveId + ":" + folderId;
             if (visitedFolders.contains(folderKey)) {
                 logger.debug("Skipping already visited folder: {}", folderKey);
@@ -487,7 +494,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             do {
                 for (DriveItem item : items.getCurrentPage()) {
                     if (item.folder != null) {
-                        logger.debug("Traversing subfolder: {} (id={})", item.name, item.id);
+                        logger.info("Traversing subfolder: {} (id={})", item.name, item.id);
                         //traverseSubtreeForFiles(client, driveId, item.id, matchedCourse, username, result, dryRun, visitedFolders);
 
                     } else if (item.remoteItem != null && item.remoteItem.folder != null) {
@@ -501,10 +508,10 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
 
                     } else if (item.file != null && item.name != null && item.name.toLowerCase().endsWith(".mp4")) {
                         if (matchedCourse != null) {
-                            logger.debug("Found .mp4 file: {} (webUrl={})", item.name, item.webUrl);
-                            processVideoFile(item, matchedCourse, username, result, dryRun);
+                            logger.info("Found .mp4 file: {} (webUrl={})", item.name, item.webUrl);
+                            processVideoFile(item, matchedCourse, username, result, dryRun, seqId++);
                         } else {
-                            logger.debug("Skipping .mp4 file '{}' - no course matched at first level", item.name);
+                            logger.info("Skipping .mp4 file '{}' - no course matched at first level", item.name);
                         }
                     }
                 }
@@ -529,13 +536,13 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     private Optional<CourseSummary> matchCourseByFolderPath(String folderName, String folderWebUrl) {
         Optional<CourseSummary> courseOpt = courseRepository.findByFolderPath(folderWebUrl);
         if (courseOpt.isPresent()) {
-            logger.debug("Matched by URL: {}", folderWebUrl);
+            logger.info("Matched by URL: {}", folderWebUrl);
             return courseOpt;
         }
 
         courseOpt = courseRepository.findByFolderPathIgnoreCase(folderName);
         if (courseOpt.isPresent()) {
-            logger.debug("Matched by name: {}", folderName);
+            logger.info("Matched by name: {}", folderName);
             return courseOpt;
         }
 
@@ -547,15 +554,15 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
      * The trainingLink (MODULE_PATH) is set to the file's webUrl, which contains the full path to the video file.
      */
     private void processVideoFile(DriveItem item, CourseSummary course, String username,
-                                   SharePointSyncResult result, boolean dryRun) {
+                                   SharePointSyncResult result, boolean dryRun, int seqId) {
         try {
             String filename = item.name;
             String webUrl = item.webUrl;
 
             String moduleName = SessionSequenceParser.removeExtension(filename);
-            Integer seqId = SessionSequenceParser.extractSessionNumber(filename);
+          //Integer seqId = SessionSequenceParser.extractSessionNumber(filename);
 
-            logger.debug("Processing file: {} -> moduleName={}, seqId={}, webUrl={}", filename, moduleName, seqId, webUrl);
+            logger.info("Processing file: {} -> moduleName={}, seqId={}, webUrl={}", filename, moduleName, seqId, webUrl);
 
             Optional<CourseDetail> existingModuleOpt = courseDetailRepository
                     .findByCourseTrainingIdAndTrainingLink(course.getTrainingId(), webUrl);
@@ -574,8 +581,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
                     updated = true;
                 }
 
-                if ((seqId == null && existingModule.getSeqId() != null) ||
-                    (seqId != null && !seqId.equals(existingModule.getSeqId()))) {
+                if (!Integer.valueOf(seqId).equals(existingModule.getSeqId())) {
                     existingModule.setSeqId(seqId);
                     updated = true;
                 }
@@ -618,4 +624,81 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             result.addError("Error processing file '" + item.name + "': " + e.getMessage());
         }
     }
+
+  @Override
+  public java.util.List<String> fetchAllFilePathsFromWebUrl(String bearerToken, String webUrl) {
+    try {
+      validateConfiguration();
+
+      logger.info("Fetching all file paths from webUrl: {}", webUrl);
+
+      if (webUrl == null || webUrl.trim().isEmpty()) {
+        throw new IllegalArgumentException("WebUrl cannot be null or empty");
+      }
+
+      GraphServiceClient<Request> client = graphClientProvider.getGraphClientWithBearerToken(bearerToken);
+
+      String relativePath = parseFolderUrl(webUrl);
+      int lastSlashIndex = relativePath.lastIndexOf("/");
+      String finalpath = lastSlashIndex != -1 ? relativePath.substring(lastSlashIndex + 1) : relativePath;
+      logger.info("Parsed relative path from webUrl: {}, finalpath:{}", relativePath, finalpath);
+
+      String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, finalpath);
+      logger.info("Resolved folder ID: {} for webUrl: {}", targetFolderId, webUrl);
+
+      java.util.List<String> filePaths = new java.util.ArrayList<>();
+      collectFilePathsRecursively(client, driveId, targetFolderId, filePaths);
+
+      logger.info("Successfully fetched {} file paths from webUrl: {}", filePaths.size(), webUrl);
+      return filePaths;
+
+    } catch (Exception e) {
+      logger.error("Error fetching file paths from webUrl '{}': {}", webUrl, e.getMessage(), e);
+      throw new RuntimeException("Failed to fetch file paths from webUrl: " + webUrl, e);
+    }
+  }
+
+  private void collectFilePathsRecursively(GraphServiceClient<Request> client, String driveId, String folderId, java.util.List<String> filePaths) {
+    try {
+      logger.debug("Collecting file paths from folder ID: {}", folderId);
+
+      DriveItemCollectionPage items = client
+        .drives()
+        .byId(driveId)
+        .items()
+        .byId(folderId)
+        .children()
+        .buildRequest()
+        .get();
+
+      if (items == null || items.getCurrentPage() == null) {
+        logger.debug("No items found in folder ID: {}", folderId);
+        return;
+      }
+
+      do {
+        for (DriveItem item : items.getCurrentPage()) {
+          if (item.folder != null) {
+            logger.debug("Recursing into subfolder: {} (id={})", item.name, item.id);
+            collectFilePathsRecursively(client, driveId, item.id, filePaths);
+          } else if (item.file != null) {
+            logger.debug("Found file: {} with webUrl: {}", item.name, item.webUrl);
+            filePaths.add(item.webUrl);
+          }
+        }
+
+        if (items.getNextPage() != null) {
+          items = items.getNextPage().buildRequest().get();
+        } else {
+          break;
+        }
+      } while (items != null && items.getCurrentPage() != null);
+
+    } catch (Exception e) {
+      logger.error("Error collecting file paths from folder ID '{}': {}", folderId, e.getMessage(), e);
+      throw new RuntimeException("Failed to collect file paths from folder: " + folderId, e);
+    }
+  }
+
+
 }

@@ -16,17 +16,17 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class EnrollmentDetails implements Serializable {
 
-  @EmbeddedId
-  private EnrollmentDetailsId enrollmentDetailsId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lms_trng_enrl_dtl_id_generator")
+  @SequenceGenerator(name = "lms_trng_enrl_dtl_id_generator", sequenceName = "lms_schema.trng_enrl_dtl_id_seq", allocationSize = 1)
+  @Column(name = "TRNG_ENRL_DTL_ID")
+  private Long enrollmentDetailsId;
+
+  @Column(name = "module_id")
+  private Long moduleId;
 
   @Column(name = "status")
   private String status;
-
-  @Column(name = "current_learning_ts")
-  private Integer currentLearningTs;
-
-  @Column(name = "last_accessed_ts")
-  private OffsetDateTime lastAccessedAt;
 
   @Column(name = "created_ts")
   private OffsetDateTime createdTs;
@@ -41,8 +41,7 @@ public class EnrollmentDetails implements Serializable {
   private String updatedBy;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @MapsId("trainingEmrollmentId")
-  @JoinColumn(name = "trng_enrl_id")
+  @JoinColumn(name = "trng_enrl_id", nullable = false)
   @JsonBackReference
   private EnrollmentMapping enrollmentMapping;
 

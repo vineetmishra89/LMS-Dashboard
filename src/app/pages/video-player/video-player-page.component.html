@@ -18,13 +18,23 @@
         [course]="course"
       >
       </app-video-player> -->
+      <div *ngIf="videoPageReady; else loadingTemplate">
       <app-video-player
+        *ngIf="selectedEnrollmentModule && playCourseData"
         [videoUrl]="selectedModule.videoUrl || selectedModule.trainingLink"
         [courseId]="course.trainingId"
         [lessonId]="selectedModule.moduleId"
-        [course]="course"
+        [selectedEnrollmentModule]="selectedEnrollmentModule"
       >
       </app-video-player>
+      </div>
+
+      <ng-template #loadingTemplate>
+        <div *ngIf="isPageReady" class="loading-overlay">
+          <div class="spinner"></div>
+          <p>Loading video...</p>
+        </div>
+      </ng-template>
 
       <div class="course-info">
         <h2>{{ course.title }}</h2>
@@ -42,7 +52,7 @@
         <li (click)="moduleSelected(item, i)"
           style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300); color: #292b2d"
           class="{{
-            item.moduleProgressPercentage === 100 || i === 0 ? 'color-active' : 'color-active'
+            item.status === 'Completed'  || i === 0 ? 'color-active' : 'color-disabled'
           }} {{item.moduleId === selectedModule.moduleId ? 'selected-module' : ''}}"
         >
           Module {{ i + 1 + ':  ' }} {{ item.details }}

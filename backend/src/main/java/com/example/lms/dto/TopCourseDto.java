@@ -1,5 +1,7 @@
 package com.example.lms.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +16,7 @@ public class TopCourseDto {
   private String topic;
   private String category;
   private String level;
-  private String rating;
+  private BigDecimal rating;
   private Long enrollmentCount;
   private Long completedCount;
   private Long viewCount;
