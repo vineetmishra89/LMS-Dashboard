@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,7 +62,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     e.setUpdatedTs(OffsetDateTime.now());
     e.setCreatedBy(userId);
     e.setUpdatedBy(userId);
-    e.setEnrollmentDetailsList(new ArrayList<>());
+    e.setEnrollmentDetailsList(new HashSet<>());
 
     if (courseSummary.getLmsTrainingDetails() != null) {
       for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
@@ -160,7 +157,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollment.setUpdatedBy(userId);
         enrollment.setEnrolledByEmailId(userId);
 
-        List<EnrollmentDetails> detailsList = new ArrayList<>();
+        Set<EnrollmentDetails> detailsList = new HashSet<>();
         if (courseSummary.getLmsTrainingDetails() != null) {
           for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
 
@@ -199,7 +196,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
   @Override
   @Transactional
   public void unEnroll(Long enrollmentId) {
-    enrollmentRepository.deleteEnrollDetailByEnrollmentId(enrollmentId);
+    enrollmentDetailsRepository.deleteEnrollDetailByEnrollmentId(enrollmentId);
     enrollmentRepository.deleteEnrollMappingByEnrollmentId(enrollmentId);
   }
 }

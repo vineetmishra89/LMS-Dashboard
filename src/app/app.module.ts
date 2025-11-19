@@ -97,6 +97,7 @@ import { ChipModule } from 'primeng/chip';
 import { environment } from '../environments/environment';
 import { CarouselModule } from 'primeng/carousel';
 import { Globals } from './components/shared/globals';
+import { OrderByPipe } from './pipes/order-by.pipe';
 
 @NgModule({
   declarations: [
@@ -171,6 +172,7 @@ import { Globals } from './components/shared/globals';
     SafeHtmlPipe,
     DurationPipe,
     ProgressPipe,
+    OrderByPipe,
 
     // PWA Support
     ServiceWorkerModule.register('ngsw-worker.js', {

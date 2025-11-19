@@ -1,4 +1,6 @@
-<div style="">
+<div>
+  @if(trendingCourses?.length > 0) {
+
   <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
     Trending Course
   </div>
@@ -61,6 +63,7 @@
       </div>
     </ng-template>
   </p-carousel>
+  } @if(topSearched?.length > 0) {
 
   <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
     Top Searched
@@ -125,6 +128,7 @@
       </div>
     </ng-template>
   </p-carousel>
+  } @if(topRated?.length > 0) {
 
   <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
     Top Rated
@@ -189,6 +193,7 @@
       </div>
     </ng-template>
   </p-carousel>
+  } @if(technical?.length > 0) {
 
   <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
     Technical
@@ -253,6 +258,7 @@
       </div>
     </ng-template>
   </p-carousel>
+  } @if(behavioral?.length > 0) {
 
   <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
     Behavioral
@@ -317,6 +323,7 @@
       </div>
     </ng-template>
   </p-carousel>
+  } @if(functional?.length > 0) {
 
   <div style="font-size: 20px; margin-bottom: 10px; margin-left: 50px; margin-top: 10px">
     Functional
@@ -381,6 +388,7 @@
       </div>
     </ng-template>
   </p-carousel>
+  }
 
   <div style="background-color: #2c2c2c; height: 100px; margin: 20px -20px -20px -20px">
     <div></div>

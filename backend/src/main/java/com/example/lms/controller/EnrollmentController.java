@@ -34,7 +34,8 @@ public class EnrollmentController {
 
   @GetMapping("/{enrollmentId}")
   public EnrollmentMapping getById(@PathVariable Long enrollmentId) {
-    return enrollmentService.getById(enrollmentId);
+    EnrollmentMapping mapping = enrollmentService.getById(enrollmentId);;
+    return mapping;
   }
 
   @PutMapping("/{enrollmentDetailsId}/module/{moduleId}/progress")

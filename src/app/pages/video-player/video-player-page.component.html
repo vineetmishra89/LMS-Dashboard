@@ -3,21 +3,11 @@
     <!-- <button class="back-button" (click)="goBack()">
       ← Back to Courses
     </button> -->
-    <h1 *ngIf="course">{{ course.title }}</h1>
+   
   </div>
-
   <div style="display: flex;">
     <div style="width: 70vw; padding: 20px; display: flex;
     flex-direction: column" class="content" *ngIf="!isLoading && course">
-      <!-- <app-video-player
-        [videoUrl]="
-          course.lmsTrainingDetails[0].videoUrl || course.lmsTrainingDetails[0].trainingLink
-        "
-        [courseId]="course.trainingId"
-        [lessonId]="course.lmsTrainingDetails[0].moduleId"
-        [course]="course"
-      >
-      </app-video-player> -->
       <div *ngIf="videoPageReady; else loadingTemplate">
       <app-video-player
         *ngIf="selectedEnrollmentModule && playCourseData"
@@ -25,6 +15,7 @@
         [courseId]="course.trainingId"
         [lessonId]="selectedModule.moduleId"
         [selectedEnrollmentModule]="selectedEnrollmentModule"
+        (currentVideCompleted)="currentVideCompleted($event)"
         (videoErrorChange)="onVideoErrorChange($event)"
         (showSignInPromptChange)="onShowSignInPromptChange($event)"
       >
@@ -37,13 +28,11 @@
           <p>Loading video...</p>
         </div>
       </ng-template>
-
       <div class="course-info">
-        <h2>{{ course.title }}</h2>
-        <p *ngIf="course.description">{{ course.description }}</p>
+        <h2>{{ course.topics }}</h2>
+        <p *ngIf="course.details">{{ course.details }}</p>
         <div class="meta">
-          <span class="instructor">Instructor: {{ course.instructorName }}</span>
-          <span class="duration">Duration: {{ course.durationMinutes }} minutes</span>
+          <span class="duration">Duration: {{ course.duration }} Hours</span>
           <span class="category">Category: {{ course.category }}</span>
         </div>
       </div>
@@ -64,20 +53,17 @@
     </div>
     <div class="right" style="width: 30vw">
       <ul style="list-style: none">
-        @for(item of playCourseData?.lmsTrainingDetails; track item; let i = $index) {
-        <li (click)="moduleSelected(item, i)"
-          style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300); color: #292b2d"
-          class="{{
-            item.status === 'Completed'  || i === 0 ? 'color-active' : 'color-disabled'
-          }} {{item.moduleId === selectedModule.moduleId ? 'selected-module' : ''}}"
-        >
-          Module {{ i + 1 + ':  ' }} {{ item.details }}
+        @for(item of enrollmentMapping?.enrollmentDetailsList | orderBy:'moduleId':'asc'; track item; let i = $index) {
+        <li (click)="moduleSelected(item.courseDetail, i, item.status)"
+          style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300);"
+          class="{{ item.status === 'COMPLETED' || item.status === 'Completed'   || i === 0 ? 'color-active' : 'color-disabled' }}
+          {{item.moduleId === selectedModule.moduleId ? 'selected-module' : ''}}" >
+          Module {{ i + 1 + ':  ' }} {{ item.courseDetail.details }}
         </li>
         }
       </ul>
     </div>
   </div>
-
   <div class="loading" *ngIf="isLoading">
     <div class="spinner"></div>
     <p>Loading course...</p>
