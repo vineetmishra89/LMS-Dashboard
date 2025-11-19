@@ -5,7 +5,7 @@
 }
 <div>
   <div>
-    <p-tabView class="admin-tab-view">
+    <p-tabView class="admin-tab-view" [(activeIndex)]="activeTabIndex">
       <p-tabPanel>
         <ng-template pTemplate="header">
           <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
@@ -110,33 +110,22 @@
           <div></div>
         </div>
       </p-tabPanel>
-      <!-- <p-tabPanel>
-            <ng-template pTemplate="header">
-              <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
-                <span class="font-bold white-space-nowrap m-0"> Progress </span>
-                <span class="pi pi-chart-line" style="margin-left: 8px"></span>
-              </div>
-            </ng-template>
-            <div>
-              <ng-container *ngTemplateOutlet="metrics"></ng-container>
-            </div>
-          </p-tabPanel>
-          <p-tabPanel>
-            <ng-template pTemplate="header">
-              <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
-                <span class="font-bold white-space-nowrap m-0"> Metrics </span>
-                <span class="pi pi-chart-line" style="margin-left: 8px"></span>
-              </div>
-            </ng-template>
-            <div>
-              <ng-container *ngTemplateOutlet="metrics"></ng-container>
-            </div>
-          </p-tabPanel> -->
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <div class="flex align-items-center gap-2" style="display: flex; align-items: center">
+            <span class="font-bold white-space-nowrap m-0"> Metrics </span>
+            <span class="pi pi-chart-line" style="margin-left: 8px"></span>
+          </div>
+        </ng-template>
+        <div>
+          <app-metrics-panel 
+            [metricsService]="ropmMetricsService" 
+            mode="hierarchy">
+          </app-metrics-panel>
+        </div>
+      </p-tabPanel>
     </p-tabView>
   </div>
 </div>
 
-<ng-template #metrics>
-  <div style="margin: 5px 10px 30px 10px">Individual | Group wise</div>
-</ng-template>
 <p-toast />
