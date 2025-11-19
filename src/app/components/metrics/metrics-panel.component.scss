@@ -1,23 +1,5 @@
-.metrics-table-container {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  padding: 20px 10px;
-}
-
-.metrics-table {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.metrics-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 15px;
-  color: #333;
-}
+// Remove component-level overrides to allow global styles.scss to apply
+// Global styles.scss already defines .metrics-table-container with 2-column flex layout
 
 .no-records {
   text-align: center;
