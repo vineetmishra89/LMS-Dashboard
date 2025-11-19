@@ -12,12 +12,17 @@ import { CourseService } from '../../services/course.service';
 import { CalendarModule } from 'primeng/calendar';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { TagModule } from 'primeng/tag';
+import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import { Globals } from '../shared/globals';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { EnrollmentService } from '../../services/enrollment.service';
 @Component({
   selector: 'app-lnd-admin',
   standalone: true,
   imports: [TabViewModule, DropdownModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
   templateUrl: './lnd-admin.html',
-  styleUrl: './lnd-admin.scss'
+  styleUrl: './lnd-admin.scss',
+  providers: [MessageService, ConfirmationService]
 })
 export class LndAdminComponent implements OnInit {
   cities: any[] = [];
@@ -40,42 +45,38 @@ export class LndAdminComponent implements OnInit {
   filterData: any = null;
   trainingNameList: any = [];
 
+  filterFormGroup2: FormGroup | undefined;
+   enrollmentService = inject(EnrollmentService);
+       messageService = inject(MessageService);
+       confirmationService = inject(ConfirmationService);
+       globals = inject(Globals);
+      filterData2: any = null;
+      trainingNameList2: any = [];
+      searchedCourse: any[] = [];
+      
+    suggestions: any[] | undefined;
+    selectedTrainingName: any | undefined;
+    selectedUserTraining: any[] = [];
+    roEmailId = '';
+    sbuList: string[] = [];
+    projectList: string[] = [];
+  
+
   ngOnInit(): void {
-    this.loadForm();
+    const userId = localStorage.getItem('userId');
+    this.roEmailId = this.globals.getUser().emailId;
+    this.loadForm1();
     this.getCourseSearchList();
 
-    this.groupType = [
-      { name: 'Business Unit', code: 'group' },
-      { name: 'Employee', code: 'individual'},
-      { name: 'Department', code: 'department'},
-      { name: 'Team', code: 'team'}
-    ]
-    this.users = [
-      { name: 'abc@iris', code: 'NY', type: 'individual' },
-      { name: 'dec@iris', code: 'RM', type: 'individual' },
-      { name: 'xyz@iris', code: 'LDN', type: 'individual' },
-      { name: 'Ankit Bansal', code: 'IST', type: 'individual' },
-      { name: 'Reshmi Cp', code: 'PRS', type: 'individual' },
-      { name: 'SBU1', code: 'sbu1', type: 'group'},
-      { name: 'SBU2', code: 'sbu2', type: 'group'},
-      { name: 'ES', code: 'es', type: 'group'},
-      { name: 'HRBU', code: 'hr', type: 'department'},
-      { name: 'Finance', code: 'hr1', type: 'department'},
-      { name: 'Talent Management', code: 'hr2', type: 'department'},
-      { name: 'SFRM', code: 'sfrm', type: 'team'},
-      { name: 'Credit Risk', code: 'cr', type: 'team'},
-      { name: 'Model Risk', code: 'msfrm', type: 'team'}
-    ];
-    this.trainings = [
-      { name: 'React Js', code: 'React' },
-      { name: 'Angular Js', code: 'angular' },
-      { name: 'Javascript', code: 'javascript' }
-    ];
-
     this.loadMetricsData();
+
+    this.loadForm();
+    this.getSbus();
+    this.getUser();
+    this.getCourseSearchList();
   }
 
-  loadForm() {
+  loadForm1() {
 
     this.filterFormGroup = new FormGroup({
       categoryList: new FormControl(null),
@@ -172,9 +173,6 @@ export class LndAdminComponent implements OnInit {
     //   alert(e);
   }
 
-  add() {
-
-  }
 
   loadMetricsData() {
     this.metricsService.getMetrics({}).subscribe({
@@ -185,6 +183,141 @@ export class LndAdminComponent implements OnInit {
     })
 
   }
+
+     
+   loadForm() {
+    
+    this.filterFormGroup2 = new FormGroup({
+      selectedSbus: new FormControl([]),
+      selectedProjects: new FormControl([]),
+      selectedUsers: new FormControl([]),
+      selectedTrainingName: new FormControl([])
+    })
+   }
+  
+      getSbus() {
+        this.courseService.getSbusByUser(this.roEmailId).subscribe({
+          next: (res) => {
+            console.log('SBUs:', res);
+            this.sbuList = res;
+          },
+          error: (err) => {
+            console.error('Error fetching SBUs:', err);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load SBUs' });
+          }
+        });
+      }
+  
+      onSbuChange() {
+        const selectedSbus = this.filterFormGroup2?.get('selectedSbus')?.value;
+        console.log('Selected SBUs:', selectedSbus);
+        
+        this.filterFormGroup2?.get('selectedProjects')?.setValue([]);
+        this.filterFormGroup2?.get('selectedUsers')?.setValue([]);
+        
+        if (selectedSbus && selectedSbus.length > 0) {
+          this.courseService.getProjectsByUserAndSbus(this.roEmailId, selectedSbus).subscribe({
+            next: (res) => {
+              console.log('Projects:', res);
+              this.projectList = res;
+            },
+            error: (err) => {
+              console.error('Error fetching projects:', err);
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load projects' });
+            }
+          });
+        } else {
+          this.courseService.getProjectsByUserAndSbus(this.roEmailId).subscribe({
+            next: (res) => {
+              console.log('Projects:', res);
+              this.projectList = res;
+            },
+            error: (err) => {
+              console.error('Error fetching projects:', err);
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load projects' });
+            }
+          });
+        }
+        
+        this.getUser();
+      }
+  
+      onProjectChange() {
+        console.log('Project changed');
+        this.filterFormGroup2?.get('selectedUsers')?.setValue([]);
+        this.getUser();
+      }
+  
+      getUser() {
+        const selectedProjects = this.filterFormGroup2?.get('selectedProjects')?.value;
+        
+        const request = {
+          roEmailId: this.roEmailId,
+          projects: selectedProjects && selectedProjects.length > 0 ? selectedProjects : null
+        };
+        
+        this.courseService.getEmployeesForROPMDashboard(request).subscribe({
+          next: (res) => {
+            console.log('Employees:', res);
+            this.users = res;
+          },
+          error: (err) => {
+            console.error('Error fetching employees:', err);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load employees' });
+          }
+        });
+      }
+  
+      add() {
+        if (this.filterFormGroup2?.get('selectedUsers')?.value?.length === 0) {
+          this.messageService.add({ severity: 'warn', summary: '', detail: 'Please select employee' });
+          return;
+        }if (this.filterFormGroup2?.get('selectedTrainingName')?.value?.length == 0) {
+          this.messageService.add({ severity: 'warn', summary: '', detail: 'Please select training name' });
+          return;
+        }
+  
+        this.selectedUserTraining = this.filterFormGroup2?.get('selectedUsers')?.value;
+      }
+  
+      search2(event: AutoCompleteCompleteEvent) {
+        this.suggestions = [...Array(10).keys()].map(item => event.query + '-' + item);
+    }
+  
+    bulkEnroll() {
+      this.loading = true;
+      
+      const data = {
+        userId: this.roEmailId,
+        emailIdList: this.filterFormGroup2?.get('selectedUsers')?.value.map((x: any) => x.emailId),
+        courseIdList: this.filterFormGroup2?.get('selectedTrainingName')?.value.map((x: any) => x.trainingId),
+        enrollmentType: 'Mandatory'
+      }
+      this.enrollmentService.bulkEnroll(data).subscribe({
+        next :(res) => {
+          this.loading = false;
+          this.filterFormGroup2?.reset();
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successful' });
+  
+        }, error: (err: Error) => {
+          this.loading = false;
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+        }
+      });
+    }
+  
+  
+      getCourseSearchList2() {
+        this.courseService.getCourseSearchList().subscribe({
+          next: (res) => {
+            console.log(res);
+            this.filterData = res;
+            //this.filterData.trainingNameList = res.trainingNameList;
+           
+            
+          }
+        })
+      }
 
 
 }

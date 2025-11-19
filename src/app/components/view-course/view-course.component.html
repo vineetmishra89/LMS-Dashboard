@@ -13,7 +13,10 @@
         <p-button label="Enroll" class="enroll-resume-btn" (click)="enroll($event)" />
         } @else() {
         <p-button label="{{progress === true ? 'Start' : 'Continue'}}" class="enroll-resume-btn" (click)="resume()" />
-        <p-button label="Withdraw" class="enroll-resume-btn" style="margin-top: 20px" (click)="unenroll($event)" />
+        <div style="margin-top: 20px">
+          <p-button label="Withdraw" class="enroll-resume-btn" severity="danger" (click)="unenroll($event)" />
+        </div>
+        
         }
       </div>
       <div class="header" style="padding-bottom: 30px">
@@ -114,9 +117,9 @@
         <div style="font-size: 18px; font-weight: bold">This course includes:</div>
         <div class="flex-container" style="width: 400px; margin-top: 10px">
           <div class="flex-item">{{courseDetail?.duration}} Hours duration</div>
-          <div class="flex-item">
+          <!-- <div class="flex-item">
             <a href="/" style="color: var(--primary-700)">Material Link</a>
-          </div>
+          </div> -->
         </div>
       </div>
       <div style="margin-top: 30px">
@@ -133,18 +136,18 @@
         <div style="font-size: 18px; font-weight: bold">Course Content</div>
         <div style="width: 90vw; margin-top: 10px">
           <ul style="list-style: none">
-            @for(content of courseDetail?.lmsTrainingDetails; track content) {
+            @for(content of courseDetail?.enrollmentMappings[0].enrollmentDetailsList; track content) {
               <li class="playlist-section">
                 <div style="display: flex; align-items: center">
                   <i class="pi pi-youtube"></i>
                   <span class="playlist-item">
-                    {{content?.details}}
+                    {{content?.courseDetail?.details}}
                   </span>
                 </div>
                 <div style="display: flex; align-items: center">
                   <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
                   <span style="font-size: 10px; margin-left: 10px; width: 60px">
-                    {{content?.duration}} mins
+                    {{content?.courseDetail?.duration}} mins
                   </span>
                 </div>
               </li>

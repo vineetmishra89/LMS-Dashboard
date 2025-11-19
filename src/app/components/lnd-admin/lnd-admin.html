@@ -21,38 +21,98 @@
         </ng-template>
         <div>
           <div>
-            <p-dropdown
-              [options]="groupType"
-              [(ngModel)]="selectedGroupType"
-              optionLabel="name"
-              (onChange)="onGroupTypeChange($event)"
-              styleClass="assign-training-multiselect"
-              placeholder="Select Group/Individual"
-              style="margin-right: 10px; width: 300px"
-            />
-            <p-multiSelect
-              [options]="users"
-              [(ngModel)]="selectedUsers"
-              optionLabel="name"
-              [selectAll]="null"
-              styleClass="assign-training-multiselect"
-              placeholder="Search by name, email, empcode"
-              style="margin-right: 10px; width: 300px"
-            />
-            <p-multiSelect
-              [options]="trainings"
-              [(ngModel)]="selectedTrainings"
-              showToggleAll="false"
-              styleClass="assign-training-multiselect"
-              optionLabel="name"
-              style="margin-right: 10px; width: 300px"
-              placeholder="Search by training name, category, level"
-            />
-            <button pButton pRipple label="Add" class="p-button-primary" (click)="add()"></button>
-            
+            <form [formGroup]="filterFormGroup2" class="ro-pm-form-grid">
+              <p-multiSelect
+                [options]="sbuList"
+                formControlName="selectedSbus"
+                [selectAll]="null"
+                styleClass="ro-pm-multiselect"
+                placeholder="Select BU"
+                (onChange)="onSbuChange()"
+              />
+              <p-multiSelect
+                [options]="projectList"
+                formControlName="selectedProjects"
+                [selectAll]="null"
+                styleClass="ro-pm-multiselect"
+                placeholder="Select Project"
+                (onChange)="onProjectChange()"
+              />
+              <p-multiSelect
+                [options]="users"
+                formControlName="selectedUsers"
+                optionLabel="empName"
+                filterBy="empName,empId,emailId"
+                [selectAll]="null"
+                styleClass="ro-pm-multiselect"
+                placeholder="Search by Employee Name, Email Id, Emp Code"
+              />
+              <p-multiSelect
+                [options]="filterData?.trainingNameList"
+                formControlName="selectedTrainingName"
+                optionLabel="trainingName"
+                filterBy="trainingName"
+                [selectAll]="null"
+                styleClass="ro-pm-multiselect"
+                placeholder="Search by Training Name"
+              />
+              <div class="ro-pm-button-row">
+                <button
+                  pButton
+                  pRipple
+                  label="Assign Training"
+                  class="p-button-primary"
+                  [disabled]="filterFormGroup2?.value?.selectedUsers?.length === 0 || filterFormGroup2?.value?.selectedTrainingName?.length === 0"
+                  (click)="bulkEnroll()"
+                ></button>
+              </div>
+            </form>
+            @if(filterFormGroup2?.value?.selectedUsers?.length > 0) {
+            <div style="margin: 30px 0px 15px 15px">
+              <span style="font-weight: bold; font-size: 16px;">Selected Employees</span>
+              <span> ({{ filterFormGroup2?.value?.selectedUsers?.length }})</span>
+            </div>
+            <div class="selected-section">
+              @for(user of filterFormGroup2?.value?.selectedUsers; track user) {
+              <div [title]="user.emailId">{{ user.empName }}</div>
+              }
+            </div>
+            } @if(filterFormGroup2?.value?.selectedTrainingName?.length > 0) {
+            <div style="margin: 30px 0px 15px 15px">
+              <span style="font-weight: bold; font-size: 16px;">Selected Trainings</span>
+              <span> ({{ filterFormGroup2?.value?.selectedTrainingName?.length }})</span>
+            </div>
+            <div class="selected-section">
+              @for(training of filterFormGroup2?.value?.selectedTrainingName; track training) {
+              <div>{{ training.trainingName }}</div>
+              }
+            </div>
+            }
           </div>
-          <div></div>
-          <div></div>
+          <div style="margin-top: 20px">
+            @if(selectedUserTraining?.length > 0) {
+            <p-table [value]="selectedUserTraining" [tableStyle]="{ 'min-width': '50rem' }">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Emp Code</th>
+                  <th>Emp Name</th>
+                  <th>Designation</th>
+                  <th>Email Id</th>
+                  <th>Training Name</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-product>
+                <tr>
+                  <td>{{ product.empId }}</td>
+                  <td>{{ product.empName }}</td>
+                  <td>{{ product.empDesignation }}</td>
+                  <td>{{ product.emailId }}</td>
+                  <td>{{ selectedTrainingName?.trainingName }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+            }
+          </div>
         </div>
       </p-tabPanel>
       <!-- <p-tabPanel>
@@ -109,8 +169,8 @@
         placeholder="Select a Top Record Number"
         [showClear]="true" 
       />
-      <p-button label="Search" icon="pi pi-search" [loading]="loading" (click)="search()" />
-      <p-button label="Download" style="margin-left: 20px" icon="pi pi-download" [loading]="downloading" (click)="download()" />
+      <p-button label="" icon="pi pi-search" [loading]="loading" (click)="search2()" />
+      <p-button label="" style="margin-left: 20px" icon="pi pi-download" [loading]="downloading" (click)="download()" />
       @if(filterFormGroup?.get('dateRange')?.value === null) {
        <div style="display: flex; align-items: center; margin-left: 20px; color: #e24c4c; font-size: 13px">
         (Default showing last 60 days records)
