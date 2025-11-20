@@ -109,11 +109,13 @@ export class ViewCourseComponent implements OnInit {
         if (res) {
           this.courseDetail = res;
           this.enrollment = res.enrollmentMappings[0];
-          this.totalLearners = res.enrollmentMappings.filter((x: any) => x.status === 'Completed').length;
+          this.totalLearners = res.enrollmentMappings.filter((x: any) => x.status.toUpperCase() === 'COMPLETED').length;
           this.ratings = Math.floor(Number(res.rating));
           this.hasEnrolled = res.enrollmentMappings.find((x: any) => x.userId === this.userId) || false;
           this.progress = res.lmsTrainingDetails.every((x: any) => x.moduleProgressPercentage === null);
         }
+      }, error: (err: Error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err['message'] });
       }
     })
   }

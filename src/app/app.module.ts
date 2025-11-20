@@ -86,7 +86,7 @@ import { LazyLoadDirective } from './directives/lazy-load.directive';
 import { InViewportDirective } from './directives/in-viewport.directive';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 
-import { PrimeNGConfig } from 'primeng/api';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -98,6 +98,7 @@ import { environment } from '../environments/environment';
 import { CarouselModule } from 'primeng/carousel';
 import { Globals } from './components/shared/globals';
 import { OrderByPipe } from './pipes/order-by.pipe';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -173,6 +174,7 @@ import { OrderByPipe } from './pipes/order-by.pipe';
     DurationPipe,
     ProgressPipe,
     OrderByPipe,
+    ToastModule,
 
     // PWA Support
     ServiceWorkerModule.register('ngsw-worker.js', {
@@ -210,6 +212,7 @@ import { OrderByPipe } from './pipes/order-by.pipe';
     AuthGuard,
     RoleGuard,
     UnsavedChangesGuard,
+    MessageService,
     
     // HTTP Interceptors
     {
