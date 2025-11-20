@@ -1,17 +1,20 @@
-import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit, inject } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoProgressService } from '../../services/video-progress.service';
 import { UserService } from '../../services/user.service';
 import { CourseMaster } from '../../models/course';
 import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
+import { ActivatedRoute } from '@angular/router';
+import { CourseService } from '../../services/course.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-video-player',
   templateUrl: './video-player.component.html',
   styleUrls: ['./video-player.component.scss']
 })
-export class VideoPlayerComponent implements OnInit, OnDestroy {
+export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit   {
   @Input() videoUrl!: string;
   @Input() courseId!: number;
   @Input() lessonId!: number;
@@ -20,6 +23,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   @Output() videoErrorChange = new EventEmitter<boolean>();
   @Output() showSignInPromptChange = new EventEmitter<boolean>();
   completed: boolean = false;
+   route = inject(ActivatedRoute);
+   courseService = inject(CourseService);
+   messageService = inject(MessageService);
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
   
@@ -48,7 +54,18 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     console.log('Load video progress');
     this.loadVideoProgress();
     this.setupProgressTracking();
+    this.getCourseMaterial();
   }
+
+  
+ngAfterViewInit() {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      this.videoElement.nativeElement.pause();
+    }
+  });
+}
+
   
   ngOnDestroy(): void {
     this.saveCurrentProgress(false);
@@ -211,4 +228,16 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     
     this.lastSavedTime = this.currentTime;
   }
+
+  getCourseMaterial() {
+    const trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
+    this.courseService.getCourseMaterial(trainingId).subscribe({
+      next: (res) => {
+        console.log('course material', res);
+      }, error: (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: error['error']['message'].split('from')[0] });
+      }
+    })
+  }
+
 }

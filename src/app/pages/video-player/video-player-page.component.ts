@@ -75,7 +75,7 @@ export class VideoPlayerPageComponent implements OnInit {
     const statusMap = sortedList.map((item: any) => item.status.toUpperCase() === 'COMPLETED');
     const lastCompletedIndex_map = statusMap.lastIndexOf(true);
     if (lastCompletedIndex_map !== -1) {
-      return lastCompletedIndex_map;
+      return sortedList.length === lastCompletedIndex_map ? lastCompletedIndex_map : lastCompletedIndex_map + 1;
     } else {
       return 0;
     }
@@ -118,7 +118,7 @@ export class VideoPlayerPageComponent implements OnInit {
     if (this.enrollmentMapping) {
       const currentIndex = this.enrollmentMapping.enrollmentDetailsList.findIndex((x: any) => x.moduleId === this.selectedModule?.moduleId);
       if (this.enrollmentMapping.enrollmentDetailsList[currentIndex]) {
-        this.enrollmentMapping.enrollmentDetailsList[currentIndex].status = 'Completed';
+        this.enrollmentMapping.enrollmentDetailsList[currentIndex + 1].status = 'COMPLETED';
         this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
       }
     }

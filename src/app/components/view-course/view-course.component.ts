@@ -21,7 +21,7 @@ import { Globals } from '../shared/globals';
 @Component({
   selector: 'app-view-course',
   standalone: true,
-  imports: [ButtonModule, ProgressSpinnerModule, ConfirmDialogModule , DialogModule   , ToastModule , SkeletonModule,  OverlayPanelModule, InputGroupModule,InputGroupAddonModule  ],
+  imports: [ButtonModule, ProgressSpinnerModule, ConfirmDialogModule, DialogModule, ToastModule, SkeletonModule, OverlayPanelModule, InputGroupModule, InputGroupAddonModule],
   templateUrl: './view-course.component.html',
   styleUrl: './view-course.component.scss',
   providers: [MessageService, ConfirmationService]
@@ -49,10 +49,10 @@ export class ViewCourseComponent implements OnInit {
   enrollment!: EnrollmentMapping;
 
   hasEnrolled: boolean = false;
-  courseRatings: any[] = [{user: 'Ankit Bansal', ratings: 3, when: '3 weeks ago', comments: 'This course is good for intermediate level. Instructor explained topics very well'},
-    {user: 'Vineet Mishra', ratings: 3, when: '1 day ago', comments: 'The instructor is taking a right approach teaching concepts very much to the point, crisp with practical applications and time limit of each lesson.'},
-    {user: 'Satya Prakash Mishra',  ratings: 3, when: 'Today', comments: 'Great Learning so far. Very Clear and detailed information with all resources available.'},
-    {user: 'Rajib Bhattacharya',  ratings: 3, when: '3 months ago', comments: 'Learnt the basics! Thank you so much.'}
+  courseRatings: any[] = [{ user: 'Ankit Bansal', ratings: 3, when: '3 weeks ago', comments: 'This course is good for intermediate level. Instructor explained topics very well' },
+  { user: 'Vineet Mishra', ratings: 3, when: '1 day ago', comments: 'The instructor is taking a right approach teaching concepts very much to the point, crisp with practical applications and time limit of each lesson.' },
+  { user: 'Satya Prakash Mishra', ratings: 3, when: 'Today', comments: 'Great Learning so far. Very Clear and detailed information with all resources available.' },
+  { user: 'Rajib Bhattacharya', ratings: 3, when: '3 months ago', comments: 'Learnt the basics! Thank you so much.' }
   ]
 
   ngOnInit(): void {
@@ -61,16 +61,16 @@ export class ViewCourseComponent implements OnInit {
   }
 
   enroll(event: Event) {
-   // this.hasEnrolled = true;
+    // this.hasEnrolled = true;
     this.loading = true;
-    
+
     const data = {
       userId: this.userId,
       courseId: Number(this.trainingId),
       enrollmentType: 'VOLUNTARY'
     }
     this.enrollmentService.enroll(data).subscribe({
-      next :(res) => {
+      next: (res) => {
         this.message = 'Enrollment Successful.'
         this.visible = true;
         this.hasEnrolled = true;
@@ -83,9 +83,9 @@ export class ViewCourseComponent implements OnInit {
 
   unenroll(event: Event) {
     this.loading = true;
-    
+
     this.enrollmentService.unenroll(this.enrollment.trainingEnrollmentId).subscribe({
-      next :(res) => {
+      next: (res) => {
         this.message = 'Unenrollment Successful.'
         this.hasEnrolled = false;
         this.visible = true;
@@ -106,45 +106,27 @@ export class ViewCourseComponent implements OnInit {
     this.trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
     this.courseService.getCourseDetailsById(this.userId, this.trainingId).subscribe({
       next: (res) => {
-        
-        this.getCourseMaterial();
-
-        this.courseDetail = res;
-        this.enrollment = res.enrollmentMappings[0];
-        this.totalLearners = res.enrollmentMappings.filter((x: any)=> x.status === 'Completed').length;
-        this.ratings = Math.floor(Number(res.rating));
-        
-        //this.dataSharingService.getData().subscribe({
-          //next: (res) => {
-            //this.courseDetail.trainerNames = res.names,
-            //this.courseDetail.trainerEmails = res.emails.split(',')
-           
-          //}
-        //})
-     //   this.dataSharingService.sendData(null);
-        this.hasEnrolled = res.enrollmentMappings.find((x: any) => x.userId === this.userId) || false;
-        this.progress = res.lmsTrainingDetails.every((x: any) => x.moduleProgressPercentage === null);
-    //    this.loading = false;
+        if (res) {
+          this.courseDetail = res;
+          this.enrollment = res.enrollmentMappings[0];
+          this.totalLearners = res.enrollmentMappings.filter((x: any) => x.status.toUpperCase() === 'COMPLETED').length;
+          this.ratings = Math.floor(Number(res.rating));
+          this.hasEnrolled = res.enrollmentMappings.find((x: any) => x.userId === this.userId) || false;
+          this.progress = res.lmsTrainingDetails.every((x: any) => x.moduleProgressPercentage === null);
+        }
+      }, error: (err: Error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err['message'] });
       }
     })
   }
   numberToStars(n: number): number[] {
     return Array.from({ length: n }, (_, i) => i);
   }
-  
-  convertStringToInt(str: string){ 
-    var Num = parseInt(str); 
+
+  convertStringToInt(str: string) {
+    var Num = parseInt(str);
     return Num;
   }
 
-  getCourseMaterial() {
-    this.trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
-    this.courseService.getCourseMaterial(this.trainingId).subscribe({
-      next: (res) => {
-        console.log(res);
-      }, error: (error) => {
-        console.log(error);
-      }
-    })
-  }
+
 }
