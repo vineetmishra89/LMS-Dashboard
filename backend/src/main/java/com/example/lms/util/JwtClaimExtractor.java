@@ -18,11 +18,12 @@ public class JwtClaimExtractor {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     /**
-     * Extracts username from JWT token.
-     * Tries claims in order: preferred_username, upn, email, name.
+     * Extracts email from JWT token.
+     * Tries claims in order: email, preferred_username, upn, sub, unique_name, username.
+     * Only returns values that look like valid email addresses (contains @ and no spaces).
      * 
      * @param bearerToken JWT token (without "Bearer " prefix)
-     * @return Username if found, null otherwise
+     * @return Email address if found and valid, null otherwise
      */
     public static String extractUsername(String bearerToken) {
         try {
@@ -43,37 +44,41 @@ public class JwtClaimExtractor {
             
             JsonNode claims = objectMapper.readTree(decodedPayload);
             
-            String username = extractClaim(claims, "preferred_username");
-            if (username != null) {
-                logger.debug("Extracted username from preferred_username: {}", username);
-                return username;
+            String[] claimNames = {"email", "preferred_username", "upn", "sub", "unique_name", "username"};
+            
+            for (String claimName : claimNames) {
+                String value = extractClaim(claims, claimName);
+                if (value != null && isValidEmail(value)) {
+                    logger.debug("Extracted email from '{}' claim: {}", claimName, value);
+                    return value;
+                }
+                if (value != null && !isValidEmail(value)) {
+                    logger.debug("Skipping '{}' claim - value '{}' is not a valid email", claimName, value);
+                }
             }
             
-            username = extractClaim(claims, "upn");
-            if (username != null) {
-                logger.debug("Extracted username from upn: {}", username);
-                return username;
-            }
-            
-            username = extractClaim(claims, "email");
-            if (username != null) {
-                logger.debug("Extracted username from email: {}", username);
-                return username;
-            }
-            
-            username = extractClaim(claims, "name");
-            if (username != null) {
-                logger.debug("Extracted username from name: {}", username);
-                return username;
-            }
-            
-            logger.warn("No username claim found in JWT token");
+            logger.warn("No valid email claim found in JWT token. Available claims: {}", 
+                    String.join(", ", claimNames));
             return null;
             
         } catch (Exception e) {
-            logger.error("Error extracting username from JWT: {}", e.getMessage(), e);
+            logger.error("Error extracting email from JWT: {}", e.getMessage(), e);
             return null;
         }
+    }
+    
+    /**
+     * Validates if a string looks like a valid email address.
+     * Checks for presence of @ and absence of spaces.
+     * 
+     * @param value String to validate
+     * @return true if value looks like an email, false otherwise
+     */
+    private static boolean isValidEmail(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return false;
+        }
+        return value.contains("@") && !value.contains(" ");
     }
     
     /**

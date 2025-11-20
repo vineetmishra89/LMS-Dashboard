@@ -1,0 +1,38 @@
+.metrics-table-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px 10px;
+}
+
+.metrics-table {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.metrics-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.no-records {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 14px;
+}
+
+.search-form-group {
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-form-group p-dropdown,
+.search-form-group p-calendar {
+  min-width: 200px;
+}
