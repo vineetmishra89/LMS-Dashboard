@@ -179,8 +179,6 @@ ngAfterViewInit() {
   onTimeUpdate(): void {
     this.currentTime = this.videoElement.nativeElement.currentTime;
     this.progress = (this.currentTime / this.duration) * 100;
-    console.log(this.currentTime, Math.floor(this.progress), this.duration);
-    
   }
   
   private updateSessionWatchTime(): void {

@@ -56,7 +56,9 @@ export class VideoPlayerPageComponent implements OnInit {
         //   this.selectedModule = course.lmsTrainingDetails[0];
 
         this.enrollmentMapping = enrollment;
+        console.log('Enrollment Mapping Detail - '+ this.enrollmentMapping.enrollmentDetailsList);
         const runningCourse = this.getRunningModule(this.enrollmentMapping!.enrollmentDetailsList);
+        console.log('Running Course -'+ runningCourse);
         this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[runningCourse];
         this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[runningCourse].courseDetail;
         console.log('CourseDetail : ' + this.enrollmentMapping!.enrollmentDetailsList[runningCourse].courseDetail);
@@ -74,7 +76,7 @@ export class VideoPlayerPageComponent implements OnInit {
     const sortedList = list.sort((a: any, b: any) => a.moduleId - b.moduleId);
     const statusMap = sortedList.map((item: any) => item.status.toUpperCase() === 'COMPLETED');
     const lastCompletedIndex_map = statusMap.lastIndexOf(true);
-    if (lastCompletedIndex_map !== -1) {
+    if (lastCompletedIndex_map !== -1 && lastCompletedIndex_map <list.length-1) {
       return sortedList.length === lastCompletedIndex_map ? lastCompletedIndex_map : lastCompletedIndex_map + 1;
     } else {
       return 0;
