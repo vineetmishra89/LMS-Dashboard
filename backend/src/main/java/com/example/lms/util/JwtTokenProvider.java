@@ -52,13 +52,15 @@ public class JwtTokenProvider {
             Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
             
             Map<String, Object> claims = new HashMap<>();
+            claims.put("email", emailId);  // Add email claim for robust extraction
+            claims.put("preferred_username", emailId);  // Add for AAD compatibility
             claims.put("name", name);
             claims.put("role", role);
             
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
             
             String token = Jwts.builder()
-                    .subject(emailId)
+                    .subject(emailId)  // Email also in standard 'sub' claim
                     .claims(claims)
                     .issuer(jwtIssuer)
                     .issuedAt(now)
@@ -66,7 +68,7 @@ public class JwtTokenProvider {
                     .signWith(key)
                     .compact();
             
-            logger.info("Generated JWT token for user: {}", emailId);
+            logger.info("Generated JWT token for user: {} with claims: email, preferred_username, name, role", emailId);
             return token;
             
         } catch (Exception e) {
