@@ -5,7 +5,7 @@ import { TagModule } from 'primeng/tag';
 import { Router } from '@angular/router';
 import { CourseService } from '../../services/course.service';
 import { DataSharingService } from '../../services/data-sharing.service';
-import { Globals } from '../shared/globals';
+import { Globals } from '../../core/globals';
 
 @Component({
   selector: 'app-home',

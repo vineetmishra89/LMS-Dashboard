@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { User, UserPreferences } from '../models/user';
 import { ApiService } from './api.service';
-import { Globals } from '../components/shared/globals';
+import { Globals } from '../core/globals';
 
 @Injectable({
   providedIn: 'root'

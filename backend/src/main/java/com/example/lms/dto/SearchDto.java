@@ -33,7 +33,7 @@ public class SearchDto {
 
   private Integer rating;
 
-  private Set<CourseDetail> courseDetailList;
+  private List<CourseDetail> courseDetailList;
 
   private Set<TrainerDto> trainerDetailList;
 

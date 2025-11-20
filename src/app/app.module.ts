@@ -96,7 +96,7 @@ import { ChipModule } from 'primeng/chip';
 // Environment
 import { environment } from '../environments/environment';
 import { CarouselModule } from 'primeng/carousel';
-import { Globals } from './components/shared/globals';
+import { Globals } from './core/globals';
 import { OrderByPipe } from './pipes/order-by.pipe';
 import { ToastModule } from 'primeng/toast';
 

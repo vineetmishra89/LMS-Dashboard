@@ -9,10 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface EnrollmentDetailsRepository extends JpaRepository<EnrollmentDetails, Long> {
 
-  @Modifying(clearAutomatically = true, flushAutomatically = true)
-  @Transactional
   @Query(value="select count(1) from lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING map, lms_schema.LMS_USER_TRNG_ENROLLMENT_DTLS dtls where map.trng_enrl_id=dtls.trng_enrl_id and map.email_id=:userId and dtls.status='Enrolled' and map.trng_id=:trainingId", nativeQuery = true)
-  long countEnrollmentByStatusAndEnrollmentId(@Param("trainingId") Integer trainingId, @Param("userId")String userId);
+  int countEnrollmentByStatusAndEnrollmentId(@Param("trainingId") Integer trainingId, @Param("userId")String userId);
 
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Transactional
@@ -21,7 +19,7 @@ public interface EnrollmentDetailsRepository extends JpaRepository<EnrollmentDet
 
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Transactional
-  @Query(value="update lms_schema.LMS_USER_TRNG_ENROLLMENT_DTLS set status='COMPLETED' where trng_enrl_dtl_id= :enrollmentDetailsId", nativeQuery = true)
+  @Query(value="update lms_schema.LMS_USER_TRNG_ENROLLMENT_DTLS set status='COMPLETED', updated_ts=CURRENT_TIMESTAMP where trng_enrl_dtl_id= :enrollmentDetailsId", nativeQuery = true)
   void updateEnrollmentStatusByEnrollmentDtlId(@Param("enrollmentDetailsId") Long enrollmentDetailsId);
 
 }

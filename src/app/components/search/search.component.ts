@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { CourseService } from '../../services/course.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { Globals } from '../shared/globals';
+import { Globals } from '../../core/globals';
 
 @Component({
   selector: 'app-search',
