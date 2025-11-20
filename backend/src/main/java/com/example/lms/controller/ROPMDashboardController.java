@@ -221,10 +221,16 @@ public class ROPMDashboardController {
         String email = JwtClaimExtractor.extractUsername(token);
         
         if (email == null || email.trim().isEmpty()) {
-            logger.error("Unable to extract email from JWT token");
-            throw new IllegalArgumentException("Unable to extract email from JWT token");
+            logger.error("Unable to extract email from JWT token - no valid email claim found");
+            throw new IllegalArgumentException("JWT token does not contain a valid email claim");
         }
         
+        if (!email.contains("@") || email.contains(" ")) {
+            logger.error("Extracted value '{}' from JWT is not a valid email address", email);
+            throw new IllegalArgumentException("JWT token contains invalid email format: " + email);
+        }
+        
+        logger.debug("Successfully extracted and validated email from JWT: {}", email);
         return email;
     }
     

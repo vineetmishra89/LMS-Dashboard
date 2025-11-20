@@ -7,6 +7,7 @@ import { CourseMaster } from '../../models/course';
 import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
 import { ActivatedRoute } from '@angular/router';
 import { CourseService } from '../../services/course.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-video-player',
@@ -24,6 +25,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit   
   completed: boolean = false;
    route = inject(ActivatedRoute);
    courseService = inject(CourseService);
+   messageService = inject(MessageService);
   
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
   
@@ -233,7 +235,7 @@ ngAfterViewInit() {
       next: (res) => {
         console.log('course material', res);
       }, error: (error) => {
-        console.log(error);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: error['error']['message'].split('from')[0] });
       }
     })
   }
