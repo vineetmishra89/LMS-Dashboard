@@ -56,12 +56,9 @@ export class VideoPlayerPageComponent implements OnInit {
         //   this.selectedModule = course.lmsTrainingDetails[0];
 
         this.enrollmentMapping = enrollment;
-        console.log('Enrollment Mapping Detail - '+ this.enrollmentMapping.enrollmentDetailsList);
         const runningCourse = this.getRunningModule(this.enrollmentMapping!.enrollmentDetailsList);
-        console.log('Running Course -'+ runningCourse);
         this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[runningCourse];
         this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[runningCourse].courseDetail;
-        console.log('CourseDetail : ' + this.enrollmentMapping!.enrollmentDetailsList[runningCourse].courseDetail);
         this.videoPageReady = true;
         console.log("Video player page loaded successfully");
       },
