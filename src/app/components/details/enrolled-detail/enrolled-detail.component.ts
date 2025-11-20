@@ -6,7 +6,7 @@ import { CourseDetail, CourseMaster } from '../../../models/course';
 import { CourseService } from '../../../services/course.service';
 import { EnrollmentService } from '../../../services/enrollment.service';
 import { EnrollmentMapping } from '../../../models/enrollments';
-import { Globals } from '../../shared/globals';
+import { Globals } from '../../../core/globals';
 
 @Component({
   selector: 'app-enrolled-detail',

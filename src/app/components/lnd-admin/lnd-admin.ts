@@ -13,7 +13,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { TagModule } from 'primeng/tag';
 import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
-import { Globals } from '../shared/globals';
+import { Globals } from '../../core/globals';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { EnrollmentService } from '../../services/enrollment.service';
 @Component({

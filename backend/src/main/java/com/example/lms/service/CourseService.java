@@ -88,14 +88,22 @@ public class CourseService {
   }
 
   public CourseSummary search(Long courseId, String userId) {
+    CourseSummary courseSummary= null;
     try{
-      return courseRepository.findByIdAndUserId(courseId,userId);
+      EnrollmentMapping enrollmentMapping = enrollmentRepository.getEnrollmentMappingByUserIdAndTrainingId(userId,courseId);
+      courseSummary = courseRepository.findCourseSummaryByTrainingId(courseId);
+      if(enrollmentMapping!=null){
+        List<EnrollmentMapping> enrollmentMappings = new ArrayList<>();
+        enrollmentMappings.add(enrollmentMapping);
+        courseSummary.setEnrollmentMappings(enrollmentMappings);
+      }
     }catch(ResourceNotFoundException ex){
       throw ex;
     }catch(Exception ex){
       log.error("Database error while fetching course", ex);
       throw new DatabaseException("Failed to fetch course with id: " + courseId, ex);
     }
+    return courseSummary;
   }
 
   public List<CourseCardDetailDto> getCourseCardList(String viewType, String category) {

@@ -4,6 +4,8 @@
       #videoElement
       [src]="videoUrl"
       controls
+      controlsList="nodownload norestore"
+      (contextmenu)="disableRightClick($event)"
       autoplay
       muted
       preload="metadata"

@@ -16,8 +16,16 @@ public interface CourseRepository extends JpaRepository<CourseSummary, Long>, Jp
   @EntityGraph(value = "CourseSummary.withDetails", type = EntityGraph.EntityGraphType.LOAD)
   List<CourseSummary> findAll();
 
+  @Query("select cs from CourseSummary cs where cs.trainingId = :trainingId")
+  CourseSummary findCourseSummaryByTrainingId(@Param("trainingId") Long trainingId);
+
+  @EntityGraph(attributePaths = {
+    "lmsTrainingDetails",
+    "enrollmentMappings",
+    "enrollmentMappings.enrollmentDetailsList"
+  })
   @Query("select distinct cs from CourseSummary cs left join fetch cs.lmsTrainingDetails cd left join fetch cs.enrollmentMappings em left join fetch em.enrollmentDetailsList emd where cs.trainingId = :trainingId and em.userId=:userId")
-  CourseSummary findByIdAndUserId(@Param("trainingId") Long trainingId, @Param("userId") String userId);
+  CourseSummary findEnrolledCourseByIdAndUserId(@Param("trainingId") Long trainingId, @Param("userId") String userId);
 
   // Alternative fetch-join (handy for ad-hoc calls)
   @Query("select distinct cm from CourseSummary cm left join fetch cm.details")

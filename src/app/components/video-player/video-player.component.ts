@@ -158,10 +158,10 @@ ngAfterViewInit() {
 
   onVideoEnded(): void {
     console.log("video ended. Marking the module progress completed");
-    this.currentVideCompleted.emit(true)
     this.onTimeUpdate();
     this.saveCurrentProgress(true);
     this.completed = false;
+    this.currentVideCompleted.emit(true)
   }
   
   onPlay(): void {
@@ -240,4 +240,7 @@ ngAfterViewInit() {
     })
   }
 
+  disableRightClick(event: MouseEvent) {
+    event.preventDefault();
+  }
 }

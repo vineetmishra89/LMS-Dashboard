@@ -5,7 +5,7 @@
 }
 
 
-@if(courseDetail) {
+@if(courseSummary) {
   <div>
     <div style="margin: -20px -20px; background-color: #2c2c2c; padding: 20px 50px; position: relative">
       <div style="position: absolute; top: 140%; right: 5%; display: flex; flex-direction: column">
@@ -21,13 +21,13 @@
       </div>
       <div class="header" style="padding-bottom: 30px">
         <div style="font-size: 20px; font-weight: bold; color: #fff">
-          {{courseDetail?.topics}}
+          {{courseSummary?.topics}}
         </div>
         <div style="font-size: 16px; margin-top: 20px; color: #fff">
-          {{courseDetail?.details}}
+          {{courseSummary?.details}}
         </div>
         <div style="font-size: 12px; margin-top: 20px; color: #fff">Trainer Name: 
-            <span (mouseover)="op.toggle($event)" style="color: #fff">{{courseDetail.trainerNames}}</span>
+            <span (mouseover)="op.toggle($event)" style="color: #fff">{{courseSummary.trainerNames}}</span>
             <!-- <p-button (onClick)="op.toggle($event)" icon="pi pi-share-alt" label="Share" /> -->
         <p-overlayPanel #op>
             <div style="width: 300px">
@@ -35,7 +35,7 @@
                     <span style="font-size: 12px;">Email address:</span>
                     <p-inputGroup style="margin-top: 5px">
                       <div style="display: flex; flex-direction: column; width: 100%">
-                        @for(item of courseDetail.trainerEmails; track item) {
+                        @for(item of courseSummary.trainerEmails; track item) {
                           <input pInputText value="{{item}}" readonly style="width: 100%; border: 0px"/>
                         }
                       </div>
@@ -116,7 +116,7 @@
       <div style="margin-top: 15px">
         <div style="font-size: 18px; font-weight: bold">This course includes:</div>
         <div class="flex-container" style="width: 400px; margin-top: 10px">
-          <div class="flex-item">{{courseDetail?.duration}} Hours duration</div>
+          <div class="flex-item">{{courseSummary?.duration}} Hours duration</div>
           <!-- <div class="flex-item">
             <a href="/" style="color: var(--primary-700)">Material Link</a>
           </div> -->
@@ -124,11 +124,11 @@
       </div>
       <div style="margin-top: 30px">
         <div style="font-size: 18px; font-weight: bold">Pre requisites:</div>
-        <div style="margin-top: 10px">{{courseDetail?.prerequisite}}</div>
+        <div style="margin-top: 10px">{{courseSummary?.prerequisite}}</div>
       </div>
       <div style="margin-top: 30px">
         <div style="font-size: 18px; font-weight: bold">Tools required:</div>
-        <div style="margin-top: 10px"><span>{{courseDetail?.toolsNeeded}}</span> <a href="https://supporthub.irissoftware.com/support/catalog/items" target="_blank" style="margin-left: 20px; color: var(--primary-700)">IT Ticket Support</a></div>
+        <div style="margin-top: 10px"><span>{{courseSummary?.toolsNeeded}}</span> <a href="https://supporthub.irissoftware.com/support/catalog/items" target="_blank" style="margin-left: 20px; color: var(--primary-700)">IT Ticket Support</a></div>
       </div>
     </div>
     <div class="content" style="margin-top: 30px; margin-left: 20px; margin-right: 20px">
@@ -136,18 +136,18 @@
         <div style="font-size: 18px; font-weight: bold">Course Content</div>
         <div style="width: 90vw; margin-top: 10px">
           <ul style="list-style: none">
-            @for(content of courseDetail?.enrollmentMappings[0].enrollmentDetailsList; track content) {
+            @for(content of courseSummary?.lmsTrainingDetails; track content) {
               <li class="playlist-section">
                 <div style="display: flex; align-items: center">
                   <i class="pi pi-youtube"></i>
                   <span class="playlist-item">
-                    {{content?.courseDetail?.details}}
+                    {{content?.details}}
                   </span>
                 </div>
                 <div style="display: flex; align-items: center">
                   <i class="pi pi-play-circle" style="color: var(--bluegray-300)"></i>
                   <span style="font-size: 10px; margin-left: 10px; width: 60px">
-                    {{content?.courseDetail?.duration}} mins
+                    {{content?.duration}} mins
                   </span>
                 </div>
               </li>

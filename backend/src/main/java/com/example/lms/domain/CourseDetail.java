@@ -60,7 +60,7 @@ public class CourseDetail {
   @JsonBackReference("LMS_TRNG_DTLS")
   private CourseSummary course;
 
-  @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "courseDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonBackReference
   private Set<EnrollmentDetails> enrollmentDetailsList;
 }
