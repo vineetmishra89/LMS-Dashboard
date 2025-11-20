@@ -32,12 +32,12 @@ public class VideoProgress {
   private Long trainingEnrollmentDtlId;
 
   @Column(name = "TRNG_ID")
-  private String courseId;
+  private Integer courseId;
 
   @Column(name = "module_id")
-  private String lessonId;
+  private Integer lessonId;
 
-  @Column(name = "module_progress_percent")
+  @Column(name = "module_progress_percentage")
   private Long progressPercent;
 
   @Column(name = "current_ts")

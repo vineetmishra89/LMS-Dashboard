@@ -142,13 +142,6 @@ export class CourseService {
   }
 
   getCourseDetail(data: any) {
-    // const cat = data['category'] ? 'category='+ data['category'] : '';
-    // const lev = data['level'] ? 'level='+ data['level']: '';
-    // const inst = data['instructor'] ? 'instructor='+data['instructor']: '';
-    // const top = data['topic'] ? 'topic='+data['topic'] : '';
-    // const param = '?'+ cat + lev + inst + top;
-    // const x = this.buildParamQueryModern('searchCourse/getCourseDetail', data);
-    //return this.apiService.get<any>(x);
     return this.apiService.post<any>('searchCourse/getCourseDetail', data);
   }
 
@@ -175,6 +168,27 @@ export class CourseService {
 
   getEmployeeHierarchy(emailId: string): Observable<any>  {
    return this.apiService.get('employee-hierarchy?userId=' + emailId);
+  }
+
+  getCourseMaterial(trainingId: any) {
+    return this.apiService.get<any>(`courses/materialCourse?trngId=${trainingId}`);
+  }
+
+  recordSearchHistory(data: any) {
+    return this.apiService.post<any>(`courses/recordSearchHistory`, data);
+  }
+
+  getSbusByUser(userId: string): Observable<string[]> {
+    return this.apiService.get<string[]>(`ro-pm-dashboard/filters/sbus?userId=${userId}`);
+  }
+
+  getProjectsByUserAndSbus(userId: string, sbus?: string[]): Observable<string[]> {
+    const sbuParams = sbus && sbus.length > 0 ? `&sbus=${sbus.join(',')}` : '';
+    return this.apiService.get<string[]>(`ro-pm-dashboard/filters/projects?userId=${userId}${sbuParams}`);
+  }
+
+  getEmployeesForROPMDashboard(request: any): Observable<any> {
+    return this.apiService.post<any>('ro-pm-dashboard/employees', request);
   }
 
 }

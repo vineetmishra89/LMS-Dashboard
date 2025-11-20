@@ -52,7 +52,7 @@ public class CourseController {
 
   @GetMapping("/getCourseById/{courseId}")
   public CourseSummary getCourseById(@PathVariable(required = true) Long courseId,@RequestParam String userId) {
-    CourseSummary summary = courseService.search(courseId);
+    CourseSummary summary = courseService.search(courseId,userId);
     return summary;
   }
 
@@ -65,41 +65,41 @@ public class CourseController {
   @SecurityRequirement(name = "bearerAuth")
   public ResponseEntity<?> getMaterialCourseLink(@RequestParam Long trngId, HttpServletRequest httpRequest) {
     try {
-      logger.info("Received request to get material course link for trngId: {}", trngId);
-      String authorization = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
-      if (authorization == null || !authorization.startsWith("Bearer ")) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Invalid Authorization header");
-        error.put("message", "Authorization header must start with 'Bearer '");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-      }
-      String folderPath = courseService.getFolderPathByTrainingId(trngId);
+        logger.info("Received request to get material course link for trngId: {}", trngId);
+        String authorization = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+          Map<String, String> error = new HashMap<>();
+          error.put("error", "Invalid Authorization header");
+          error.put("message", "Authorization header must start with 'Bearer '");
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+        String folderPath = courseService.getFolderPathByTrainingId(trngId);
 
-      if (folderPath == null || folderPath.isEmpty()) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Folder path not found");
-        error.put("message", "No folder path configured for training ID: " + trngId);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-      }
-      Map<String, Object> response = courseService.getMaterialCourseLink(trngId, authorization, folderPath);
+        if (folderPath == null || folderPath.isEmpty()) {
+          Map<String, String> error = new HashMap<>();
+          error.put("error", "Folder path not found");
+          error.put("message", "No folder path configured for training ID: " + trngId);
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+        Map<String, Object> response = courseService.getMaterialCourseLink(trngId, authorization, folderPath);
 
 
-      return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
 
     } catch (Exception e) {
-      logger.error("Error getting material course link for trngId: {}: {}", trngId, e.getMessage(), e);
-      Map<String, String> error = new HashMap<>();
-      error.put("error", "Failed to get material course link");
-      error.put("message", e.getMessage());
+        logger.error("Error getting material course link for trngId: {}: {}", trngId, e.getMessage(), e);
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Failed to get material course link");
+        error.put("message", e.getMessage());
 
-      if (e.getMessage() != null &&
-          (e.getMessage().contains("401") ||
-           e.getMessage().contains("Unauthorized") ||
-           e.getMessage().contains("Invalid token"))) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-      }
+        if (e.getMessage() != null &&
+            (e.getMessage().contains("401") ||
+             e.getMessage().contains("Unauthorized") ||
+             e.getMessage().contains("Invalid token"))) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
 
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
   }
 
@@ -112,17 +112,17 @@ public class CourseController {
   public ResponseEntity<?> recordSearchHistory(@RequestBody Map<String, Object> request) {
     try {
       logger.info("Received request to record search history: {}", request);
-      
+
       Object trngIdObj = request.get("trng_id");
       String emailId = (String) request.get("email_id");
-      
+
       if (trngIdObj == null || emailId == null || emailId.isEmpty()) {
         Map<String, String> error = new HashMap<>();
         error.put("error", "Missing required fields");
         error.put("message", "Both trng_id and email_id are required");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
       }
-      
+
       Integer trngId;
       if (trngIdObj instanceof Integer) {
         trngId = (Integer) trngIdObj;
@@ -143,9 +143,9 @@ public class CourseController {
         error.put("message", "trng_id must be a number");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
       }
-      
+
       OffsetDateTime currentTime = OffsetDateTime.now();
-      
+
       TrainingSearchHistory searchHistory = new TrainingSearchHistory();
       searchHistory.setTrngId(trngId);
       searchHistory.setEmailId(emailId);
@@ -154,20 +154,20 @@ public class CourseController {
       searchHistory.setCreatedTs(currentTime);
       searchHistory.setUpdatedBy(emailId);
       searchHistory.setUpdatedTs(currentTime);
-      
+
       trainingSearchHistoryRepository.save(searchHistory);
-      
+
       logger.info("Successfully recorded search history for trngId: {} and emailId: {}", trngId, emailId);
-      
+
       Map<String, Object> response = new HashMap<>();
       response.put("success", true);
       response.put("message", "Search history recorded successfully");
       response.put("trng_id", trngId);
       response.put("email_id", emailId);
       response.put("view_ts", currentTime);
-      
+
       return ResponseEntity.ok(response);
-      
+
     } catch (Exception e) {
       logger.error("Error recording search history: {}", e.getMessage(), e);
       Map<String, String> error = new HashMap<>();

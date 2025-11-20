@@ -8,6 +8,7 @@ import lombok.*;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "LMS_TRNG_DTLS")
@@ -59,7 +60,7 @@ public class CourseDetail {
   @JsonBackReference("LMS_TRNG_DTLS")
   private CourseSummary course;
 
-  @OneToMany(mappedBy = "courseDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JsonManagedReference
-  private List<EnrollmentDetails> enrollmentDetailsList;
+  @OneToMany(mappedBy = "courseDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonBackReference
+  private Set<EnrollmentDetails> enrollmentDetailsList;
 }

@@ -1,11 +1,17 @@
+import { EnrollmentDetails, EnrollmentMapping } from "./enrollments";
+
 export interface CourseDetail {
-  moduleId: string;
-  trainersCurrentFeedback?: number;
-  currentUserFeedback?: number;
-  instructorName?: string;
-  topic?: string;
+  moduleId: number;
+  summary?: string;
+  details?: string;
   duration?: number;
+  seqId?: number;
   trainingLink?: string;
+  createdTs: string;
+  updatedTs: string;
+  createdBy: string;
+  updatedBy: string;
+  enrollmentDetailsList?: EnrollmentDetails[];
 }
 
 export interface CourseMaster {
@@ -18,21 +24,11 @@ export interface CourseMaster {
   instructorName?: string;
   duration?: number;       // or minutes if that’s what you store
   category?: string;
-  details: CourseDetail[];
   reviewComments?: string;
   prerequisite?: string;
   toolsNeeded?: string;
   lmsTrainingDetails: CourseDetail[];
-}
-
-export interface CourseModule {
-  id: string;
-  title: string;
-  description: string;
-  orderIndex: number;
-  duration: number;
-  lessons: Lesson[];
-  isCompleted?: boolean;
+  enrollmentMappings: EnrollmentMapping[];
 }
 
 export interface Lesson {

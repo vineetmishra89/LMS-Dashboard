@@ -2,10 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { RoleService } from '../../services/role.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { Globals } from '../../core/globals';
 
 @Component({
   selector: 'app-login',
@@ -21,17 +23,26 @@ export class LoginComponent implements OnInit {
   returnUrl = '';
   showPassword = false;
   route =  inject(ActivatedRoute);
+  globals = inject(Globals);
 
   constructor(
     private formBuilder: FormBuilder,
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    private roleService: RoleService
   ) {}
 
   ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+    
+    if (this.authService.isLoggedIn()) {
+      console.log('User already authenticated, redirecting to:', this.returnUrl);
+      this.router.navigate([this.returnUrl]);
+      return;
+    }
+    
     const x = this.authService.isLoggedIn();
     console.log(x);
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
     const registered = this.route.snapshot.queryParams['registered'] === '1';
     if (registered) {
       this.errorMessage = '';
@@ -61,7 +72,20 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         console.log('Login successful:', response);
         this.isLoading = false;
-        this.router.navigate([this.returnUrl]);
+        
+        this.globals.setUser(JSON.stringify(response));
+        
+        this.roleService.clearRoles();
+        this.roleService.fetchUserRoles().subscribe({
+          next: (roles) => {
+            console.log('Roles fetched after login:', roles);
+            this.router.navigate([this.returnUrl]);
+          },
+          error: (roleError) => {
+            console.error('Error fetching roles after login:', roleError);
+            this.router.navigate([this.returnUrl]);
+          }
+        });
       },
       error: (error) => {
         this.errorMessage = error.userMessage || 'Login failed. Please check your credentials.';

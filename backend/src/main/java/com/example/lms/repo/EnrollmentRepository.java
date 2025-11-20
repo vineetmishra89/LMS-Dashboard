@@ -16,9 +16,16 @@ public interface EnrollmentRepository extends JpaRepository<EnrollmentMapping, L
   @Query("Select count(e) from EnrollmentMapping e where e.userId = :userId and e.status=:status")
   long countByUserIdAndStatus(@Param("userId") String userId, @Param("status") String status);
 
+  @Query("Select e from EnrollmentMapping e where e.userId = :userId and e.courseSummary.trainingId=:trainingId")
+  EnrollmentMapping getEnrollmentMappingByUserIdAndTrainingId(@Param("userId") String userId, @Param("trainingId") Long trainingId);
+
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Transactional
-  @Query(value="delete from lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING where trng_id= :trainingId and email_id=:userId", nativeQuery = true)
-  void deleteNativeByUserIdAndTrainingId(@Param("userId") String userId,@Param("trainingId") Long trainingId);
+  @Query(value="delete from lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING where trng_enrl_id= :enrollmentId", nativeQuery = true)
+  void deleteEnrollMappingByEnrollmentId(@Param("enrollmentId") Long enrollmentId);
 
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Transactional
+  @Query(value="update lms_schema.LMS_USER_TRNG_ENROLLMENT_MAPPING set completion_review_status=:completionReviewStatus, updated_ts=CURRENT_TIMESTAMP where trng_id= :trainingId and email_id=:userId", nativeQuery = true)
+  void updateEnrollMappingByUseridAndTrngId(@Param("completionReviewStatus") String completionReviewStatus, @Param("trainingId") Integer trainingId, @Param("userId") String userId);
 }

@@ -2,7 +2,9 @@ package com.example.lms.controller;
 
 import com.example.lms.domain.EnrollmentDetails;
 import com.example.lms.domain.EnrollmentMapping;
+import com.example.lms.dto.EnrollmentRequest;
 import com.example.lms.service.EnrollmentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,25 +16,26 @@ import java.util.Map;
 @CrossOrigin
 public class EnrollmentController {
   private final EnrollmentService enrollmentService;
+
+  @Autowired
   public EnrollmentController(EnrollmentService enrollmentService) { this.enrollmentService = enrollmentService; }
 
   @PostMapping("enroll")
-  public EnrollmentMapping enroll(@RequestBody Map<String, Object> body) {
-    String enrollmentType = (null == body.get("enrollmentType") ? "Voluntary" : (String)body.get("enrollmentType"));
-    Integer courseIdInt = (Integer)body.get("courseId");
-    Long courseId = Long.valueOf(courseIdInt);
-    return enrollmentService.enroll((String)body.get("userId"), courseId,enrollmentType);
+  public EnrollmentMapping enroll(@RequestBody EnrollmentRequest enrollmentRequest) {
+    String enrollmentType = (null == enrollmentRequest.getEnrollmentType()) ? "Voluntary" : enrollmentRequest.getEnrollmentType();
+    return enrollmentService.enroll(enrollmentRequest.getUserId(), enrollmentRequest.getCourseId(),enrollmentType);
   }
 
-  @PostMapping("unenroll")
-  public ResponseEntity<Map<String,String>> unenroll(@RequestBody Map<String, Object> body) {
-    enrollmentService.unEnroll((String)body.get("userId"), Long.valueOf((Integer)body.get("courseId")));
+  @PostMapping("unenroll/{enrollmentId}")
+  public ResponseEntity<Map<String,String>> unenroll(@PathVariable Long enrollmentId) {
+    enrollmentService.unEnroll(enrollmentId);
     return ResponseEntity.ok(Map.of("Status","SUCCESS"));
   }
 
   @GetMapping("/{enrollmentId}")
   public EnrollmentMapping getById(@PathVariable Long enrollmentId) {
-    return enrollmentService.getById(enrollmentId);
+    EnrollmentMapping mapping = enrollmentService.getById(enrollmentId);;
+    return mapping;
   }
 
   @PutMapping("/{enrollmentDetailsId}/module/{moduleId}/progress")
@@ -59,5 +62,4 @@ public class EnrollmentController {
 
     return enrollmentService.bulkEnroll(emailIdList, courseIdList, enrollmentType, userId);
   }
-
 }

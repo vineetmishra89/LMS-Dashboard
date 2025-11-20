@@ -18,12 +18,15 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { PickListModule } from 'primeng/picklist';
+import { MetricsPanelComponent } from '../metrics/metrics-panel.component';
+import { RopmMetricsService } from '../../services/ropm-metrics.service';
+import { Globals } from '../../core/globals';
 
 
 @Component({
   selector: 'app-ro-admin',
   standalone: true,
-  imports: [TabViewModule , ToastModule, PickListModule, DropdownModule, AutoCompleteModule, ProgressSpinnerModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule],
+  imports: [TabViewModule , ToastModule, PickListModule, DropdownModule, AutoCompleteModule, ProgressSpinnerModule, TagModule , CalendarModule, FloatLabelModule, TableModule, CardModule, CommonModule, FormsModule, ReactiveFormsModule, MultiSelectModule, ButtonModule, MetricsPanelComponent],
   templateUrl: './ro-admin.component.html',
   styleUrl: './ro-admin.component.scss',
     providers: [MessageService, ConfirmationService]
@@ -45,11 +48,13 @@ export class RoAdminComponent implements OnInit {
   
     metricsData: any[] = [];
     metricsService = inject(MetricsService);
+    ropmMetricsService = inject(RopmMetricsService);
     filterFormGroup: FormGroup | undefined;
     courseService = inject(CourseService);
      enrollmentService = inject(EnrollmentService);
      messageService = inject(MessageService);
      confirmationService = inject(ConfirmationService);
+     globals = inject(Globals);
     filterData: any = null;
     trainingNameList: any = [];
     searchedCourse: any[] = [];
@@ -61,10 +66,16 @@ export class RoAdminComponent implements OnInit {
     suggestions: any[] | undefined;
     selectedTrainingName: any | undefined;
     selectedUserTraining: any[] = [];
-    roEmailId = 'rajib.bhattacharya@irissoftware.com';
+    roEmailId = '';
+    sbuList: string[] = [];
+    projectList: string[] = [];
+    activeTabIndex: number = 0;
 
     ngOnInit(): void {
+      const userId = localStorage.getItem('userId');
+    this.roEmailId = this.globals.getUser().emailId;
       this.loadForm();
+      this.getSbus();
       this.getUser();
       this.getCourseSearchList();
       
@@ -74,19 +85,84 @@ export class RoAdminComponent implements OnInit {
  loadForm() {
   
   this.filterFormGroup = new FormGroup({
+    selectedSbus: new FormControl([]),
+    selectedProjects: new FormControl([]),
     selectedUsers: new FormControl([]),
     selectedTrainingName: new FormControl([])
   })
  }
 
-    getUser() {
-      const emailId = this.roEmailId;
-      this.courseService.getEmployeeHierarchy(emailId).subscribe({
+    getSbus() {
+      this.courseService.getSbusByUser(this.roEmailId).subscribe({
         next: (res) => {
-          console.log(res);
-          this.users = res.employees;
+          console.log('SBUs:', res);
+          this.sbuList = res;
+        },
+        error: (err) => {
+          console.error('Error fetching SBUs:', err);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load SBUs' });
         }
-      })
+      });
+    }
+
+    onSbuChange() {
+      const selectedSbus = this.filterFormGroup?.get('selectedSbus')?.value;
+      console.log('Selected SBUs:', selectedSbus);
+      
+      this.filterFormGroup?.get('selectedProjects')?.setValue([]);
+      this.filterFormGroup?.get('selectedUsers')?.setValue([]);
+      
+      if (selectedSbus && selectedSbus.length > 0) {
+        this.courseService.getProjectsByUserAndSbus(this.roEmailId, selectedSbus).subscribe({
+          next: (res) => {
+            console.log('Projects:', res);
+            this.projectList = res;
+          },
+          error: (err) => {
+            console.error('Error fetching projects:', err);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load projects' });
+          }
+        });
+      } else {
+        this.courseService.getProjectsByUserAndSbus(this.roEmailId).subscribe({
+          next: (res) => {
+            console.log('Projects:', res);
+            this.projectList = res;
+          },
+          error: (err) => {
+            console.error('Error fetching projects:', err);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load projects' });
+          }
+        });
+      }
+      
+      this.getUser();
+    }
+
+    onProjectChange() {
+      console.log('Project changed');
+      this.filterFormGroup?.get('selectedUsers')?.setValue([]);
+      this.getUser();
+    }
+
+    getUser() {
+      const selectedProjects = this.filterFormGroup?.get('selectedProjects')?.value;
+      
+      const request = {
+        roEmailId: this.roEmailId,
+        projects: selectedProjects && selectedProjects.length > 0 ? selectedProjects : null
+      };
+      
+      this.courseService.getEmployeesForROPMDashboard(request).subscribe({
+        next: (res) => {
+          console.log('Employees:', res);
+          this.users = res;
+        },
+        error: (err) => {
+          console.error('Error fetching employees:', err);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load employees' });
+        }
+      });
     }
 
     add() {

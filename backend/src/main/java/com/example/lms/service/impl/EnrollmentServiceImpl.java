@@ -1,5 +1,6 @@
 package com.example.lms.service.impl;
 
+import com.example.lms.constant.EnrollmentStatus;
 import com.example.lms.domain.CourseSummary;
 import com.example.lms.domain.EnrollmentDetails;
 import com.example.lms.domain.EnrollmentMapping;
@@ -9,13 +10,13 @@ import com.example.lms.repo.CourseRepository;
 import com.example.lms.repo.EnrollmentDetailsRepository;
 import com.example.lms.repo.EnrollmentRepository;
 import com.example.lms.service.EnrollmentService;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +26,19 @@ public class EnrollmentServiceImpl implements EnrollmentService {
   private final EnrollmentDetailsRepository enrollmentDetailsRepository;
   private final CourseRepository courseRepository;
 
+  @Autowired
+  private EntityManager entityManager;
+
+  @Autowired
   public EnrollmentServiceImpl(EnrollmentRepository enrollmentRepository,EnrollmentDetailsRepository enrollmentDetailsRepository, CourseRepository courseRepository) {
     this.enrollmentRepository = enrollmentRepository;
     this.enrollmentDetailsRepository = enrollmentDetailsRepository;
     this.courseRepository = courseRepository;
+  }
+
+  @PostConstruct
+  public void checkProxy(){
+    System.out.println(">>> EnrollmentServiceImpl class: "+ this.getClass());
   }
 
   @Override
@@ -44,7 +54,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     EnrollmentMapping e = new EnrollmentMapping();
     e.setUserId(userId);
     e.setCourseSummary(courseSummary);
-    e.setStatus("Enrolled");
+    e.setStatus(EnrollmentStatus.ENROLLED.getStatus());
     e.setEnrolledTs(OffsetDateTime.now());
     e.setEnrollmentType(enrollmentType.toUpperCase());
     e.setProgressPercent(0L);
@@ -52,26 +62,22 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     e.setUpdatedTs(OffsetDateTime.now());
     e.setCreatedBy(userId);
     e.setUpdatedBy(userId);
+    e.setEnrollmentDetailsList(new HashSet<>());
 
-    List<EnrollmentDetails> enrollmentDetailsList = new ArrayList<>();
     if (courseSummary.getLmsTrainingDetails() != null) {
       for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
         EnrollmentDetails details = new EnrollmentDetails();
         details.setModuleId(courseDetail.getModuleId());
-        details.setStatus("Enrolled");
+        details.setStatus(EnrollmentStatus.ENROLLED.getStatus());
         details.setEnrollmentMapping(e);
         details.setCourseDetail(courseDetail);
         details.setCreatedTs(OffsetDateTime.now());
         details.setUpdatedTs(OffsetDateTime.now());
         details.setCreatedBy(userId);
         details.setUpdatedBy(userId);
-        //details.setCurrentLearningTs(0);
-
-        enrollmentDetailsList.add(details);
+        e.addEnrollmentDetail(details);
       }
     }
-
-    e.setEnrollmentDetailsList(enrollmentDetailsList);
 
     return enrollmentRepository.save(e);
   }
@@ -151,7 +157,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollment.setUpdatedBy(userId);
         enrollment.setEnrolledByEmailId(userId);
 
-        List<EnrollmentDetails> detailsList = new ArrayList<>();
+        Set<EnrollmentDetails> detailsList = new HashSet<>();
         if (courseSummary.getLmsTrainingDetails() != null) {
           for (var courseDetail : courseSummary.getLmsTrainingDetails()) {
 
@@ -189,7 +195,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
   @Override
   @Transactional
-  public void unEnroll(String userId, Long courseId) {
-     enrollmentRepository.deleteNativeByUserIdAndTrainingId(userId,courseId);
+  public void unEnroll(Long enrollmentId) {
+    enrollmentDetailsRepository.deleteEnrollDetailByEnrollmentId(enrollmentId);
+    enrollmentRepository.deleteEnrollMappingByEnrollmentId(enrollmentId);
   }
 }

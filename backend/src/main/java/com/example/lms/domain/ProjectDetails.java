@@ -22,6 +22,9 @@ public class ProjectDetails {
   @Column(name = "PROJECT_NAME")
   private String projectName;
 
+  @Column(name = "BU")
+  private String sbu;
+
   @Column(name = "PM_EMAIL_ID")
   private String pmEmailId;
 

@@ -35,7 +35,6 @@ import { SidebarComponent } from './components/sidebar/sidebar';
 import { WelcomeBannerComponent } from './components/welcome-banner/welcome-banner';
 import { StatsCardComponent } from './components/stats-card/stats-card';
 import { CourseCardComponent } from './components/course-card/course-card';
-import { ChatComponent } from './components/chat/chat';
 
 // Authentication Components
 import { LoginComponent } from './components/login/login.component';
@@ -87,7 +86,7 @@ import { LazyLoadDirective } from './directives/lazy-load.directive';
 import { InViewportDirective } from './directives/in-viewport.directive';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 
-import { PrimeNGConfig } from 'primeng/api';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -97,6 +96,9 @@ import { ChipModule } from 'primeng/chip';
 // Environment
 import { environment } from '../environments/environment';
 import { CarouselModule } from 'primeng/carousel';
+import { Globals } from './core/globals';
+import { OrderByPipe } from './pipes/order-by.pipe';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -108,7 +110,6 @@ import { CarouselModule } from 'primeng/carousel';
     WelcomeBannerComponent,
     StatsCardComponent,
     CourseCardComponent,
-    ChatComponent,
     
     // Auth Components
     
@@ -172,6 +173,8 @@ import { CarouselModule } from 'primeng/carousel';
     SafeHtmlPipe,
     DurationPipe,
     ProgressPipe,
+    OrderByPipe,
+    ToastModule,
 
     // PWA Support
     ServiceWorkerModule.register('ngsw-worker.js', {
@@ -204,11 +207,12 @@ import { CarouselModule } from 'primeng/carousel';
     VideoProgressService,
     
     LoadingInterceptor,
-    
+    Globals,
     // Guards
     AuthGuard,
     RoleGuard,
     UnsavedChangesGuard,
+    MessageService,
     
     // HTTP Interceptors
     {

@@ -1,17 +1,20 @@
 <div class="video-player-container">
-  <div class="video-wrapper" [class.loading]="isLoading">
+  <div class="video-wrapper" [class.loading]="isLoading" [class.error]="videoError">
     <video 
       #videoElement
       [src]="videoUrl"
       controls
+      controlsList="nodownload norestore"
+      (contextmenu)="disableRightClick($event)"
       autoplay
       muted
-      loop
       preload="metadata"
       (loadedmetadata)="onVideoLoaded()"
       (play)="onPlay()"
       (pause)="onPause()"
       (timeupdate)="onTimeUpdate()"
+      (ended)="onVideoEnded()"
+      (error)="onVideoError($event)"
       class="video-element">
       Your browser does not support the video tag.
     </video>
@@ -20,9 +23,18 @@
       <div class="spinner"></div>
       <p>Loading video...</p>
     </div>
+    
+    <div *ngIf="videoError" class="error-overlay">
+      <div class="error-content">
+        <div class="error-icon">⚠️</div>
+        <h3>Video Playback Error</h3>
+        <p class="error-message">{{ videoErrorMessage }}</p>
+      </div>
+    </div>
   </div>
   
   <div class="progress-info">
     <span>Progress: {{progress | number:'1.1-1'}}%</span>
   </div>
 </div>
+<p-toast />

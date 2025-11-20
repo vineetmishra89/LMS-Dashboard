@@ -15,18 +15,20 @@ import { ViewCourseComponent } from './components/view-course/view-course.compon
 import { LndAdminComponent } from './components/lnd-admin/lnd-admin';
 import { LoginComponent } from './components/login/login.component';
 import { RoAdminComponent } from './components/ro-admin/ro-admin.component';
+import { LndAdminGuard } from './guards/lnd-admin.guard';
+import { RODashboardGuard } from './guards/ro-dashboard.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'roAdmin', component: RoAdminComponent },
-  { path: 'lndAdmin', component: LndAdminComponent },
+  { path: 'roAdmin', component: RoAdminComponent, canActivate: [RODashboardGuard] },
+  { path: 'lndAdmin', component: LndAdminComponent, canActivate: [LndAdminGuard] },
   { path: 'search', component: DashboardComponent },
   { path: 'support', component: SupportComponent },
   { path: 'dashboard', component: SearchComponent },
   { path: 'viewCourse/:trainingId', component: ViewCourseComponent },
-  { path: 'runningCourse/:trainingId', component: VideoPlayerPageComponent },
+  { path: 'runningCourse/:trainingId/:trngEnrollmentId', component: VideoPlayerPageComponent },
   { path: 'video-player/:courseId', component: VideoPlayerPageComponent },
   { path: 'detail/completed', component: CompletedDetailComponent },
   { path: 'detail/enrolled', component: EnrolledDetailComponent },

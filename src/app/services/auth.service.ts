@@ -56,13 +56,26 @@ export class AuthService {
     const token = this.getToken();
     const user = this.getCurrentUserFromStorage();
     
-    if (token && user && !this.isTokenExpired(token)) {
-      this.currentUserSubject.next(user);
+    if (token && user) {
+      if (this.isTokenExpired(token)) {
+        this.clearAuthStorage();
+        this.isAuthenticatedSubject.next(false);
+        return;
+      }
+      
+      const tokenType = sessionStorage.getItem('tokenType');
+      const expiresAt = sessionStorage.getItem('expiresAt');
+      
+      if (tokenType && expiresAt) {
+        this.currentUserSubject.next(user);
+        this.isAuthenticatedSubject.next(true);
+        return;
+      }
+      
+      this.clearAuthStorage();
       this.isAuthenticatedSubject.next(false);
       return;
-    } /*else {
-      this.logout();
-    }*/
+    }
 
   if (environment.devAutoLogin) {
     const exp = Math.floor(Date.now()/1000) + 60*60*24*365;
@@ -82,6 +95,17 @@ export class AuthService {
   this.isAuthenticatedSubject.next(false);
   }
 
+  private clearAuthStorage(): void {
+    sessionStorage.removeItem(this.tokenKey);
+    sessionStorage.removeItem('tokenType');
+    sessionStorage.removeItem('expiresAt');
+    sessionStorage.removeItem(this.userKey);
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.refreshTokenKey);
+    localStorage.removeItem(this.userKey);
+    localStorage.removeItem('userId');
+  }
+
   loginhardcode() {
      this.isAuthenticatedSubject.next(true);
      return of(null);
@@ -93,7 +117,7 @@ export class AuthService {
       password: credentials.password 
     };
     
-    return this.http.post<any>('http://localhost:5000/api/auth/login', loginRequest).pipe(
+    return this.http.post<any>(`${environment.apiUrl}/auth/login`, loginRequest).pipe(
       tap(response => {
         if (response.token) {
           sessionStorage.setItem(this.tokenKey, response.token);
@@ -139,7 +163,7 @@ export class AuthService {
     const token = this.getToken();
     
     if (token) {
-      this.http.post('http://localhost:5000/api/auth/logout', {}).subscribe({
+      this.http.post(`${environment.apiUrl}/auth/logout`, {}).subscribe({
         next: () => console.log('Logout successful'),
         error: (error) => console.error('Logout error:', error)
       });
@@ -191,7 +215,7 @@ export class AuthService {
   }
 
   changePassword(currentPassword: string, newPassword: string): Observable<any> {
-    return this.http.post('http://localhost:5000/api/auth/change-password', {
+    return this.http.post(`${environment.apiUrl}/auth/change-password`, {
       currentPassword,
       newPassword
     }).pipe(

@@ -13,18 +13,22 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { DataSharingService } from '../../services/data-sharing.service';
+import { CourseMaster } from '../../models/course';
+import { EnrollmentMapping } from '../../models/enrollments';
+import { error } from 'console';
+import { Globals } from '../../core/globals';
 
 @Component({
   selector: 'app-view-course',
   standalone: true,
-  imports: [ButtonModule, ProgressSpinnerModule, ConfirmDialogModule , DialogModule   , ToastModule , SkeletonModule,  OverlayPanelModule, InputGroupModule,InputGroupAddonModule  ],
+  imports: [ButtonModule, ProgressSpinnerModule, ConfirmDialogModule, DialogModule, ToastModule, SkeletonModule, OverlayPanelModule, InputGroupModule, InputGroupAddonModule],
   templateUrl: './view-course.component.html',
   styleUrl: './view-course.component.scss',
   providers: [MessageService, ConfirmationService]
 })
 export class ViewCourseComponent implements OnInit {
 
-  userId: string = 'chetna.bhatia@irissoftware.com';
+  userId: string = '';
   router = inject(Router);
   liked: boolean = false;
   courseService = inject(CourseService);
@@ -33,7 +37,8 @@ export class ViewCourseComponent implements OnInit {
   confirmationService = inject(ConfirmationService);
   dataSharingService = inject(DataSharingService);
   route = inject(ActivatedRoute);
-  courseDetail: any = null;
+  globals = inject(Globals);
+  courseSummary!: CourseMaster;
   totalLearners: number = 0;
   ratings: number = 0;
   trainingId: string = '0';
@@ -41,33 +46,35 @@ export class ViewCourseComponent implements OnInit {
   visible: boolean = false;
   message: string = '';
   progress: number = 0;
+  enrollment!: EnrollmentMapping;
 
   hasEnrolled: boolean = false;
-  courseRatings: any[] = [{user: 'Ankit Bansal', ratings: 3, when: '3 weeks ago', comments: 'This course is good for intermediate level. Instructor explained topics very well'},
-    {user: 'Vineet Mishra', ratings: 3, when: '1 day ago', comments: 'The instructor is taking a right approach teaching concepts very much to the point, crisp with practical applications and time limit of each lesson.'},
-    {user: 'Satya Prakash Mishra',  ratings: 3, when: 'Today', comments: 'Great Learning so far. Very Clear and detailed information with all resources available.'},
-    {user: 'Rajib Bhattacharya',  ratings: 3, when: '3 months ago', comments: 'Learnt the basics! Thank you so much.'}
+  courseRatings: any[] = [{ user: 'Ankit Bansal', ratings: 3, when: '3 weeks ago', comments: 'This course is good for intermediate level. Instructor explained topics very well' },
+  { user: 'Vineet Mishra', ratings: 3, when: '1 day ago', comments: 'The instructor is taking a right approach teaching concepts very much to the point, crisp with practical applications and time limit of each lesson.' },
+  { user: 'Satya Prakash Mishra', ratings: 3, when: 'Today', comments: 'Great Learning so far. Very Clear and detailed information with all resources available.' },
+  { user: 'Rajib Bhattacharya', ratings: 3, when: '3 months ago', comments: 'Learnt the basics! Thank you so much.' }
   ]
 
   ngOnInit(): void {
+    this.userId = this.globals.getUser().emailId;
     this.getCourseDetailsById();
-    
   }
 
   enroll(event: Event) {
-   // this.hasEnrolled = true;
+    // this.hasEnrolled = true;
     this.loading = true;
-    
+
     const data = {
       userId: this.userId,
       courseId: Number(this.trainingId),
       enrollmentType: 'VOLUNTARY'
     }
     this.enrollmentService.enroll(data).subscribe({
-      next :(res) => {
+      next: (res) => {
         this.message = 'Enrollment Successful.'
         this.visible = true;
         this.hasEnrolled = true;
+        this.enrollment = res;
         console.log(res);
         this.loading = false;
       }
@@ -75,30 +82,23 @@ export class ViewCourseComponent implements OnInit {
   }
 
   unenroll(event: Event) {
-   // this.hasEnrolled = true;
     this.loading = true;
-    
-    const data = {
-      userId: this.userId,
-      courseId: Number(this.trainingId),
-      enrollmentType: 'VOLUNTARY'
-    }
-    this.enrollmentService.unenroll(data).subscribe({
-      next :(res) => {
+
+    this.enrollmentService.unenroll(this.enrollment.trainingEnrollmentId).subscribe({
+      next: (res) => {
         this.message = 'Unenrollment Successful.'
         this.hasEnrolled = false;
         this.visible = true;
+        this.enrollment = res;
         console.log(res);
         this.loading = false;
       }
     });
-
   }
 
   resume() {
-    this.dataSharingService.sendData(this.courseDetail);
-
-    this.router.navigate(['runningCourse', this.trainingId]);
+    this.dataSharingService.sendData(this.courseSummary);
+    this.router.navigate(['runningCourse', this.trainingId, this.enrollment.trainingEnrollmentId]);
   }
 
   getCourseDetailsById() {
@@ -106,32 +106,29 @@ export class ViewCourseComponent implements OnInit {
     this.trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
     this.courseService.getCourseDetailsById(this.userId, this.trainingId).subscribe({
       next: (res) => {
-        
-        
-        this.courseDetail = res;
-        this.totalLearners = res.enrollmentMappings.filter((x: any)=> x.status === 'Completed').length;
-        this.ratings = Math.floor(Number(res.rating));
-        
-        this.dataSharingService.getData().subscribe({
-          next: (res) => {
-            this.courseDetail.trainerNames = res.names,
-            this.courseDetail.trainerEmails = res.emails.split(',')
-           
+        if (res) {
+          this.courseSummary = res;
+          if(res.enrollmentMappings){
+            this.enrollment = res.enrollmentMappings[0];
           }
-        })
-     //   this.dataSharingService.sendData(null);
-        this.hasEnrolled = res.enrollmentMappings.find((x: any) => x.userId === this.userId) || false;
-        this.progress = res.lmsTrainingDetails.every((x: any) => x.moduleProgressPercentage === null);
-    //    this.loading = false;
+          this.totalLearners = res.enrollmentMappings.filter((x: any) => x.status.toUpperCase() === 'COMPLETED').length;
+          this.ratings = Math.floor(Number(res.rating));
+          this.hasEnrolled = res.enrollmentMappings.find((x: any) => x.userId === this.userId) || false;
+          this.progress = res.lmsTrainingDetails.every((x: any) => x.moduleProgressPercentage === null);
+        }
+      }, error: (err: Error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err['message'] });
       }
     })
   }
   numberToStars(n: number): number[] {
     return Array.from({ length: n }, (_, i) => i);
   }
-  
-  convertStringToInt(str: string){ 
-    var Num = parseInt(str); 
+
+  convertStringToInt(str: string) {
+    var Num = parseInt(str);
     return Num;
   }
+
+
 }

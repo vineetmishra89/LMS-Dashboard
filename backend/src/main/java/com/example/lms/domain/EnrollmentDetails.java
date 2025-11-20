@@ -1,6 +1,7 @@
 package com.example.lms.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,14 +42,14 @@ public class EnrollmentDetails implements Serializable {
   private String updatedBy;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "trng_enrl_id")
-  @JsonBackReference("LMS_USER_TRNG_ENROLLMENT_DTLS")
+  @JoinColumn(name = "trng_enrl_id", nullable = false)
+  @JsonBackReference
   private EnrollmentMapping enrollmentMapping;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("moduleId")
   @JoinColumn(name = "module_id")
-  @JsonBackReference
+  @JsonManagedReference
   private CourseDetail courseDetail;
 
 }
