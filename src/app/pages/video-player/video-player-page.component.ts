@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
 import { forkJoin } from 'rxjs';
-import { Globals } from '../../components/shared/globals';
+import { Globals } from '../../core/globals';
 import { VideoPlayerComponent } from '../../components/video-player/video-player.component';
 
 @Component({
@@ -120,6 +120,7 @@ export class VideoPlayerPageComponent implements OnInit {
       if (this.enrollmentMapping.enrollmentDetailsList[currentIndex]) {
         this.enrollmentMapping.enrollmentDetailsList[currentIndex + 1].status = 'COMPLETED';
         this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
+        this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1];
       }
     }
   }

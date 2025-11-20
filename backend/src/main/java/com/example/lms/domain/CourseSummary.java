@@ -87,7 +87,7 @@ public class CourseSummary {
     fetch = FetchType.EAGER
   )
   @JsonManagedReference("LMS_TRNG_DTLS")
-  private Set<CourseDetail> lmsTrainingDetails = new HashSet<>();
+  private List<CourseDetail> lmsTrainingDetails = new ArrayList<>();
 
   @OneToMany(
     mappedBy = "courseSummary",
@@ -96,7 +96,7 @@ public class CourseSummary {
     fetch = FetchType.EAGER
   )
   @JsonManagedReference("LMS_USER_TRNG_ENROLLMENT_MAPPING")
-  private Set<EnrollmentMapping> enrollmentMappings;
+  private List<EnrollmentMapping> enrollmentMappings = new ArrayList<>();
 
   // helpers to keep both sides in sync
   public void addDetail(CourseDetail d) {

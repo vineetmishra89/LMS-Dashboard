@@ -16,7 +16,7 @@ import { DataSharingService } from '../../services/data-sharing.service';
 import { CourseMaster } from '../../models/course';
 import { EnrollmentMapping } from '../../models/enrollments';
 import { error } from 'console';
-import { Globals } from '../shared/globals';
+import { Globals } from '../../core/globals';
 
 @Component({
   selector: 'app-view-course',
@@ -38,7 +38,7 @@ export class ViewCourseComponent implements OnInit {
   dataSharingService = inject(DataSharingService);
   route = inject(ActivatedRoute);
   globals = inject(Globals);
-  courseDetail: any = null;
+  courseSummary!: CourseMaster;
   totalLearners: number = 0;
   ratings: number = 0;
   trainingId: string = '0';
@@ -97,7 +97,7 @@ export class ViewCourseComponent implements OnInit {
   }
 
   resume() {
-    this.dataSharingService.sendData(this.courseDetail);
+    this.dataSharingService.sendData(this.courseSummary);
     this.router.navigate(['runningCourse', this.trainingId, this.enrollment.trainingEnrollmentId]);
   }
 
@@ -107,8 +107,10 @@ export class ViewCourseComponent implements OnInit {
     this.courseService.getCourseDetailsById(this.userId, this.trainingId).subscribe({
       next: (res) => {
         if (res) {
-          this.courseDetail = res;
-          this.enrollment = res.enrollmentMappings[0];
+          this.courseSummary = res;
+          if(res.enrollmentMappings){
+            this.enrollment = res.enrollmentMappings[0];
+          }
           this.totalLearners = res.enrollmentMappings.filter((x: any) => x.status.toUpperCase() === 'COMPLETED').length;
           this.ratings = Math.floor(Number(res.rating));
           this.hasEnrolled = res.enrollmentMappings.find((x: any) => x.userId === this.userId) || false;

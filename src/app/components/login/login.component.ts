@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { Globals } from '../shared/globals';
+import { Globals } from '../../core/globals';
 
 @Component({
   selector: 'app-login',

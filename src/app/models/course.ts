@@ -1,4 +1,4 @@
-import { EnrollmentDetails } from "./enrollments";
+import { EnrollmentDetails, EnrollmentMapping } from "./enrollments";
 
 export interface CourseDetail {
   moduleId: number;
@@ -24,11 +24,11 @@ export interface CourseMaster {
   instructorName?: string;
   duration?: number;       // or minutes if that’s what you store
   category?: string;
-  details: CourseDetail[];
   reviewComments?: string;
   prerequisite?: string;
   toolsNeeded?: string;
   lmsTrainingDetails: CourseDetail[];
+  enrollmentMappings: EnrollmentMapping[];
 }
 
 export interface Lesson {
