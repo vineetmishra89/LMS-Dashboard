@@ -20,10 +20,10 @@ public class TrainingPlanSummary {
     @Column(name = "TRNG_PLAN_ID", nullable = false)
     private Long trngPlanId;
 
-    @Column(name = "TRNG_PLAN_NAME", nullable = false, length = 500)
+    @Column(name = "TRNG_PLAN_NAME", nullable = false, length = 1000)
     private String trngPlanName;
 
-    @Column(name = "EMAIL_ID", nullable = false, length = 100)
+    @Column(name = "EMAIL_ID", nullable = false, length = 255)
     private String emailId;
 
     @Enumerated(EnumType.STRING)

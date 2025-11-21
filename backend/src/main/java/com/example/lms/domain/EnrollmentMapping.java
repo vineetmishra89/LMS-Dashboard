@@ -50,6 +50,12 @@ public class EnrollmentMapping {
   @Column(name = "progress_percent")
   private Long progressPercent;
 
+  @Column(name = "trng_plan_id")
+  private Long trainingPlanId;
+
+  @Column(name = "trng_plan_seq")
+  private Long trainingPlanSeq;
+
   @Column(name = "created_ts")
   private OffsetDateTime createdTs;
 
