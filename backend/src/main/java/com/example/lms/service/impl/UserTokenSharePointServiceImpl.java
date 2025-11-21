@@ -684,7 +684,9 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
             collectFilePathsRecursively(client, driveId, item.id, filePaths);
           } else if (item.file != null) {
             logger.debug("Found file: {} with webUrl: {}", item.name, item.webUrl);
-            filePaths.add(item.webUrl);
+            String normalizedUrl = normalizeSharePointFileUrl(item.webUrl);
+            logger.debug("Normalized URL for {}: {}", item.name, normalizedUrl);
+            filePaths.add(normalizedUrl);
           }
         }
 
@@ -698,6 +700,77 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     } catch (Exception e) {
       logger.error("Error collecting file paths from folder ID '{}': {}", folderId, e.getMessage(), e);
       throw new RuntimeException("Failed to collect file paths from folder: " + folderId, e);
+    }
+  }
+
+  /**
+   * Normalizes SharePoint/OneDrive file URLs by extracting the actual file path
+   * from WOPI viewer URLs (WopiFrame.aspx) or OneDrive viewer URLs (onedrive.aspx).
+   * 
+   * For Office documents (docx, pptx, xlsx), SharePoint returns viewer URLs like:
+   * - https://.../_layouts/15/WopiFrame.aspx?source=https://...file.docx
+   * - https://.../onedrive.aspx?id=/path/to/file.docx
+   * 
+   * This method extracts the actual file URL from these viewer links.
+   * 
+   * @param webUrl The original webUrl from DriveItem
+   * @return The normalized direct file URL
+   */
+  private String normalizeSharePointFileUrl(String webUrl) {
+    if (webUrl == null || webUrl.isEmpty()) {
+      return webUrl;
+    }
+
+    try {
+      if (webUrl.contains("WopiFrame.aspx") || webUrl.contains("WOPIFrame.aspx")) {
+        URI uri = new URI(webUrl);
+        String query = uri.getQuery();
+        if (query != null) {
+          String[] params = query.split("&");
+          for (String param : params) {
+            if (param.startsWith("source=") || param.startsWith("sourcedoc=")) {
+              String value = param.substring(param.indexOf('=') + 1);
+              String decoded = URLDecoder.decode(value, StandardCharsets.UTF_8);
+              if (decoded.startsWith("http://") || decoded.startsWith("https://")) {
+                logger.debug("Extracted source URL from WopiFrame: {}", decoded);
+                return decoded;
+              }
+            }
+          }
+        }
+      }
+
+      if (webUrl.contains("onedrive.aspx")) {
+        URI uri = new URI(webUrl);
+        String query = uri.getQuery();
+        if (query != null) {
+          String[] params = query.split("&");
+          for (String param : params) {
+            if (param.startsWith("id=")) {
+              String value = param.substring(3); // Skip "id="
+              String decoded = URLDecoder.decode(value, StandardCharsets.UTF_8);
+              
+              if (decoded.startsWith("http://") || decoded.startsWith("https://")) {
+                logger.debug("Extracted full URL from onedrive.aspx id parameter: {}", decoded);
+                return decoded;
+              }
+              
+              if (decoded.startsWith("/")) {
+                String baseUrl = uri.getScheme() + "://" + uri.getHost();
+                String fullUrl = baseUrl + decoded;
+                logger.debug("Constructed full URL from server-relative path: {}", fullUrl);
+                return fullUrl;
+              }
+            }
+          }
+        }
+      }
+
+      return webUrl;
+
+    } catch (Exception e) {
+      logger.warn("Error normalizing SharePoint URL '{}': {}", webUrl, e.getMessage());
+      return webUrl;
     }
   }
 
