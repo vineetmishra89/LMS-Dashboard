@@ -62,17 +62,10 @@ public class CourseController {
   }
 
   @GetMapping("/materialCourse")
-  @SecurityRequirement(name = "bearerAuth")
-  public ResponseEntity<?> getMaterialCourseLink(@RequestParam Long trngId, HttpServletRequest httpRequest) {
+  public ResponseEntity<?> getMaterialCourseLink(@RequestParam Long trngId) {
     try {
         logger.info("Received request to get material course link for trngId: {}", trngId);
-        String authorization = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-          Map<String, String> error = new HashMap<>();
-          error.put("error", "Invalid Authorization header");
-          error.put("message", "Authorization header must start with 'Bearer '");
-          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-        }
+
         String folderPath = courseService.getFolderPathByTrainingId(trngId);
 
         if (folderPath == null || folderPath.isEmpty()) {
@@ -81,7 +74,7 @@ public class CourseController {
           error.put("message", "No folder path configured for training ID: " + trngId);
           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
-        Map<String, Object> response = courseService.getMaterialCourseLink(trngId, authorization, folderPath);
+        Map<String, Object> response = courseService.getMaterialCourseLink(trngId, folderPath);
 
 
         return ResponseEntity.ok(response);

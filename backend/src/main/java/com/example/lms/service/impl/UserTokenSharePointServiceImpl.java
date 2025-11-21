@@ -24,6 +24,8 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -626,7 +628,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     }
 
   @Override
-  public java.util.List<String> fetchAllFilePathsFromWebUrl(String bearerToken, String webUrl) {
+  public Map<String, String> fetchAllFilePathsFromWebUrl(String webUrl) {
     try {
       validateConfiguration();
 
@@ -647,10 +649,10 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
       String targetFolderId = resolveFolderIdFromPath(client, driveId, rootFolderId, finalpath);
       logger.info("Resolved folder ID: {} for webUrl: {}", targetFolderId, webUrl);
 
-      java.util.List<String> filePaths = new java.util.ArrayList<>();
-      collectFilePathsRecursively(client, driveId, targetFolderId, filePaths);
+      Map<String,String> filePaths = new HashMap<>();
+      collectFilePathsRecursively(client, driveId, targetFolderId, filePaths, webUrl);
 
-      logger.info("Successfully fetched {} file paths from webUrl: {}", filePaths.size(), webUrl);
+      logger.info("Successfully fetched {} .file paths from webUrl: {}", filePaths.size(), webUrl);
       return filePaths;
 
     } catch (Exception e) {
@@ -659,7 +661,7 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
     }
   }
 
-  private void collectFilePathsRecursively(GraphServiceClient<Request> client, String driveId, String folderId, java.util.List<String> filePaths) {
+  private void collectFilePathsRecursively(GraphServiceClient<Request> client, String driveId, String folderId, Map<String,String> filePaths, String basePath) {
     try {
       logger.debug("Collecting file paths from folder ID: {}", folderId);
 
@@ -681,10 +683,12 @@ public class UserTokenSharePointServiceImpl implements UserTokenSharePointServic
         for (DriveItem item : items.getCurrentPage()) {
           if (item.folder != null) {
             logger.debug("Recursing into subfolder: {} (id={})", item.name, item.id);
-            collectFilePathsRecursively(client, driveId, item.id, filePaths);
+            String childPath = basePath.concat("/").concat(item.name);
+            collectFilePathsRecursively(client, driveId, item.id, filePaths, childPath);
           } else if (item.file != null) {
             logger.debug("Found file: {} with webUrl: {}", item.name, item.webUrl);
-            filePaths.add(item.webUrl);
+            String childPath = basePath.concat("/").concat(item.name);
+            filePaths.put(item.name, childPath);
           }
         }
 
