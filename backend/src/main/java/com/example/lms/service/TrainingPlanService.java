@@ -1,5 +1,7 @@
 package com.example.lms.service;
 
+import com.example.lms.dto.AddTraineesToPlanRequestDTO;
+import com.example.lms.dto.AddTraineesToPlanResponseDTO;
 import com.example.lms.dto.TrainingPlanRequestDTO;
 import com.example.lms.dto.TrainingPlanResponseDTO;
 
@@ -20,4 +22,15 @@ public interface TrainingPlanService {
      * @throws com.example.lms.exception.ResourceNotFoundException if user not found in LMS_EMPLOYEE_DTLS
      */
     TrainingPlanResponseDTO addTrainingPlan(TrainingPlanRequestDTO request);
+    
+    /**
+     * Add trainees to an existing training plan.
+     * Creates enrollment mappings and enrollment details for the specified trainees and trainings.
+     * 
+     * @param request Request containing training plan ID, training IDs, and email IDs
+     * @return AddTraineesToPlanResponseDTO containing the number of enrollments created
+     * @throws com.example.lms.exception.ResourceNotFoundException if training plan, trainings, or users not found
+     * @throws com.example.lms.exception.ValidationException if training plan status is not DRAFT
+     */
+    AddTraineesToPlanResponseDTO addTraineesToPlan(AddTraineesToPlanRequestDTO request);
 }

@@ -1,5 +1,7 @@
 package com.example.lms.controller;
 
+import com.example.lms.dto.AddTraineesToPlanRequestDTO;
+import com.example.lms.dto.AddTraineesToPlanResponseDTO;
 import com.example.lms.dto.TrainingPlanRequestDTO;
 import com.example.lms.dto.TrainingPlanResponseDTO;
 import com.example.lms.service.TrainingPlanService;
@@ -60,6 +62,38 @@ public class TrainingPlanController {
             logger.error("Error adding training plan: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Failed to add training plan", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Add trainees to an existing training plan.
+     * 
+     * Creates enrollment mappings and enrollment details for the specified trainees and trainings.
+     * Validates that:
+     * - Training plan exists and status is DRAFT
+     * - All training IDs exist
+     * - All email IDs exist in LMS_EMPLOYEE_DTLS
+     * 
+     * @param request Request containing training plan ID, training IDs, and email IDs
+     * @return ResponseEntity with AddTraineesToPlanResponseDTO or error message
+     */
+    @PostMapping("/add-trainees")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> addTraineesToPlan(@RequestBody AddTraineesToPlanRequestDTO request) {
+        try {
+            logger.info("Received request to add trainees to training plan: {}", request.getTrainingPlanId());
+            
+            AddTraineesToPlanResponseDTO response = trainingPlanService.addTraineesToPlan(request);
+            
+            logger.info("Successfully added {} enrollments to training plan {}", 
+                       response.getEnrollmentsCreated(), response.getTrainingPlanId());
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            
+        } catch (Exception e) {
+            logger.error("Error adding trainees to training plan: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Failed to add trainees to training plan", e.getMessage()));
         }
     }
     
