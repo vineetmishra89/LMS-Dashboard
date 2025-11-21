@@ -46,6 +46,9 @@ public class VideoProgressService {
       existingProgress.setCurrentTime(progress.getCurrentTime());
       existingProgress.setDuration(progress.getDuration());
         //progress.setCompleted(progress.getCurrentTime().compareTo(progress.getDuration().multiply(BigDecimal.valueOf(0.9))) >= 0);
+      if((progress.getCurrentTime().compareTo(progress.getDuration()) == 0)){
+        progress.setCompleted(true);
+      }
       existingProgress.setCompleted(progress.getCompleted());
       existingProgress.setLastWatchedAt(OffsetDateTime.now());
       existingProgress.setUpdatedAt(OffsetDateTime.now());
@@ -54,7 +57,7 @@ public class VideoProgressService {
 
       if(progress.getCompleted()){
         this.enrollmentDetailsRepository.updateEnrollmentStatusByEnrollmentDtlId(progress.getTrainingEnrollmentDtlId());
-        long count = this.enrollmentDetailsRepository.countEnrollmentByStatusAndEnrollmentId(progress.getCourseId(), progress.getUserId());
+        int count = this.enrollmentDetailsRepository.countEnrollmentByStatusAndEnrollmentId(progress.getCourseId(), progress.getUserId());
         if(count==0){
            this.enrollmentRepository.updateEnrollMappingByUseridAndTrngId(ReviewStatus.PENDING_LND_REVIEW.name(),progress.getCourseId(), progress.getUserId());
         }

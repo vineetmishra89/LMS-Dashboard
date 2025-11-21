@@ -18,9 +18,9 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { PickListModule } from 'primeng/picklist';
-import { Globals } from '../shared/globals';
 import { MetricsPanelComponent } from '../metrics/metrics-panel.component';
 import { RopmMetricsService } from '../../services/ropm-metrics.service';
+import { Globals } from '../../core/globals';
 
 
 @Component({

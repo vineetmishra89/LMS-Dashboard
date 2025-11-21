@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
 import { forkJoin } from 'rxjs';
-import { Globals } from '../../components/shared/globals';
+import { Globals } from '../../core/globals';
 import { VideoPlayerComponent } from '../../components/video-player/video-player.component';
 
 @Component({
@@ -59,7 +59,6 @@ export class VideoPlayerPageComponent implements OnInit {
         const runningCourse = this.getRunningModule(this.enrollmentMapping!.enrollmentDetailsList);
         this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[runningCourse];
         this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[runningCourse].courseDetail;
-        console.log('CourseDetail : ' + this.enrollmentMapping!.enrollmentDetailsList[runningCourse].courseDetail);
         this.videoPageReady = true;
         console.log("Video player page loaded successfully");
       },
@@ -74,7 +73,7 @@ export class VideoPlayerPageComponent implements OnInit {
     const sortedList = list.sort((a: any, b: any) => a.moduleId - b.moduleId);
     const statusMap = sortedList.map((item: any) => item.status.toUpperCase() === 'COMPLETED');
     const lastCompletedIndex_map = statusMap.lastIndexOf(true);
-    if (lastCompletedIndex_map !== -1) {
+    if (lastCompletedIndex_map !== -1 && lastCompletedIndex_map <list.length-1) {
       return sortedList.length === lastCompletedIndex_map ? lastCompletedIndex_map : lastCompletedIndex_map + 1;
     } else {
       return 0;
@@ -120,6 +119,7 @@ export class VideoPlayerPageComponent implements OnInit {
       if (this.enrollmentMapping.enrollmentDetailsList[currentIndex]) {
         this.enrollmentMapping.enrollmentDetailsList[currentIndex + 1].status = 'COMPLETED';
         this.selectedModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1].courseDetail;
+        this.selectedEnrollmentModule = this.enrollmentMapping!.enrollmentDetailsList[currentIndex + 1];
       }
     }
   }
