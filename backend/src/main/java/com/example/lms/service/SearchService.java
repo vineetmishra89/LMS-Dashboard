@@ -138,7 +138,7 @@ public class SearchService {
     try {
       List<Object[]> results = courseRepository.getAllTrainings();
       if (null != results) {
-        log.info("got results");
+        log.info("got search results in getTrainingList  {}", results.size());
         return results.stream()
           .map(row -> new TrainingNameDto(
             (String)row[0],(String)row[1],(Long)row[2]
@@ -159,7 +159,7 @@ public class SearchService {
     try {
       List<Object> results = courseRepository.getAllCategories();
       if (null != results) {
-        log.info("got results");
+        log.info("got search results in getAllCategories  {}", results.size());
         return results.stream()
           .map(obj -> (String) obj)
           .collect(Collectors.toList());
@@ -177,7 +177,7 @@ public class SearchService {
       try {
         List<Object> results = courseRepository.getAllLevels();
         if (null != results) {
-          log.info("got results");
+          log.info("got search results in getAllLevels  {}", results.size());
           return results.stream()
             .map(obj -> (String) obj)
             .collect(Collectors.toList());
@@ -195,7 +195,7 @@ public class SearchService {
       try {
         List<Object> results = trainerRepository.getAllTrainers();
         if (null != results) {
-          log.info("got results");
+          log.info("got search results in getAllTrainers  {}", results.size());
           return results.stream()
             .map(obj -> (String) obj)
             .collect(Collectors.toList());
