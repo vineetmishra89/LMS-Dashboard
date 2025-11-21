@@ -1,6 +1,7 @@
 package com.example.lms.service.impl;
 
 import com.example.lms.constants.RoleConstants;
+import com.example.lms.constants.TrainingPlanStatus;
 import com.example.lms.domain.TrainingPlanSummary;
 import com.example.lms.dto.TrainingPlanRequestDTO;
 import com.example.lms.dto.TrainingPlanResponseDTO;
@@ -69,7 +70,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         TrainingPlanSummary trainingPlan = TrainingPlanSummary.builder()
                 .trngPlanName(finalTrainingPlanName)
                 .emailId(emailId)
-                .status("DRAFT")
+                .status(TrainingPlanStatus.DRAFT)
                 .createdBy(emailId)
                 .createdTs(currentTime)
                 .updatedBy(emailId)

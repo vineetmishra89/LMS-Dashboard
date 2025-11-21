@@ -1,5 +1,6 @@
 package com.example.lms.domain;
 
+import com.example.lms.constants.TrainingPlanStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,8 +26,9 @@ public class TrainingPlanSummary {
     @Column(name = "EMAIL_ID", nullable = false, length = 100)
     private String emailId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", nullable = false, length = 50)
-    private String status;
+    private TrainingPlanStatus status;
 
     @Column(name = "CREATED_BY", length = 100)
     private String createdBy;

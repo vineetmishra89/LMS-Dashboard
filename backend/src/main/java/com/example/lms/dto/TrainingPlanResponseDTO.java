@@ -1,5 +1,6 @@
 package com.example.lms.dto;
 
+import com.example.lms.constants.TrainingPlanStatus;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -32,7 +33,7 @@ public class TrainingPlanResponseDTO {
     /**
      * Training plan status
      */
-    private String status;
+    private TrainingPlanStatus status;
     
     /**
      * Created timestamp
