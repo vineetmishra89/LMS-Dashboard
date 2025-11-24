@@ -166,18 +166,12 @@ public class CourseService {
     }
   }
 
-  public Map<String, Object> getMaterialCourseLink(Long trngId, String authorization, String folderPath){
+  public Map<String, Object> getMaterialCourseLink(Long trngId, String folderPath){
 
-    String bearerToken = authorization.substring(7).trim();
-
-
-
+    //String bearerToken = authorization.substring(7).trim();
     log.info("Found folder path: {} for trngId: {}", folderPath, trngId);
-
-    List<String> allFilePaths = userTokenSharePointService.fetchAllFilePathsFromWebUrl(bearerToken,folderPath);
-
-    List<String> nonVideoFiles = filterNonVideoFiles(allFilePaths);
-
+    Map<String, String> allFilePaths = userTokenSharePointService.fetchAllFilePathsFromWebUrl(folderPath);
+    Map<String, String> nonVideoFiles = filterNonVideoFiles(allFilePaths);
     Map<String, Object> response = new HashMap<>();
     response.put("success", true);
     response.put("trngId", trngId);
@@ -186,21 +180,18 @@ public class CourseService {
     response.put("files", nonVideoFiles);
     log.info("Successfully retrieved {} non-video files for trngId: {}", nonVideoFiles.size(), trngId);
     return response;
-
   }
-  private List<String> filterNonVideoFiles(List<String> filePaths) {
-    List<String> nonVideoFilePaths = new ArrayList<>();
+  private Map<String, String> filterNonVideoFiles(Map<String, String> filePaths) {
+    Map<String, String> nonVideoFilePaths = new HashMap<>();
 
     if (filePaths == null) {
       return nonVideoFilePaths;
     }
-
-    for (String filePath : filePaths) {
-      if (!isVideoFilePath(filePath)) {
-        nonVideoFilePaths.add(filePath);
+    filePaths.forEach((s, s2) -> {
+      if (!isVideoFilePath(s2)) {
+        nonVideoFilePaths.put(s,s2);
       }
-    }
-
+    });
     return nonVideoFilePaths;
   }
 
