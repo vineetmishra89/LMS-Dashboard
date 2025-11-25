@@ -177,4 +177,16 @@ downloadFile(fileUrl: any, fileName: any) {
   // 5. Clean up: remove the element
   document.body.removeChild(a);
 }
+
+getModuleActive(allItems: any, item: any, index: number) {
+  if(index === 0) {
+    return 'color-active';
+  } else if(allItems[index - 1].status.toUpperCase() === 'COMPLETED') {
+    return 'color-active';
+  } else if(item.status === 'COMPLETED' || item.status === 'Completed') {
+    return 'color-active';
+  } else {
+    return 'color-disabled';
+  }
+}
 }

@@ -60,13 +60,13 @@
         @for(item of enrollmentMapping?.enrollmentDetailsList | orderBy:'moduleId':'asc'; track item; let i = $index) {
         <li (click)="moduleSelected(item.courseDetail, i, item.status)"
           style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300);"
-          class="{{ item.status === 'COMPLETED' || item.status === 'Completed'   || i === 0 ? 'color-active' : 'color-disabled' }}
-          {{item.moduleId === selectedModule.moduleId ? 'selected-module' : ''}}" >
+          class="{{getModuleActive(enrollmentMapping?.enrollmentDetailsList, item, i)}} {{item.moduleId === selectedModule.moduleId ? 'selected-module' : ''}}" >
           Module {{ i + 1 + ':  ' }} {{ item.courseDetail.details }}
         </li>
         }
       </ul>
     </div>
+    <!-- {{ item.status === 'COMPLETED' || item.status === 'Completed'   || i === 0 ? 'color-active' : 'color-disabled' -->
   </div>
   <div class="loading" *ngIf="isLoading">
     <div class="spinner"></div>
