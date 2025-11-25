@@ -17,10 +17,13 @@
     gap: 40px;
 
     .logo {
+      display: flex;
       .logo-text {
         font-size: 24px;
         font-weight: bold;
-        color: #3b82f6;
+        color: #294587;
+        border-left: 1px solid #c4c4c5;
+    padding-left: 16px;
       }
     }
 
@@ -38,8 +41,8 @@
         transition: all 0.2s;
 
         &.active, &:hover {
-          color: #3b82f6;
-          border-bottom-color: #3b82f6;
+          color: #294587;
+          border-bottom-color: #294587;
         }
       }
     }
@@ -63,7 +66,7 @@
 
         &:focus {
           background: #0f172a;
-          box-shadow: 0 0 0 2px #3b82f6;
+          box-shadow: 0 0 0 2px #294587;
         }
       }
 
@@ -92,7 +95,7 @@
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: #3b82f6;
+        background: #294587;
         color: white;
         display: flex;
         align-items: center;
@@ -100,26 +103,36 @@
         font-weight: 600;
         font-size: 14px;
       }
-
+.name-section {
+  color: #294587;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+}
       .user-name {
-        color: var(--text-color);
-        font-weight: 500;
-        font-size: 14px;
+        color: #294587;
+        font-weight: bold;
+        font-size: 12px;
+      }
+
+      .vertical-line {
+        color: #8080806e;
+        margin-left: 10px;
       }
 
       .logout-btn {
-        background: #ef4444;
-        color: white;
+        background: transparent;
+        color: #294587;
         border: none;
         border-radius: 6px;
         padding: 8px 16px;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
 
         &:hover {
-          background: #dc2626;
+          background: #dcdddf;
         }
 
         &:active {

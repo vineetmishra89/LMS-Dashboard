@@ -91,7 +91,7 @@ body {
 .card-body-2 {
   font-weight: 400;
             font-weight: 400;
-            background: #dbeafe;
+            background: #e4e9f6;
             color: #1e40af;
             border-radius: 5px;
             padding: 0px 10px;
@@ -197,4 +197,14 @@ body {
     width: 180px !important;
     margin-right: 20px;
   }
+}
+.p-button-primary {
+  background: #294587 !important;
+  border: 1px solid #294587 !important;
+
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  color: #294587 !important;
+  border-color: #294587 !important;
 }

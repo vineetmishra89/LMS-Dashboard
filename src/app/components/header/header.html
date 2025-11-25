@@ -1,6 +1,8 @@
 <header class="header">
   <div class="header-left">
     <div class="logo">
+      <img src="assets/images/Logomark_RGB - Blue.png" alt="Iris Logo" style="    margin-right: 10px;
+    width: 50px;" />
       <span class="logo-text">LMS</span>
     </div>
     <nav class="main-nav">
@@ -25,7 +27,11 @@
       <div class="user-avatar">
         {{ (user?.userName || user?.name || user?.email || '') | slice:0:1 | uppercase }}
       </div>
-      <span class="user-name">{{ user?.userName || user?.name || user?.email }}</span>
+      <div class="name-section">
+        <span>Welcome</span>
+        <span class="user-name">{{ user?.userName || user?.name || user?.email }}</span>
+      </div>
+      <span class="vertical-line">|</span>
       <button class="logout-btn" (click)="logout.emit()">Logout</button>
     </div>
   </div>

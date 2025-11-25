@@ -17,9 +17,10 @@
 
 /* Sidebar Styles */
 .sidebar {
-    background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+    background: #294587;
+    // background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
     color: white;
-    padding: 48px 32px;
+    padding: 15px 32px 48px 32px;
     display: flex;
     flex-direction: column;
 }

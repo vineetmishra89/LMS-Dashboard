@@ -54,7 +54,6 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit   
     console.log('Load video progress');
     this.loadVideoProgress();
     this.setupProgressTracking();
-    this.getCourseMaterial();
   }
 
   
@@ -227,16 +226,7 @@ ngAfterViewInit() {
     this.lastSavedTime = this.currentTime;
   }
 
-  getCourseMaterial() {
-    const trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
-    this.courseService.getCourseMaterial(trainingId).subscribe({
-      next: (res) => {
-        console.log('course material', res);
-      }, error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: error['error']['message'].split('from')[0] });
-      }
-    })
-  }
+ 
 
   disableRightClick(event: MouseEvent) {
     event.preventDefault();

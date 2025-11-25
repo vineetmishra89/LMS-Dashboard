@@ -9,6 +9,7 @@ import { ConfigService } from './services/config.service';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { PrimeNGConfig } from 'primeng/api';
 import { RoleService } from './services/role.service';
+import { FooterComponent } from './components/footer/footer.component';
 
 @Component({
   selector: 'app-root',

@@ -1,4 +1,4 @@
-<div style="margin: 5px 10px 30px 10px">
+<div style="margin: 5px 10px 0px 10px">
   <form [formGroup]="filterFormGroup" class="search-form-group" style="display: flex">
     <p-dropdown
       [options]="filterData?.categoryList"
@@ -38,8 +38,25 @@
       placeholder="Select a Top Record Number"
       [showClear]="true" 
     />
-    <p-button label="Search" icon="pi pi-search" [loading]="loading" (click)="search()" />
-    <p-button label="Download" style="margin-left: 20px" icon="pi pi-download" [loading]="downloading" (click)="download()" />
+    <button
+            pButton
+            pRipple
+            label=""
+            icon="pi pi-search" 
+            [loading]="loading" 
+            class="p-button-primary"
+            (click)="search()"
+          ></button>
+          <button
+            pButton
+            pRipple
+            label=""
+            [loading]="downloading"
+            style="margin-left: 20px" icon="pi pi-download" 
+            class="p-button-primary"
+            (click)="download()"
+          ></button>
+
     @if(filterFormGroup?.get('dateRange')?.value === null) {
      <div style="display: flex; align-items: center; margin-left: 20px; color: #e24c4c; font-size: 13px">
       (Default showing last 60 days records)

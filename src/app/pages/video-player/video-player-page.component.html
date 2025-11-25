@@ -35,7 +35,8 @@
           <span class="duration">Duration: {{ course.duration }} Hours</span>
           <span class="category">Category: {{ course.category }}</span>
           <span class="category">
-            <a href="/" style="color: var(--primary-700)">Material Link</a>
+            
+            <p-button label="Material Link" [link]="true" (click)="visible = true"/>
           </span>
         </div>
       </div>
@@ -72,3 +73,11 @@
     <p>Loading course...</p>
   </div>
 </div>
+<p-dialog header="Download Training Material" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+  <div style="display: flex; flex-direction: column; margin-top: 2px">
+    @for(file of materialLinkRes['files']; track file; let i = $index ) {
+      <p-button label="{{'Download ' + (i + 1)}}" [link]="true" (click)="download(file)" />
+    }
+  </div>
+ 
+</p-dialog>

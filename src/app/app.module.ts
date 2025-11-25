@@ -99,6 +99,8 @@ import { CarouselModule } from 'primeng/carousel';
 import { Globals } from './core/globals';
 import { OrderByPipe } from './pipes/order-by.pipe';
 import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
+import { FooterComponent } from './components/footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -141,6 +143,7 @@ import { ToastModule } from 'primeng/toast';
     HoursDetailComponent,
     VideoPlayerComponent,
     VideoPlayerPageComponent,
+    FooterComponent
     
   ],
   imports: [
@@ -175,7 +178,7 @@ import { ToastModule } from 'primeng/toast';
     ProgressPipe,
     OrderByPipe,
     ToastModule,
-
+    DialogModule, 
     // PWA Support
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
