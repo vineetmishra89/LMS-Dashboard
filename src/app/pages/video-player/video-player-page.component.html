@@ -75,8 +75,8 @@
 </div>
 <p-dialog header="Download Training Material" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
   <div style="display: flex; flex-direction: column; margin-top: 2px">
-    @for(file of materialLinkRes['files']; track file; let i = $index ) {
-      <p-button label="{{'Download ' + (i + 1)}}" [link]="true" (click)="download(file)" />
+    @for(file of materialLinkRes['files'] | keyvalue; track file; let i = $index ) {
+      <p-button label="{{file?.key}}" [link]="true" (click)="download(file?.value)" /> 
     }
   </div>
  
