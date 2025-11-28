@@ -19,4 +19,9 @@ public interface CourseDetailRepository extends JpaRepository<CourseDetail, Long
    * Find CourseDetail by training ID and module path (for idempotency check).
    */
   Optional<CourseDetail> findByCourseTrainingIdAndTrainingLink(Long trainingId, String trainingLink);
+  
+  /**
+   * Find all CourseDetails by training ID.
+   */
+  List<CourseDetail> findByCourseTrainingId(Long trainingId);
 }
