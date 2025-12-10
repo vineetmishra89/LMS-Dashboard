@@ -3,8 +3,7 @@ package com.example.lms.service;
 import com.example.lms.dto.FolderNode;
 import com.example.lms.dto.SharePointSyncResult;
 
-import java.io.File;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Service for accessing SharePoint/OneDrive using user-provided bearer tokens.
@@ -44,5 +43,5 @@ public interface UserTokenSharePointService {
      */
     SharePointSyncResult syncModulesFromSharePoint(String bearerToken, boolean dryRun);
 
-    List<String> fetchAllFilePathsFromWebUrl(String bearerToken, String webUrl);
+    Map<String, String> fetchAllFilePathsFromWebUrl(String webUrl);
 }

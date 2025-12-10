@@ -105,7 +105,16 @@
               ">
                <div> {{ item.trainingName }}</div>
                <div>
-                <p-button class="same-button-width" severity="Primary"  label="Start"   size="small" (click)="start(item)"/>
+                
+                <button
+                pButton
+                pRipple
+                size="small" 
+                label="Start"
+                style="width: 100%"
+                class="same-button-width p-button-primary"
+                (click)="start(item)"
+              ></button>
                </div>
               </div>
               <div>
@@ -141,6 +150,7 @@
                <div>
                
                 <p-button class="same-button-width" severity="warning"  label="Continue"   size="small"/>
+                
                </div>
               </div>
               <div style="position: relative">
@@ -215,6 +225,7 @@
                <div> {{ item.trainingName }}</div>
                <div>
                 <p-button class="same-button-width" severity="primary"  label="View Course"   size="small"/>
+                
                </div>
               </div>
               

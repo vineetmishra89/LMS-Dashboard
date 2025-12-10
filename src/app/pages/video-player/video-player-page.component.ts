@@ -10,6 +10,7 @@ import { EnrollmentDetails, EnrollmentMapping } from '../../models/enrollments';
 import { forkJoin } from 'rxjs';
 import { Globals } from '../../core/globals';
 import { VideoPlayerComponent } from '../../components/video-player/video-player.component';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-video-player-page',
@@ -30,6 +31,9 @@ export class VideoPlayerPageComponent implements OnInit {
 
   videoError: boolean = false;
   showSignInPrompt: boolean = false;
+  visible: boolean = false;
+  messageService = inject(MessageService);
+  materialLinkRes: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +48,7 @@ export class VideoPlayerPageComponent implements OnInit {
     const trngEnrollmentId = this.route.snapshot.params['trngEnrollmentId'];
     console.log("trngEnrollmentId : " + trngEnrollmentId);
     const userId = this.globals.getUser().emailId;
+    this.getCourseMaterial();
 
     forkJoin({
       course: this.courseService.getCourseById(courseId, userId),
@@ -124,6 +129,64 @@ export class VideoPlayerPageComponent implements OnInit {
     }
   }
 
+  getCourseMaterial() {
+    const trainingId = this.route.snapshot.paramMap.get('trainingId') || '0';
+    this.courseService.getCourseMaterial(trainingId).subscribe({
+      next: (res) => {
+        this.materialLinkRes = res;
+      }, error: (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: error['error']['message'].split('from')[0] });
+      }
+    })
+  }
   
+  download(file: any) {
+    const fileToDownload = 'https://example.com/assets/my_document.pdf'; 
+    const desiredFilename = 'report_2025.pdf';
+    
+    this.downloadFile(file, desiredFilename);
+  }
+
+  downloadBlob(content: any, fileName: any, contentType: any) {
+    // Create a Blob from the content
+    const blob = new Blob([content], { type: contentType });
+    // Create a URL for the Blob
+    const blobUrl = URL.createObjectURL(blob);
+
+    // Call the main download function
+    this.downloadFile(blobUrl, fileName);
+
+    // Optional: Revoke the Blob URL after a short delay for cleanup
+    // setTimeout(() => URL.revokeObjectURL(blobUrl), 100); 
+}
+
+downloadFile(fileUrl: any, fileName: any) {
+  // 1. Create a temporary anchor element
+  const a = document.createElement('a');
   
+  // 2. Set the file URL and filename
+  a.href = fileUrl;
+  a.download = fileName; // The name the file will be saved as
+  
+  // 3. Append to the document body (required for some browsers to trigger the click)
+  document.body.appendChild(a);
+  
+  // 4. Programmatically click the anchor to start the download
+  a.click();
+  
+  // 5. Clean up: remove the element
+  document.body.removeChild(a);
+}
+
+getModuleActive(allItems: any, item: any, index: number) {
+  if(index === 0) {
+    return 'color-active';
+  } else if(allItems[index - 1].status.toUpperCase() === 'COMPLETED') {
+    return 'color-active';
+  } else if(item.status === 'COMPLETED' || item.status === 'Completed') {
+    return 'color-active';
+  } else {
+    return 'color-disabled';
+  }
+}
 }

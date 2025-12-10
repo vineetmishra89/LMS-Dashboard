@@ -35,7 +35,8 @@
           <span class="duration">Duration: {{ course.duration }} Hours</span>
           <span class="category">Category: {{ course.category }}</span>
           <span class="category">
-            <a href="/" style="color: var(--primary-700)">Material Link</a>
+            
+            <p-button label="Material Link" [link]="true" (click)="visible = true"/>
           </span>
         </div>
       </div>
@@ -59,16 +60,24 @@
         @for(item of enrollmentMapping?.enrollmentDetailsList | orderBy:'moduleId':'asc'; track item; let i = $index) {
         <li (click)="moduleSelected(item.courseDetail, i, item.status)"
           style="margin: 5px 10px; padding: 10px 10px; border-bottom: 1px solid var(--gray-300);"
-          class="{{ item.status === 'COMPLETED' || item.status === 'Completed'   || i === 0 ? 'color-active' : 'color-disabled' }}
-          {{item.moduleId === selectedModule.moduleId ? 'selected-module' : ''}}" >
+          class="{{getModuleActive(enrollmentMapping?.enrollmentDetailsList, item, i)}} {{item.moduleId === selectedModule.moduleId ? 'selected-module' : ''}}" >
           Module {{ i + 1 + ':  ' }} {{ item.courseDetail.details }}
         </li>
         }
       </ul>
     </div>
+    <!-- {{ item.status === 'COMPLETED' || item.status === 'Completed'   || i === 0 ? 'color-active' : 'color-disabled' -->
   </div>
   <div class="loading" *ngIf="isLoading">
     <div class="spinner"></div>
     <p>Loading course...</p>
   </div>
 </div>
+<p-dialog header="Download Training Material" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+  <div style="display: flex; flex-direction: column; margin-top: 2px">
+    @for(file of materialLinkRes['files'] | keyvalue; track file; let i = $index ) {
+      <p-button label="{{file?.key}}" [link]="true" (click)="download(file?.value)" /> 
+    }
+  </div>
+ 
+</p-dialog>
